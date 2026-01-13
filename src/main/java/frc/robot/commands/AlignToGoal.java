@@ -3,9 +3,8 @@ package frc.robot.commands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -18,15 +17,20 @@ public class AlignToGoal extends Command {
     private final DriveSubsystem drive;
     private final PIDController turnPID = AlignmentConstants.turnPID;
     private final CommandXboxController controller;
+    private final Pose2d goalPose;
     private double yawError;
     private Debouncer alignDebouncer = new Debouncer(0.05);
 
-    public AlignToGoal(DriveSubsystem drive, CommandXboxController controller, int tagID) {
+    public AlignToGoal(DriveSubsystem drive, CommandXboxController controller, Pose2d goalPose) {
         this.drive = drive;
         this.controller = controller;
+        this.goalPose = goalPose;
 
         addRequirements(drive);
-        yawError = PositionCalculations.getYawChangeToTag(drive.getCurrentPose(), tagID);
+        yawError = PositionCalculations.getYawChangeToPose(
+            drive.getCurrentPose(),
+            goalPose
+        );
     }
 
     @Override
@@ -41,9 +45,9 @@ public class AlignToGoal extends Command {
         double strafe  = -MathUtil.applyDeadband(controller.getLeftX(), OIConstants.kDriveDeadband);
 
         // Compute yaw error based on alliance
-        yawError = PositionCalculations.getYawChangeToTag(
+        yawError = PositionCalculations.getYawChangeToPose(
             drive.getCurrentPose(),
-            DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7
+            goalPose
         );
         SmartDashboard.putNumber("Yaw Align Error", Units.degreesToRadians(yawError));
 

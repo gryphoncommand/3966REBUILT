@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AlignToGoal;
 import frc.robot.subsystems.DriveSubsystem;
@@ -59,7 +60,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Driver bindings
     m_driverController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
-    m_driverController.rightBumper().whileTrue(new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7));
+    m_driverController.rightBumper().whileTrue(new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose));
    
     m_operatorController.rightTrigger().whileTrue(
         new RunCommand(() -> m_flywheel.set(1.0), m_flywheel)).onFalse(

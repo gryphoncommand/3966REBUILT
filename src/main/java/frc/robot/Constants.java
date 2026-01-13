@@ -10,6 +10,8 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -155,7 +157,7 @@ public final class Constants {
 
 
     // The layout of the AprilTags on the field
-    public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+    public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
@@ -170,6 +172,10 @@ public final class Constants {
 
   public static class AlignmentConstants {
     public static final PIDController turnPID = new PIDController(2.0, 0.0, 0.3);{turnPID.enableContinuousInput(-Math.PI, Math.PI);}
+
+    public static final Pose2d RedHubPose = new Pose2d(11.916, 4.055, new Rotation2d());
+    public static final Pose2d BlueHubPose = new Pose2d(4.624, 4.055, new Rotation2d());
+    
 
     // Tolerances
     public static final double ANGLE_TOLERANCE_RAD = Math.toRadians(5.0);

@@ -55,4 +55,25 @@ public class PositionCalculations {
         shortestDelta = Math.atan2(Math.sin(shortestDelta), Math.cos(shortestDelta));  // wrap to [-π, π]
         return shortestDelta;
     }
+
+    public static double getYawChangeToPose(Pose2d robotPose, Pose2d goalPose){
+        double xDiff = goalPose.getX() - robotPose.getX();
+        double yDiff = goalPose.getY() - robotPose.getY();
+        double angleToTag = Math.atan2(yDiff, xDiff);
+
+        // Get robot's heading
+        double robotHeading = robotPose.getRotation().getRadians();
+
+        // Compute target angle relative to the robot
+        double desiredAngle = angleToTag - robotHeading;
+
+        // Normalize to [-π, π]
+        desiredAngle = Math.atan2(Math.sin(desiredAngle), Math.cos(desiredAngle));
+
+        double DesiredAngleToTag = 0;
+
+        double shortestDelta = desiredAngle - DesiredAngleToTag;
+        shortestDelta = Math.atan2(Math.sin(shortestDelta), Math.cos(shortestDelta));  // wrap to [-π, π]
+        return shortestDelta;
+    }
 }
