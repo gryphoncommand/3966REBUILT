@@ -1,28 +1,28 @@
-package frc.robot.subsystems.Shooter;
+package frc.robot.subsystems.Flywheel;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
+import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Configs;
 import frc.robot.Constants.ShooterConstants;
 
-public class ShooterTalonFX extends SubsystemBase implements ShooterIO {
-  private final TalonFX shooterMotor = new TalonFX(ShooterConstants.kFlywheelCANID);
-  private TalonFXConfiguration shooterConfigurator = new TalonFXConfiguration();
+public class FlywheelTalonFX extends SubsystemBase implements FlywheelIO {
+  private final SparkFlex shooterMotor = new SparkFlex(ShooterConstants.kFlywheelCANID, MotorType.kBrushless);
+  private final SparkClosedLoopController closedLoopController = shooterMotor.getClosedLoopController();
+  private final RelativeEncoder encoder = shooterMotor.getEncoder();
 
   private double targetReference = 0;
   private ControlType currentControlType = ControlType.kPosition;
 
-  public ShooterTalonFX() {
-    shooterConfigurator.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    shooterConfigurator.Slot0.kP = 1.0;
-
-    shooterMotor.getConfigurator().apply(shooterConfigurator);
+  public FlywheelTalonFX() {
+    shooterMotor.configure(Configs.FlywheelConfig.flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
@@ -38,13 +38,13 @@ public class ShooterTalonFX extends SubsystemBase implements ShooterIO {
   @Override
   public void setVelocity(double rpm) {
     targetReference = rpm;
-    shooterMotor.setControl(new VelocityDutyCycle(rpm));
+    closedLoopController.setSetpoint(rpm, ControlType.kVelocity);
     currentControlType = ControlType.kVelocity;
   }
 
   public void setPosition(double position){
     SmartDashboard.putNumber("Requested Wheel Position", position);
-    shooterMotor.setControl(new PositionDutyCycle(position));
+    closedLoopController.setSetpoint(position, ControlType.kPosition);
     
     targetReference = position;
     currentControlType = ControlType.kPosition;
@@ -57,13 +57,13 @@ public class ShooterTalonFX extends SubsystemBase implements ShooterIO {
 
   @Override
   public void setEncoderPosition(double position) {
-    shooterMotor.setPosition(position);
+    encoder.setPosition(position);
   }
 
   @Override
   public double getVelocity() {
     // convert to RPM if needed
-    return shooterMotor.getVelocity().getValueAsDouble();
+    return encoder.getVelocity();
   }
 
   @Override

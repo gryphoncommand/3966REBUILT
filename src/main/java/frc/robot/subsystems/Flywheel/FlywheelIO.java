@@ -1,9 +1,9 @@
-package frc.robot.subsystems.Shooter;
+package frc.robot.subsystems.Flywheel;
 
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public interface ShooterIO extends Subsystem {
+public interface FlywheelIO extends Subsystem {
   void set(double speed);
 
   void setVelocity(double rpm);

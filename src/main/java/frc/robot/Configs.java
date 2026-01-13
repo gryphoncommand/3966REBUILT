@@ -98,4 +98,25 @@ public final class Configs {
                     .outputRange(-0.5, 0.5);
         }
     }
+
+    public static final class FlywheelConfig {
+        public static final SparkMaxConfig flywheelConfig = new SparkMaxConfig();
+
+        static {
+                flywheelConfig
+                        .idleMode(IdleMode.kBrake)
+                        .smartCurrentLimit(80)
+                        .inverted(true)
+                        .openLoopRampRate(0)
+                        .closedLoopRampRate(0);
+                flywheelConfig.encoder
+                    .positionConversionFactor(1)
+                    .velocityConversionFactor(1);
+                flywheelConfig.closedLoop
+                    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                    // These are example gains need to them for your own robot!
+                    .pid(5, 2, 0)
+                    .outputRange(-0.95, 0.95);
+        }
+    }
 }

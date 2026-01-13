@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Shooter;
+package frc.robot.subsystems.Flywheel;
 
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 
-public class ShooterSim extends SubsystemBase implements ShooterIO {
+public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     private final FlywheelSim shooterSim =
         new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(3), 0.04, 1), DCMotor.getNeoVortex(3), 0.005);
 
@@ -40,7 +40,7 @@ public class ShooterSim extends SubsystemBase implements ShooterIO {
     final VelocityVoltage m_flywheelVelocityVoltage = new VelocityVoltage(0);
     
 
-    public ShooterSim() {
+    public FlywheelSimTalonFX() {
         m_flywheelMotor = new TalonFX(ShooterConstants.kFlywheelCANID);
         m_flywheelSim = m_flywheelMotor.getSimState();
     }
