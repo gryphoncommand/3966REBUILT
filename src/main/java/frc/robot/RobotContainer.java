@@ -4,22 +4,19 @@
 
 package frc.robot;
 
-import frc.GryphonLib.PositionCalculations;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.PositionPIDCommand;
+import frc.robot.commands.AlignToGoal;
 import frc.robot.subsystems.DriveSubsystem;
-
-import static edu.wpi.first.units.Units.Seconds;
-
-import java.util.Set;
-
+import frc.robot.subsystems.Flywheel.FlywheelIO;
+import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
+import frc.robot.subsystems.Flywheel.FlywheelSparkFlex;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -28,6 +25,7 @@ public class RobotContainer {
 
   // Subsystems
   private final DriveSubsystem m_drive = new DriveSubsystem();
+  private final FlywheelIO m_flywheel = Robot.isReal() ? new FlywheelSparkFlex() : new FlywheelSimTalonFX();
 
   // Controllers
   private final CommandXboxController m_driverController =
@@ -61,16 +59,15 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Driver bindings
     m_driverController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
-    m_driverController.leftBumper().whileTrue(Commands.defer(()->PositionPIDCommand.generateCommand(m_drive, PositionCalculations.translateCoordinates(m_drive::getCurrentPose, 0, 2), Seconds.of(2)), Set.of(m_drive)));
-    m_driverController.rightBumper().whileTrue(Commands.defer(()->m_drive.goToPose(PositionCalculations.translateCoordinates(m_drive::getCurrentPose, 0, -2)), Set.of(m_drive)));
-    m_driverController.a().whileTrue(Commands.defer(()->PositionPIDCommand.generateCommand(m_drive, PositionCalculations.getStraightOutPose(8), Seconds.of(2)), Set.of(m_drive)));
-    m_driverController.b().whileTrue(Commands.defer(()->m_drive.goToPose(PositionCalculations.getStraightOutPose(8)), Set.of(m_drive)));
-
-    SmartDashboard.putData("Drive 2m Back", Commands.defer(()->m_drive.goToPose(PositionCalculations.translateCoordinates(m_drive::getCurrentPose, 0, -2)), Set.of(m_drive)));
-    SmartDashboard.putData("Drive 2m Forward", new InstantCommand(()->m_drive.goToPose(PositionCalculations.translateCoordinates(m_drive::getCurrentPose, 0, 2)).schedule()));
-    SmartDashboard.putData("PID 2m Forward", new InstantCommand(()->PositionPIDCommand.generateCommand(m_drive, PositionCalculations.translateCoordinates(m_drive::getCurrentPose, 0, 2), Seconds.of(2)).schedule()));
-  
+    m_driverController.rightBumper().whileTrue(new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7));
+   
+    m_operatorController.rightTrigger().whileTrue(
+        new RunCommand(() -> m_flywheel.set(1.0), m_flywheel)).onFalse(
+          new InstantCommand(()->m_flywheel.set(0), m_flywheel));
+    m_operatorController.a().onTrue(new InstantCommand(m_drive::stop, m_drive));
+    m_operatorController.y().onTrue(new InstantCommand(m_drive::setX, m_drive));
   }
+
 
   private void configureStateTriggers() {}
     

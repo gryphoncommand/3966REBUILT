@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ShooterConstants;
 
-public class FlywheelTalonFX extends SubsystemBase implements FlywheelIO {
+public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   private final SparkFlex shooterMotor = new SparkFlex(ShooterConstants.kFlywheelCANID, MotorType.kBrushless);
   private final SparkClosedLoopController closedLoopController = shooterMotor.getClosedLoopController();
   private final RelativeEncoder encoder = shooterMotor.getEncoder();
@@ -21,7 +21,7 @@ public class FlywheelTalonFX extends SubsystemBase implements FlywheelIO {
   private double targetReference = 0;
   private ControlType currentControlType = ControlType.kPosition;
 
-  public FlywheelTalonFX() {
+  public FlywheelSparkFlex() {
     shooterMotor.configure(Configs.FlywheelConfig.flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
