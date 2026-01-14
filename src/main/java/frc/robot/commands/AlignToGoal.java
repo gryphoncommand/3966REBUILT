@@ -6,7 +6,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -22,7 +21,7 @@ public class AlignToGoal extends Command {
     private final CommandXboxController controller;
     private Pose2d goalPose;
     private double yawError;
-    private Debouncer alignDebouncer = new Debouncer(0.05);
+    private Debouncer alignDebouncer = new Debouncer(0.2);
     private boolean SOTM;
 
     public AlignToGoal(DriveSubsystem drive, CommandXboxController controller, Pose2d goalPose, boolean SOTM) {
@@ -67,7 +66,7 @@ public class AlignToGoal extends Command {
             drive.getCurrentPose(),
             goalPose
         );
-        SmartDashboard.putNumber("Yaw Align Error", Units.degreesToRadians(yawError));
+        SmartDashboard.putNumber("Yaw Align Error", (yawError));
 
         // PID output
         double turn = turnPID.calculate(yawError, 0.0);
@@ -75,9 +74,17 @@ public class AlignToGoal extends Command {
 
         // Drive with driver’s translation + auto-turn
         drive.drive(forward, strafe, -turn, true);
+
         boolean withinAngleTol = Math.abs(yawError) < AlignmentConstants.ANGLE_TOLERANCE_RAD;
         boolean slowEnoughRot = Math.abs(drive.getCurrentSpeeds().omegaRadiansPerSecond) < AlignmentConstants.ANG_VEL_TOLERANCE_RAD_PER_SEC;
         boolean slowEnoughTrans = Math.abs(MovementCalculations.getVelocityMagnitude(drive.getCurrentSpeeds()).in(MetersPerSecond)) < AlignmentConstants.SPEED_VEL_TOLERANCE;
+
+        if (SOTM){
+            withinAngleTol = Math.abs(yawError) < AlignmentConstants.ANGLE_TOLERANCE_RAD;
+            slowEnoughRot = true;
+            slowEnoughTrans = true;
+        }
+        
 
         // Debouncer ensures it's stable for required time
         boolean alignedNow = alignDebouncer.calculate(withinAngleTol && slowEnoughRot && slowEnoughTrans);
