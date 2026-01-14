@@ -10,6 +10,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.ShooterConstants;
 
 public final class Configs {
     public static final class MAXSwerveModule {
@@ -141,22 +142,29 @@ public final class Configs {
         public static final TalonFXConfiguration HoodConfig = new TalonFXConfiguration();
 
         static {
-                // Use module constants to calculate conversion factors and feed forward gain.                
                 var slot0ConfigsDrive = HoodConfig.Slot0;
                 // PID + FF tuning
                 slot0ConfigsDrive.kS = 0;
                 slot0ConfigsDrive.kV = 0;
                 slot0ConfigsDrive.kA = 0;
-                slot0ConfigsDrive.kP = 1.0;
+                slot0ConfigsDrive.kP = 0.2;
                 slot0ConfigsDrive.kI = 0; 
                 slot0ConfigsDrive.kD = 0;
 
                 HoodConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
-                HoodConfig.CurrentLimits.withSupplyCurrentLimit(90).withSupplyCurrentLimitEnable(true);
+                HoodConfig.CurrentLimits.withSupplyCurrentLimit(50).withSupplyCurrentLimitEnable(true);
+
+                HoodConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+                HoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
                 
                 // Motor behavior
                 HoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+                HoodConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Constants.ShooterConstants.kHoodMaxAngleDeg * ShooterConstants.kHoodGearRatio / 360.0;
+                HoodConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+                HoodConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Constants.ShooterConstants.kHoodMinAngleDeg * ShooterConstants.kHoodGearRatio / 360.0;
+                HoodConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         }
     }
 }

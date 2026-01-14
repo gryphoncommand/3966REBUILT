@@ -24,4 +24,10 @@ public interface HoodIO extends Subsystem {
   boolean atTarget(double thresholdDeg);
 
   SubsystemBase returnSubsystem();
+
+  double getStatorCurrent();
+
+  void stop();
+
+  void stow();
 }

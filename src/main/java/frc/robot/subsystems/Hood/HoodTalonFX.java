@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Hood;
 
+import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -24,13 +25,12 @@ public class HoodTalonFX extends SubsystemBase implements HoodIO {
 
   public HoodTalonFX() {
     hoodMotor.getConfigurator().apply(Configs.Hood.HoodConfig);
+    hoodMotor.setPosition(startingValue * kRotationsPerDegree);
   }
 
   @Override
   public void periodic() {
-    hoodMotor.setPosition(startingValue * kRotationsPerDegree);
     SmartDashboard.putNumber("Hood Angle (deg)", getAngle());
-    SmartDashboard.putNumber("Hood Target (deg)", targetAngleDeg);
   }
 
   @Override
@@ -41,8 +41,15 @@ public class HoodTalonFX extends SubsystemBase implements HoodIO {
   @Override
   public void setAngle(double degrees) {
     targetAngleDeg = degrees;
-    hoodMotor.setControl(positionRequest.withPosition(degrees * kRotationsPerDegree));
+    SmartDashboard.putNumber("Requested Hood Position", degrees);
+      hoodMotor.setControl(positionRequest.withPosition(degrees * kRotationsPerDegree));
   }
+
+  @Override
+    public void stow() {
+      SmartDashboard.putNumber("Requested Hood Position", ShooterConstants.kHoodMinAngleDeg);
+      hoodMotor.setControl(positionRequest.withPosition(ShooterConstants.kHoodMinAngleDeg * kRotationsPerDegree));
+    }
 
   @Override
   public void setVoltage(double volts) {
@@ -67,5 +74,15 @@ public class HoodTalonFX extends SubsystemBase implements HoodIO {
   @Override
   public SubsystemBase returnSubsystem() {
     return this;
+  }
+
+  @Override
+  public double getStatorCurrent() {
+      return hoodMotor.getStatorCurrent().getValueAsDouble();
+  }
+
+  @Override
+  public void stop() {
+      hoodMotor.setControl(new NeutralOut());
   }
 }

@@ -4,20 +4,20 @@
 
 package frc.robot;
 
-import frc.GryphonLib.ShooterState;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AlignToGoal;
+import frc.robot.commands.HomeHood;
 import frc.robot.commands.PrepareToShoot;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Flywheel.FlywheelSparkFlex;
 
-import java.util.Set;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -25,13 +25,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Hood.*;
-import frc.robot.commands.SetShooterToDefinedState;
 
 public class RobotContainer {
 
@@ -67,6 +66,12 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(turn, OIConstants.kDriveDeadband), true);
             },
             m_drive));
+    
+    m_hood.setDefaultCommand(
+      new RunCommand(()->{
+        m_hood.stow();
+      }, m_hood)
+    );
   }
 
   private void configureButtonBindings() {
@@ -75,17 +80,27 @@ public class RobotContainer {
     m_driverController.rightBumper().whileTrue(new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose));
     m_driverController.leftBumper().whileTrue(new RepeatCommand(new PrepareToShoot(m_hood, m_flywheel, ()->m_drive.getDistanceToPose(DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose), ShooterConstants.FakeValues)));
    
-    m_driverController.rightTrigger().whileTrue(new RunCommand(() -> m_flywheel.setVelocity(3000), m_flywheel)).onFalse(new RunCommand(() -> m_flywheel.setVelocity(0), m_flywheel));
+    m_driverController.b().whileTrue(new HomeHood(m_hood));
     m_driverController.leftTrigger().whileTrue(new RunCommand(() -> m_flywheel.set(1.0), m_flywheel)).onFalse(new RunCommand(() -> m_flywheel.set(0), m_flywheel));
+    
 
-    SmartDashboard.putData("Get Shooter Ready", new PrepareToShoot(m_hood, m_flywheel, ()->m_drive.getDistanceToPose(DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose), ShooterConstants.FakeValues));
+    SmartDashboard.putData("Get Shooter Ready", new RepeatCommand(new PrepareToShoot(m_hood, m_flywheel, ()->m_drive.getDistanceToPose(DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose), ShooterConstants.FakeValues)));
 
     m_operatorController.a().onTrue(new InstantCommand(m_drive::stop, m_drive));
     m_operatorController.y().onTrue(new InstantCommand(m_drive::setX, m_drive));
   }
 
 
-  private void configureStateTriggers() {}
+  private void configureStateTriggers() {
+    Trigger ShooterReady = new Trigger(()->(m_flywheel.atTarget(50) && m_hood.atTarget(5)));
+    Trigger Aligned = new Trigger(m_drive::getAligned);
+
+    Debouncer ShootDebouncer = new Debouncer(0.5);
+    Trigger ReadyToShoot = new Trigger(()->ShootDebouncer.calculate(Aligned.getAsBoolean() && ShooterReady.getAsBoolean()));
+
+    ReadyToShoot.onChange(new InstantCommand(()->SmartDashboard.putBoolean("Ready To Shoot", ReadyToShoot.getAsBoolean())));
+    
+  }
     
 
   /** Returns the autonomous command. */

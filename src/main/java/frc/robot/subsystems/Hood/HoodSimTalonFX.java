@@ -73,9 +73,6 @@ import frc.robot.Constants.ShooterConstants;
 
         SmartDashboard.putData("Hood Mech", mech2d);
         SmartDashboard.putNumber("Hood Angle (deg)", getAngle());
-        SmartDashboard.putNumber("Motor Output Volts", hoodMotor.getMotorVoltage().getValueAsDouble());
-        SmartDashboard.putNumber("Target Rotations", Units.degreesToRotations(targetAngleDeg) * ShooterConstants.kHoodGearRatio);
-        SmartDashboard.putNumber("Actual Rotor Pos", hoodMotor.getPosition().getValueAsDouble());
     }
 
 
@@ -91,6 +88,17 @@ import frc.robot.Constants.ShooterConstants;
         hoodMotor.setControl(
             new PositionVoltage(
                 Units.degreesToRotations(degrees)
+                * ShooterConstants.kHoodGearRatio
+            ).withSlot(0)
+        );
+    }
+
+    @Override
+    public void stow() {
+        SmartDashboard.putNumber("Requested Hood Position", ShooterConstants.kHoodMinAngleDeg);
+        hoodMotor.setControl(
+            new PositionVoltage(
+                Units.degreesToRotations(ShooterConstants.kHoodMinAngleDeg)
                 * ShooterConstants.kHoodGearRatio
             ).withSlot(0)
         );
@@ -120,5 +128,15 @@ import frc.robot.Constants.ShooterConstants;
     @Override
     public SubsystemBase returnSubsystem() {
         return this;
+    }
+
+    @Override
+    public double getStatorCurrent() {
+        return hoodMotor.getStatorCurrent().getValueAsDouble();
+    }
+
+    @Override
+    public void stop() {
+        hoodMotor.setControl(new com.ctre.phoenix6.controls.NeutralOut());
     }
 }

@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
@@ -8,6 +10,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.GryphonLib.MovementCalculations;
 import frc.GryphonLib.PositionCalculations;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.OIConstants;
@@ -58,10 +61,11 @@ public class AlignToGoal extends Command {
         // Drive with driver’s translation + auto-turn
         drive.drive(forward, strafe, -turn, true);
         boolean withinAngleTol = Math.abs(yawError) < AlignmentConstants.ANGLE_TOLERANCE_RAD;
-        boolean slowEnough = Math.abs(drive.getCurrentSpeeds().omegaRadiansPerSecond) < AlignmentConstants.ANG_VEL_TOLERANCE_RAD_PER_SEC;
+        boolean slowEnoughRot = Math.abs(drive.getCurrentSpeeds().omegaRadiansPerSecond) < AlignmentConstants.ANG_VEL_TOLERANCE_RAD_PER_SEC;
+        boolean slowEnoughTrans = Math.abs(MovementCalculations.getVelocityMagnitude(drive.getCurrentSpeeds()).in(MetersPerSecond)) < AlignmentConstants.SPEED_VEL_TOLERANCE;
 
         // Debouncer ensures it's stable for required time
-        boolean alignedNow = alignDebouncer.calculate(withinAngleTol && slowEnough);
+        boolean alignedNow = alignDebouncer.calculate(withinAngleTol && slowEnoughRot && slowEnoughTrans);
         drive.setAlign(alignedNow);
     }
 

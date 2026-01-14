@@ -176,15 +176,16 @@ public final class Constants {
 
     public static double kHoodGearRatio = 200;
     public static double kHoodLengthMeters = Units.inchesToMeters(5);
-    public static double kHoodMaxAngleDeg = 45;
-    public static double kHoodMinAngleDeg = 5;
+    public static double kHoodMaxAngleDeg = 85;
+    public static double kHoodMinAngleDeg = 45;
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
 
     public static List<ShooterState> FakeValues = List.of(
-      new ShooterState(1.5, 45, 4000),
-      new ShooterState(3.0, 35, 4500),
-      new ShooterState(4.5, 25, 5200),
-      new ShooterState(6.0, 18.0, 5800)
+      new ShooterState(1.0, 70, 4000),
+      new ShooterState(1.5, 60, 4500),
+      new ShooterState(3.0, 55, 5200),
+      new ShooterState(4.5, 50, 5800),
+      new ShooterState(6.0, 45, 6000)
     );
   }
 
@@ -199,6 +200,8 @@ public final class Constants {
     // Tolerances
     public static final double ANGLE_TOLERANCE_RAD = Math.toRadians(5.0);
     public static final double ANG_VEL_TOLERANCE_RAD_PER_SEC = Math.toRadians(5.0);
+
+    public static final double SPEED_VEL_TOLERANCE = DriveConstants.kMaxSpeedMetersPerSecond/6;
 
     public static final double MAX_DIST = 5; // Meters
     public static final double SPIN_DIST = 7;
