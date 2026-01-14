@@ -455,6 +455,10 @@ public class DriveSubsystem extends SubsystemBase {
     return PhotonUtils.getDistanceToPose(getCurrentPose(), field2d.getObject("Goal Pose").getPose());
   }
 
+  public Field2d getField(){
+    return field2d;
+  }
+
   /**
    * Resets the current pose to the specified pose. This should ONLY be called
    * when the robot's position on the field is known, like at the beginning of

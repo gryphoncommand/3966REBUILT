@@ -20,16 +20,25 @@ public class AlignToGoal extends Command {
     private final DriveSubsystem drive;
     private final PIDController turnPID = AlignmentConstants.turnPID;
     private final CommandXboxController controller;
-    private final Pose2d goalPose;
+    private Pose2d goalPose;
     private double yawError;
     private Debouncer alignDebouncer = new Debouncer(0.05);
+    private boolean SOTM;
 
-    public AlignToGoal(DriveSubsystem drive, CommandXboxController controller, Pose2d goalPose) {
+    public AlignToGoal(DriveSubsystem drive, CommandXboxController controller, Pose2d goalPose, boolean SOTM) {
         this.drive = drive;
         this.controller = controller;
         this.goalPose = goalPose;
+        this.SOTM = SOTM;
+
 
         addRequirements(drive);
+        if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)){
+            try{
+                goalPose = drive.getField().getObject("SOTM Goal").getPose();
+            }
+            catch (Exception e){}
+        }
         yawError = PositionCalculations.getYawChangeToPose(
             drive.getCurrentPose(),
             goalPose
@@ -43,6 +52,12 @@ public class AlignToGoal extends Command {
 
     @Override
     public void execute() {
+        if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)){
+            try{
+                goalPose = drive.getField().getObject("SOTM Goal").getPose();
+            }
+            catch (Exception e){}
+        }
         // Driver translation inputs
         double forward = -MathUtil.applyDeadband(controller.getLeftY(), OIConstants.kDriveDeadband);
         double strafe  = -MathUtil.applyDeadband(controller.getLeftX(), OIConstants.kDriveDeadband);

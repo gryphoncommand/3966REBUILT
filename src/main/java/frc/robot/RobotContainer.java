@@ -9,6 +9,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.HomeHood;
+import frc.robot.commands.PrepareSOTM;
 import frc.robot.commands.PrepareToShoot;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
@@ -77,8 +78,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Driver bindings
     m_driverController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
-    m_driverController.rightBumper().whileTrue(new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose));
-    m_driverController.leftBumper().whileTrue(new RepeatCommand(new PrepareToShoot(m_hood, m_flywheel, ()->m_drive.getDistanceToPose(DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose), ShooterConstants.FakeValues)));
+    m_driverController.rightBumper().whileTrue(new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose, true));
+    m_driverController.leftBumper().whileTrue(new RepeatCommand(new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeValues)));
    
     m_driverController.b().whileTrue(new HomeHood(m_hood));
     m_driverController.leftTrigger().whileTrue(new RunCommand(() -> m_flywheel.set(1.0), m_flywheel)).onFalse(new RunCommand(() -> m_flywheel.set(0), m_flywheel));

@@ -176,8 +176,10 @@ public final class Constants {
 
     public static double kHoodGearRatio = 200;
     public static double kHoodLengthMeters = Units.inchesToMeters(5);
-    public static double kHoodMaxAngleDeg = 85;
-    public static double kHoodMinAngleDeg = 45;
+
+    // difference is 46.5922 degrees
+    public static double kHoodMaxAngleDeg = 70;
+    public static double kHoodMinAngleDeg = 25;
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
 
     public static List<ShooterState> FakeValues = List.of(
