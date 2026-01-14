@@ -1,8 +1,10 @@
 package frc.robot;
 
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -100,7 +102,8 @@ public final class Configs {
     }
 
     public static final class FlywheelConfig {
-        public static final SparkMaxConfig flywheelConfig = new SparkMaxConfig();
+        public static final SparkFlexConfig flywheelConfig = new SparkFlexConfig();
+        public static final TalonFXConfiguration flywheelFXConfig = new TalonFXConfiguration();
 
         static {
                 flywheelConfig
@@ -117,6 +120,43 @@ public final class Configs {
                     // These are example gains need to them for your own robot!
                     .pid(5, 2, 0)
                     .outputRange(-0.95, 0.95);
+
+                var slot0ConfigsDrive = flywheelFXConfig.Slot0;
+                // PID + FF tuning
+                slot0ConfigsDrive.kS = 0.0;
+                slot0ConfigsDrive.kV = 0.0;
+                slot0ConfigsDrive.kA = 0.0;
+                slot0ConfigsDrive.kP = 10.0;
+                slot0ConfigsDrive.kI = 0.0; 
+                slot0ConfigsDrive.kD = 1.0;
+
+                flywheelFXConfig.CurrentLimits.withSupplyCurrentLimitEnable(false);
+                
+                // Motor behavior
+                flywheelFXConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        }
+    }
+
+    public static final class Hood {
+        public static final TalonFXConfiguration HoodConfig = new TalonFXConfiguration();
+
+        static {
+                // Use module constants to calculate conversion factors and feed forward gain.                
+                var slot0ConfigsDrive = HoodConfig.Slot0;
+                // PID + FF tuning
+                slot0ConfigsDrive.kS = 0;
+                slot0ConfigsDrive.kV = 0;
+                slot0ConfigsDrive.kA = 0;
+                slot0ConfigsDrive.kP = 1.0;
+                slot0ConfigsDrive.kI = 0; 
+                slot0ConfigsDrive.kD = 0;
+
+                HoodConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+
+                HoodConfig.CurrentLimits.withSupplyCurrentLimit(90).withSupplyCurrentLimitEnable(true);
+                
+                // Motor behavior
+                HoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         }
     }
 }

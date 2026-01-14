@@ -4,7 +4,10 @@
 
 package frc.robot;
 
+import java.util.List;
+
 import com.pathplanner.lib.path.PathConstraints;
+import frc.GryphonLib.ShooterState;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -21,6 +24,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.math.Matrix;
 
 /**
@@ -166,12 +170,27 @@ public final class Constants {
   }
 
   public static class ShooterConstants {
-    public static int kFlywheelCANID = 9;
-    
+    public static int kFlywheelCanID = 9;
+    public static int kBackWheelCanID = 10;
+    public static int kHoodCANID = 11;
+
+    public static double kHoodGearRatio = 200;
+    public static double kHoodLengthMeters = Units.inchesToMeters(5);
+    public static double kHoodMaxAngleDeg = 45;
+    public static double kHoodMinAngleDeg = 5;
+    public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
+
+    public static List<ShooterState> FakeValues = List.of(
+      new ShooterState(1.5, 45, 4000),
+      new ShooterState(3.0, 35, 4500),
+      new ShooterState(4.5, 25, 5200),
+      new ShooterState(6.0, 18.0, 5800)
+    );
   }
 
   public static class AlignmentConstants {
-    public static final PIDController turnPID = new PIDController(2.0, 0.0, 0.3);{turnPID.enableContinuousInput(-Math.PI, Math.PI);}
+    public static final PIDController turnPID = new PIDController(2.0, 0.0, 0.0);
+    {turnPID.enableContinuousInput(-Math.PI, Math.PI);}
 
     public static final Pose2d RedHubPose = new Pose2d(11.916, 4.055, new Rotation2d());
     public static final Pose2d BlueHubPose = new Pose2d(4.624, 4.055, new Rotation2d());

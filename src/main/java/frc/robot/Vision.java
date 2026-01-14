@@ -117,9 +117,9 @@ public class Vision extends SubsystemBase {
             return Optional.empty();
         }
         if (result.getBestTarget().bestCameraToTarget.getTranslation().getNorm() > 2){
-            // return Optional.empty();
+            return Optional.empty();
         }
-        var update = poseEstimator1.update(result);
+        var update = poseEstimator1.estimateAverageBestTargetsPose(result);
         
         return update;
     }
@@ -132,7 +132,7 @@ public class Vision extends SubsystemBase {
         if (result.getBestTarget().bestCameraToTarget.getTranslation().getNorm() > 2){
             return Optional.empty();
         }
-        var update = poseEstimator2.update(result);
+        var update = poseEstimator2.estimateAverageBestTargetsPose(result);
 
         return update;
     }
@@ -145,7 +145,7 @@ public class Vision extends SubsystemBase {
         if (result.getBestTarget().bestCameraToTarget.getTranslation().getNorm() > 2){
             return Optional.empty();
         }
-        var update = poseEstimator3.update(result);
+        var update = poseEstimator3.estimateAverageBestTargetsPose(result);
 
         return update;
     }

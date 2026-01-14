@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
@@ -13,7 +14,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -21,12 +21,12 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Configs;
 
 public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     private final FlywheelSim shooterSim =
         new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(3), 0.04, 1), DCMotor.getNeoVortex(3), 0.005);
 
-    private double appliedVolts = 0;
     private double targetVelocityRpm = 0;
     private double wheelAngle = 0.0;
 
@@ -41,56 +41,56 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     
 
     public FlywheelSimTalonFX() {
-        m_flywheelMotor = new TalonFX(ShooterConstants.kFlywheelCANID);
+        m_flywheelMotor = new TalonFX(ShooterConstants.kFlywheelCanID);
+        m_flywheelMotor.getConfigurator().apply(Configs.FlywheelConfig.flywheelFXConfig);
         m_flywheelSim = m_flywheelMotor.getSimState();
     }
 
     @Override
     public void periodic() {
-    // get the motor voltage of the TalonFX
-    var motorVoltageTurn = m_flywheelSim.getMotorVoltageMeasure();
+        // get the motor voltage of the TalonFX
+        var motorVoltageTurn = m_flywheelSim.getMotorVoltageMeasure();
 
-    // use the motor voltage to calculate new position and velocity
-    // using WPILib's DCMotorSim class for physics simulation
-    shooterSim.setInputVoltage(motorVoltageTurn.in(Volts));
-    shooterSim.update(0.02);
+        // use the motor voltage to calculate new position and velocity
+        // using WPILib's DCMotorSim class for physics simulation
+        shooterSim.setInputVoltage(motorVoltageTurn.in(Volts));
+        shooterSim.update(0.02);
 
-    // apply the new rotor position and velocity to the TalonFX;
-    // note that this is rotor position/velocity (before gear ratio), but
-    // DCMotorSim returns mechanism position/velocity (after gear ratio)
-    AngularVelocity mechVel = shooterSim.getAngularVelocity();
+        // apply the new rotor position and velocity to the TalonFX;
+        // note that this is rotor position/velocity (before gear ratio), but
+        // DCMotorSim returns mechanism position/velocity (after gear ratio)
+        AngularVelocity mechVel = shooterSim.getAngularVelocity();
 
-    m_flywheelSim.setRotorVelocity(mechVel.in(RotationsPerSecond));
+        m_flywheelSim.setRotorVelocity(mechVel.in(RotationsPerSecond));
 
-    wheelAngle += Units.rotationsToDegrees(mechVel.in(RPM) * 0.02 / 60.0);
-    wheelAngle %= 360;
-    wheelVisual.setAngle(wheelAngle);
+        wheelAngle += Units.rotationsToDegrees(mechVel.in(RPM) * 0.02 / 60.0);
+        wheelVisual.setAngle(wheelAngle);
 
-    SmartDashboard.putData("Shooter Mech", mech2d);
-    SmartDashboard.putNumber("Shooter Velocity (RPM)", mechVel.in(RPM));
-    SmartDashboard.putNumber("Shooter Applied Volts", appliedVolts);
+        SmartDashboard.putData("Shooter Mech", mech2d);
+        SmartDashboard.putNumber("Shooter Velocity (RPM)", mechVel.in(RPM));
+        SmartDashboard.putNumber("Shooter Applied Volts", m_flywheelMotor.getMotorVoltage().getValueAsDouble());
+        SmartDashboard.putNumber("Desired Flywheel Speed", targetVelocityRpm);
     }
 
     @Override
     public void set(double speed) {
-        appliedVolts = speed * RobotController.getBatteryVoltage();
+        m_flywheelMotor.set(speed);
     }
 
     @Override
     public void setVelocity(double rpm) {
-        // In sim we approximate by setting voltage proportional to error
         targetVelocityRpm = rpm;
-        double error = rpm - getVelocity();
-        appliedVolts = Math.max(-12, Math.min(12, error * 0.1)); // crude kP control
+        m_flywheelMotor.setControl(new VelocityVoltage(RPM.of(rpm).in(RotationsPerSecond)));
     }
 
     @Override
     public void setVoltage(double volts) {
-        appliedVolts = volts;
+        m_flywheelMotor.setControl(new VoltageOut(volts));
     }
 
     @Override
     public void setEncoderPosition(double position) {
+        m_flywheelMotor.setPosition(position);
         shooterSim.setState(VecBuilder.fill(position));
     }
 

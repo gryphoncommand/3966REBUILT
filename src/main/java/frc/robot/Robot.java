@@ -34,15 +34,6 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     PathfindingCommand.warmupCommand();
-    String[] commonAutos = new String[]{
-      "1S-14R-1C-64L-1C-64R-1C-54L",
-      "2S-24R-2C-44R-2C-44L-2C-54R",
-      "3S-34R-2C-44R-2C-44L-2C-54R"
-    };
-    for (String auto : commonAutos){
-      SmartDashboard.putString("Common Auto From " + auto.substring(0, 2), auto);
-    }
-    SmartDashboard.putString("Auto Code", "");
   }
 
   /**

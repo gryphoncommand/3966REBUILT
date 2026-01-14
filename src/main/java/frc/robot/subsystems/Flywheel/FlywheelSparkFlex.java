@@ -14,7 +14,7 @@ import frc.robot.Configs;
 import frc.robot.Constants.ShooterConstants;
 
 public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
-  private final SparkFlex shooterMotor = new SparkFlex(ShooterConstants.kFlywheelCANID, MotorType.kBrushless);
+  private final SparkFlex shooterMotor = new SparkFlex(ShooterConstants.kFlywheelCanID, MotorType.kBrushless);
   private final SparkClosedLoopController closedLoopController = shooterMotor.getClosedLoopController();
   private final RelativeEncoder encoder = shooterMotor.getEncoder();
 
@@ -43,7 +43,6 @@ public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   }
 
   public void setPosition(double position){
-    SmartDashboard.putNumber("Requested Wheel Position", position);
     closedLoopController.setSetpoint(position, ControlType.kPosition);
     
     targetReference = position;
