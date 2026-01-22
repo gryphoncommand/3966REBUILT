@@ -49,9 +49,9 @@ public final class Constants {
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(27.5);
+    public static final double kTrackWidth = Units.inchesToMeters(21.5);
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(27.5);
+    public static final double kWheelBase = Units.inchesToMeters(25.5);
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         new Translation2d(kWheelBase / 2, kTrackWidth / 2), // Front Left
@@ -177,9 +177,8 @@ public final class Constants {
     public static double kHoodGearRatio = 200;
     public static double kHoodLengthMeters = Units.inchesToMeters(5);
 
-    // difference is 46.5922 degrees
-    public static double kHoodMaxAngleDeg = 70;
-    public static double kHoodMinAngleDeg = 25;
+    public static double kHoodMaxAngleDeg = 75;
+    public static double kHoodMinAngleDeg = 49;
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
 
     public static List<ShooterState> FakeValues = List.of(
@@ -189,6 +188,11 @@ public final class Constants {
       new ShooterState(4.5, 50, 5800),
       new ShooterState(6.0, 45, 6000)
     );
+  }
+
+  public static class IntakeConstants {
+    public static int kRollerCanID = 13;
+    public static double kIntakeSpeedRPM = 2500;
   }
 
   public static class AlignmentConstants {

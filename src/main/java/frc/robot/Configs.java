@@ -102,6 +102,29 @@ public final class Configs {
         }
     }
 
+    public static final class IntakeRollerConfig {
+        public static final SparkFlexConfig intakeRollerConfig = new SparkFlexConfig();
+
+        static {
+                intakeRollerConfig
+                    .idleMode(IdleMode.kBrake)
+                    .smartCurrentLimit(80)
+                    .inverted(true)
+                    .openLoopRampRate(0)
+                    .closedLoopRampRate(0);
+                intakeRollerConfig.encoder
+                    .positionConversionFactor(1)
+                    .velocityConversionFactor(1);
+                intakeRollerConfig.closedLoop
+                    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                    .pid(0.0, 0.0, 0.0)
+                    .outputRange(-1, 1);        
+                intakeRollerConfig.closedLoop.feedForward
+                    .kV(0.002);
+                    
+        }
+    }
+
     public static final class FlywheelConfig {
         public static final SparkFlexConfig flywheelConfig = new SparkFlexConfig();
         public static final TalonFXConfiguration flywheelFXConfig = new TalonFXConfiguration();

@@ -406,10 +406,13 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Distance to Goal (m)", getDistanceToPose(VisionConstants.kTagLayout.getTagPose(DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7).get().toPose2d()));
     SmartDashboard.putBoolean("Aligned to Goal", aligned);
     if (Vision.getResult1() != null){
-      Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(getCurrentPose(), Vision.getResult1());
+      Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1());
       if (visionBotPose1.isPresent()){
+        SmartDashboard.putBoolean("Camera 1 Finding Pose", true);
         poseEstimator.addVisionData(List.of(visionBotPose1.get()), LLstdevsMat);
         field2d.getObject("Camera1 Pose Guess").setPose(visionBotPose1.get().estimatedPose.toPose2d());
+      } else{
+        SmartDashboard.putBoolean("Camera 1 Finding Pose", false);
       }
     } if (Vision.getResult2() != null){
       Optional<EstimatedRobotPose> visionBotPose2 = Vision.getEstimatedGlobalPoseCam2(getCurrentPose(), Vision.getResult2());
@@ -418,7 +421,7 @@ public class DriveSubsystem extends SubsystemBase {
         field2d.getObject("Camera2 Pose Guess").setPose(visionBotPose2.get().estimatedPose.toPose2d());
       }
     } if (Vision.getResult3() != null){
-      Optional<EstimatedRobotPose> visionBotPose3 = Vision.getEstimatedGlobalPoseCam1(getCurrentPose(), Vision.getResult3());
+      Optional<EstimatedRobotPose> visionBotPose3 = Vision.getEstimatedGlobalPoseCam3(getCurrentPose(), Vision.getResult3());
       if (visionBotPose3.isPresent()){
         poseEstimator.addVisionData(List.of(visionBotPose3.get()), ArdustdevsMat);
         field2d.getObject("Camera1 Pose Guess").setPose(visionBotPose3.get().estimatedPose.toPose2d());

@@ -111,21 +111,19 @@ public class Vision extends SubsystemBase {
         return 0;
     }
 
-    public static Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam1(Pose2d prevEstimatedRobotPose, PhotonPipelineResult result) {
-        poseEstimator1.setReferencePose(prevEstimatedRobotPose);
+    public static Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam1(PhotonPipelineResult result) {
         if (result == null || !result.hasTargets()){
             return Optional.empty();
         }
         if (result.getBestTarget().bestCameraToTarget.getTranslation().getNorm() > 2){
-            return Optional.empty();
+            // return Optional.empty();
         }
-        var update = poseEstimator1.estimateAverageBestTargetsPose(result);
+        var update = poseEstimator1.estimateCoprocMultiTagPose(result);
         
         return update;
     }
 
     public static Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam2(Pose2d prevEstimatedRobotPose, PhotonPipelineResult result) {
-        poseEstimator2.setReferencePose(prevEstimatedRobotPose);
         if (result == null || !result.hasTargets()){
             return Optional.empty();
         }
@@ -138,7 +136,6 @@ public class Vision extends SubsystemBase {
     }
 
     public static Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam3(Pose2d prevEstimatedRobotPose, PhotonPipelineResult result) {
-        poseEstimator3.setReferencePose(prevEstimatedRobotPose);
         if (result == null || !result.hasTargets()){
             return Optional.empty();
         }
