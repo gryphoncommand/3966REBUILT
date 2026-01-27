@@ -40,14 +40,14 @@ public class Vision extends SubsystemBase {
         if (!results1.isEmpty()){
             result1 = results1.get(results1.size() - 1);
         }
-        var results2 = camera2.getAllUnreadResults();
-        if (!results2.isEmpty()){
-            result2 = results2.get(results2.size() - 1);
-        }
-        var results3 = camera3.getAllUnreadResults();
-        if (!results3.isEmpty()){
-            result3 = results3.get(results3.size() - 1);
-        }
+        // var results2 = camera2.getAllUnreadResults();
+        // if (!results2.isEmpty()){
+        //     result2 = results2.get(results2.size() - 1);
+        // }
+        // var results3 = camera3.getAllUnreadResults();
+        // if (!results3.isEmpty()){
+        //     result3 = results3.get(results3.size() - 1);
+        // }
     }
 
     public static PhotonPipelineResult getResult1() {
@@ -115,10 +115,15 @@ public class Vision extends SubsystemBase {
         if (result == null || !result.hasTargets()){
             return Optional.empty();
         }
-        if (result.getBestTarget().bestCameraToTarget.getTranslation().getNorm() > 2){
-            // return Optional.empty();
+
+        Optional<EstimatedRobotPose> update = Optional.empty();
+        if (result.getTargets().size() > 1){
+            update = poseEstimator1.estimateCoprocMultiTagPose(result);
         }
-        var update = poseEstimator1.estimateCoprocMultiTagPose(result);
+        else {
+            update = poseEstimator1.estimateLowestAmbiguityPose(result);
+        }
+        
         
         return update;
     }

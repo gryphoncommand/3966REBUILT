@@ -193,6 +193,12 @@ public final class Constants {
   public static class IntakeConstants {
     public static int kRollerCanID = 13;
     public static double kIntakeSpeedRPM = 2500;
+
+    public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (14/36)
+    public static double kIntakeDeployAngle = Units.degreesToRotations(0);
+    public static double kIntakeStowAngle = Units.degreesToRotations(140);
+    public static int kDeployCanID = 14;
+    public static double kIntakeLengthMeters = Units.inchesToMeters(14.678);
   }
 
   public static class AlignmentConstants {

@@ -74,10 +74,10 @@ public class DriveSubsystem extends SubsystemBase {
   private double gyroOffset = 0.0;
 
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
-  private static Vector<N3> LLStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(10));
-  private static Matrix<N3, N1> LLstdevsMat = new Matrix<>(LLStdDevs.getStorage());
-  private static Vector<N3> ArduStdDevs = VecBuilder.fill(0.2, 0.2, Units.degreesToRadians(10));
-  private static Matrix<N3, N1> ArdustdevsMat = new Matrix<>(ArduStdDevs.getStorage());
+  private static Vector<N3> SingleTagStdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10));
+  private static Matrix<N3, N1> SingleTagStdDevsMat = new Matrix<>(SingleTagStdDevs.getStorage());
+  private static Vector<N3> MultiTagStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(5));
+  private static Matrix<N3, N1> MultiTagStdDevsMat = new Matrix<>(MultiTagStdDevs.getStorage());
   private final PoseEstimator poseEstimator;
   private final Field2d field2d = new Field2d();
   private final StructArrayPublisher<SwerveModuleState> publisher;
@@ -409,7 +409,11 @@ public class DriveSubsystem extends SubsystemBase {
       Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1());
       if (visionBotPose1.isPresent()){
         SmartDashboard.putBoolean("Camera 1 Finding Pose", true);
-        poseEstimator.addVisionData(List.of(visionBotPose1.get()), LLstdevsMat);
+        if (visionBotPose1.get().targetsUsed.size() > 1){
+          poseEstimator.addVisionData(List.of(visionBotPose1.get()), MultiTagStdDevsMat);
+        } else{
+          poseEstimator.addVisionData(List.of(visionBotPose1.get()), SingleTagStdDevsMat);
+        }
         field2d.getObject("Camera1 Pose Guess").setPose(visionBotPose1.get().estimatedPose.toPose2d());
       } else{
         SmartDashboard.putBoolean("Camera 1 Finding Pose", false);
@@ -417,13 +421,21 @@ public class DriveSubsystem extends SubsystemBase {
     } if (Vision.getResult2() != null){
       Optional<EstimatedRobotPose> visionBotPose2 = Vision.getEstimatedGlobalPoseCam2(getCurrentPose(), Vision.getResult2());
       if (visionBotPose2.isPresent()){
-        poseEstimator.addVisionData(List.of(visionBotPose2.get()), ArdustdevsMat);
+        if (visionBotPose2.get().targetsUsed.size() > 1){
+          poseEstimator.addVisionData(List.of(visionBotPose2.get()), MultiTagStdDevsMat);
+        } else{
+          poseEstimator.addVisionData(List.of(visionBotPose2.get()), SingleTagStdDevsMat);
+        }
         field2d.getObject("Camera2 Pose Guess").setPose(visionBotPose2.get().estimatedPose.toPose2d());
       }
     } if (Vision.getResult3() != null){
       Optional<EstimatedRobotPose> visionBotPose3 = Vision.getEstimatedGlobalPoseCam3(getCurrentPose(), Vision.getResult3());
       if (visionBotPose3.isPresent()){
-        poseEstimator.addVisionData(List.of(visionBotPose3.get()), ArdustdevsMat);
+        if (visionBotPose3.get().targetsUsed.size() > 1){
+          poseEstimator.addVisionData(List.of(visionBotPose3.get()), MultiTagStdDevsMat);
+        } else{
+          poseEstimator.addVisionData(List.of(visionBotPose3.get()), SingleTagStdDevsMat);
+        }
         field2d.getObject("Camera1 Pose Guess").setPose(visionBotPose3.get().estimatedPose.toPose2d());
       }
     } 
@@ -434,7 +446,7 @@ public class DriveSubsystem extends SubsystemBase {
       getCurrentSpeeds().toTwist2d(Timer.getTimestamp() - currentTimestamp)
       );
 
-      field2d.setRobotPose(getCurrentPose());
+      field2d.setRobotPose(poseEstimator.getLatestPose());
       publisher.set(getStates());
       desiredPublisher.set(getDesiredStates());
     SmartDashboard.putData("Field", field2d);

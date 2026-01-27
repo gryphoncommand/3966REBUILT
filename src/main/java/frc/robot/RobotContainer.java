@@ -11,6 +11,8 @@ import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.HomeHood;
 import frc.robot.commands.PrepareSOTM;
 import frc.robot.commands.PrepareToShoot;
+import frc.robot.commands.Intake.IntakeDeploy;
+import frc.robot.commands.Intake.IntakeStow;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
@@ -32,12 +34,16 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Hood.*;
+import frc.robot.subsystems.Intake.IntakeDeployIO;
+import frc.robot.subsystems.Intake.IntakeDeploySimTalonFX;
+import frc.robot.subsystems.Intake.IntakeDeploySparkFlex;
 import frc.robot.subsystems.Intake.IntakeRollersSparkFlex;
 
 public class RobotContainer {
 
   // Subsystems
   private final DriveSubsystem m_drive = new DriveSubsystem();
+  private final IntakeDeployIO m_intakeDeploy = Robot.isReal() ? new IntakeDeploySparkFlex() : new IntakeDeploySimTalonFX();
   // private final FlywheelIO m_flywheel = Robot.isReal() ? new FlywheelSparkFlex() : new FlywheelSimTalonFX();
   // private final HoodIO m_hood = Robot.isReal() ? new HoodTalonFX() : new HoodSimTalonFX();
   // private final IntakeRollersSparkFlex m_intakeRollers = new IntakeRollersSparkFlex();
@@ -68,7 +74,8 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(strafe, OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(turn, OIConstants.kDriveDeadband), true);
             },
-            m_drive));
+            m_drive)
+            .withName("Basic Drive"));
 
     // m_intakeRollers.setDefaultCommand(
     //   new RunCommand(()->{
@@ -82,13 +89,19 @@ public class RobotContainer {
     m_driverController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
     m_driverController.rightBumper().whileTrue(new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose, true));
     // m_driverController.leftBumper().whileTrue(new RepeatCommand(new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeValues)));
-   
+    // m_driverController.x().whileTrue(new RunCommand(()->m_intakeDeploy.set(0.2), m_intakeDeploy)).onFalse(new RunCommand(()->m_intakeDeploy.set(0.0), m_intakeDeploy));
+    // m_driverController.a().whileTrue(new RunCommand(()->m_intakeDeploy.set(-0.2), m_intakeDeploy)).onFalse(new RunCommand(()->m_intakeDeploy.set(0.0), m_intakeDeploy));
+
+    // m_driverController.leftTrigger().onTrue(new IntakeDeploy(m_intakeDeploy));
+    // m_driverController.leftBumper().onTrue(new IntakeStow(m_intakeDeploy));
     // m_driverController.b().whileTrue(new HomeHood(m_hood));
     // m_driverController.leftTrigger().whileTrue(new RunCommand(()->m_intakeRollers.intake(), m_intakeRollers));
     
 
     // m_operatorController.a().onTrue(new InstantCommand(m_drive::stop, m_drive));
     // m_operatorController.y().onTrue(new InstantCommand(m_drive::setX, m_drive));
+    SmartDashboard.putData("Deploy Intake", new IntakeDeploy(m_intakeDeploy));
+    SmartDashboard.putData("Stow Intake", new IntakeStow(m_intakeDeploy));
   }
 
 
