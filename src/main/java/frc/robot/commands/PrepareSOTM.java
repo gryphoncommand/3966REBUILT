@@ -27,20 +27,22 @@
     private final DriveSubsystem driveData;
     private final List<ShooterState> table;
     private Pose2d goalPose;
+    private Pose2d effectiveGoalPose;
 
     public PrepareSOTM(
         HoodIO hood,
         FlywheelIO flywheel,
         DriveSubsystem driveData,
-        List<ShooterState> table) {
+        List<ShooterState> table,
+        Pose2d goalPose) {
 
         this.hood = hood;
         this.flywheel = flywheel;
         this.driveData = driveData;
         this.table = table;
+        this.goalPose = goalPose;
 
-        addRequirements(hood.returnSubsystem(),
-                        flywheel.returnSubsystem());
+        addRequirements(hood, flywheel);
         SmartDashboard.putBoolean("SOTM Goal Calculating", false);
     }
 
@@ -49,19 +51,17 @@
         SmartDashboard.putBoolean("SOTM Goal Calculating", true);
 
         // TODO: This is a placeholder, make it do a few iterations to converge on a shot time from the interpolator
-        Time shotTime = Seconds.of(1.0);
-
-        Pose2d hubPose = DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose;
-
+        Time shotTime = Seconds.of(0.7);
+        
         ChassisSpeeds shotMovement = ChassisSpeeds.fromRobotRelativeSpeeds(driveData.getCurrentSpeeds(), Rotation2d.fromDegrees(Robot.isReal() ? driveData.getHeading() : driveData.getCurrentPose().getRotation().getDegrees()));
         shotMovement.vxMetersPerSecond = -shotMovement.vxMetersPerSecond;
         shotMovement.vyMetersPerSecond = -shotMovement.vyMetersPerSecond;
         shotMovement.omegaRadiansPerSecond = 0;
 
-        goalPose = hubPose.exp(shotMovement.toTwist2d(shotTime.in(Seconds)));
-        driveData.getField().getObject("SOTM Goal").setPose(goalPose);
+        effectiveGoalPose = goalPose.exp(shotMovement.toTwist2d(shotTime.in(Seconds)));
+        driveData.getField().getObject("SOTM Goal").setPose(effectiveGoalPose);
 
-        double distanceToGoal = driveData.getDistanceToPose(goalPose);
+        double distanceToGoal = driveData.getDistanceToPose(effectiveGoalPose);
 
         ShooterState state =
             ShooterInterpolator.interpolate(
@@ -73,7 +73,8 @@
 
     @Override
     public boolean isFinished() {
-        return hood.atTarget(3.0) && flywheel.atTarget(50);
+        return false;
+        // return hood.atTarget(3.0) && flywheel.atTarget(50);
     }
 
     @Override

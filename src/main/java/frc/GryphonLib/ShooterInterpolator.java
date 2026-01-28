@@ -13,7 +13,7 @@ public class ShooterInterpolator {
       return table.get(0);
     }
 
-    for (int i = 0; i < table.size() - 2; i++) {
+    for (int i = 0; i < table.size() - 1; i++) {
       ShooterState a = table.get(i);
       ShooterState b = table.get(i + 1);
 

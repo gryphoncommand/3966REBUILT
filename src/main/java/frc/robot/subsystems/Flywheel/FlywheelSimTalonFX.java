@@ -25,14 +25,14 @@ import frc.robot.Configs;
 
 public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     private final FlywheelSim shooterSim =
-        new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(3), 0.04, 1), DCMotor.getNeoVortex(3), 0.005);
+        new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(2), 0.005, 1), DCMotor.getNeoVortex(2), 0.0);
 
     private double targetVelocityRpm = 0;
     private double wheelAngle = 0.0;
 
     private final Mechanism2d mech2d = new Mechanism2d(0.5, 0.5); // 0.5 m square
     private final MechanismRoot2d root = mech2d.getRoot("ShooterBase", 0.25, 0.25);
-    private final MechanismLigament2d wheelVisual = root.append(new MechanismLigament2d("Wheel", 0.2, 0));
+    private final MechanismLigament2d wheelVisual = root.append(new MechanismLigament2d("Wheel", 0.05, 0));
 
     private final TalonFX m_flywheelMotor;
     private final TalonFXSimState m_flywheelSim;
@@ -41,6 +41,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     
 
     public FlywheelSimTalonFX() {
+        wheelVisual.setLineWeight(2);
         m_flywheelMotor = new TalonFX(ShooterConstants.kFlywheelCanID);
         m_flywheelMotor.getConfigurator().apply(Configs.FlywheelConfig.flywheelFXConfig);
         m_flywheelSim = m_flywheelMotor.getSimState();
@@ -96,7 +97,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
 
     @Override
     public double getVelocity() {
-        return shooterSim.getAngularVelocityRPM();
+        return shooterSim.getAngularVelocity().in(RPM);
     }
 
 

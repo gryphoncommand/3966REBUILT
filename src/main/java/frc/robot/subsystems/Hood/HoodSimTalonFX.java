@@ -1,7 +1,5 @@
 package frc.robot.subsystems.Hood;
 
-import static edu.wpi.first.units.Units.Degrees;
-
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -70,7 +68,7 @@ public class HoodSimTalonFX extends SubsystemBase implements HoodIO {
 
 
         hoodVisual.setAngle(
-            Units.radiansToDegrees(hoodSim.getAngleRads())
+            90 - Units.radiansToDegrees(hoodSim.getAngleRads())
         );
 
         SmartDashboard.putData("Hood Mech", mech2d);

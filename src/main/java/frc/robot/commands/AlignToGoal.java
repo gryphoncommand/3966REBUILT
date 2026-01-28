@@ -6,6 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -13,6 +14,7 @@ import frc.GryphonLib.MovementCalculations;
 import frc.GryphonLib.PositionCalculations;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AlignToGoal extends Command {
@@ -30,16 +32,15 @@ public class AlignToGoal extends Command {
         this.goalPose = goalPose;
         this.SOTM = SOTM;
 
-
         addRequirements(drive);
-        if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)){
-            try{
+        if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)) {
+            try {
                 goalPose = drive.getField().getObject("SOTM Goal").getPose();
-            }
-            catch (Exception e){}
+            } catch (Exception e) {}
         }
+
         yawError = PositionCalculations.getYawChangeToPose(
-            drive.getCurrentPose(),
+            drive.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter),
             goalPose
         );
     }
@@ -51,22 +52,22 @@ public class AlignToGoal extends Command {
 
     @Override
     public void execute() {
-        if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)){
-            try{
+        if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)) {
+            try {
                 goalPose = drive.getField().getObject("SOTM Goal").getPose();
-            }
-            catch (Exception e){}
+            } catch (Exception e) {}
         }
+
         // Driver translation inputs
         double forward = -MathUtil.applyDeadband(controller.getLeftY(), OIConstants.kDriveDeadband);
         double strafe  = -MathUtil.applyDeadband(controller.getLeftX(), OIConstants.kDriveDeadband);
 
-        // Compute yaw error based on alliance
+        // Compute yaw error from shooter pose instead of robot center
         yawError = PositionCalculations.getYawChangeToPose(
-            drive.getCurrentPose(),
+            drive.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter),
             goalPose
         );
-        SmartDashboard.putNumber("Yaw Align Error", (yawError));
+        SmartDashboard.putNumber("Yaw Align Error", yawError);
 
         // PID output
         double turn = turnPID.calculate(yawError, 0.0);
@@ -79,12 +80,11 @@ public class AlignToGoal extends Command {
         boolean slowEnoughRot = Math.abs(drive.getCurrentSpeeds().omegaRadiansPerSecond) < AlignmentConstants.ANG_VEL_TOLERANCE_RAD_PER_SEC;
         boolean slowEnoughTrans = Math.abs(MovementCalculations.getVelocityMagnitude(drive.getCurrentSpeeds()).in(MetersPerSecond)) < AlignmentConstants.SPEED_VEL_TOLERANCE;
 
-        if (SOTM){
+        if (SOTM) {
             withinAngleTol = Math.abs(yawError) < AlignmentConstants.ANGLE_TOLERANCE_RAD;
             slowEnoughRot = true;
             slowEnoughTrans = true;
         }
-        
 
         // Debouncer ensures it's stable for required time
         boolean alignedNow = alignDebouncer.calculate(withinAngleTol && slowEnoughRot && slowEnoughTrans);

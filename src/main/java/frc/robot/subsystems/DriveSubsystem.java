@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.util.List;
@@ -47,14 +48,17 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.Vision;
+import frc.FuelSim;
 import frc.GryphonLib.MovementCalculations;
 import frc.GryphonLib.PositionCalculations;
 import frc.littletonUtils.PoseEstimator;
+import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.commands.TrajectoryGeneration;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -177,6 +181,9 @@ public class DriveSubsystem extends SubsystemBase {
           builder.addDoubleProperty("Robot Angle", ()->getRotation().getRadians(), null);
       }
     });
+
+    field2d.getObject("Depot Passing Pose").setPose(AlignmentConstants.PassingPoseDepot);
+    field2d.getObject("Outpost Passing Pose").setPose(AlignmentConstants.PassingPoseOutpost);
 
     RobotConfig config;
     try{
@@ -344,6 +351,10 @@ public class DriveSubsystem extends SubsystemBase {
     return createPath(waypoint, AutoConstants.constraints, new GoalEndState(0.0, waypoint.getRotation()));
   }
 
+  public ChassisSpeeds getCurrentSpeedsFieldRelative(){
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), getRotation());
+  }
+
   public Command goToPose(Pose2d goalPose){
     ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), getRotation());
     if (MovementCalculations.getVelocityMagnitude(getCurrentSpeeds()).in(MetersPerSecond) > 0.5){
@@ -352,11 +363,11 @@ public class DriveSubsystem extends SubsystemBase {
       return Commands.defer(
         () -> AutoBuilder.followPath(getPathFromWaypoint(goalPose)),
         Set.of(this)
-      ).raceWith(new TrajectoryGeneration(this, goalPose, field2d));
+      );
     } else {
       SmartDashboard.putBoolean("Included Previous Speed in Path", false);
       SmartDashboard.putNumber("Speed at start of path", MovementCalculations.getVelocityMagnitude(fieldRelativeSpeeds).in(MetersPerSecond));
-      return PathToPose(goalPose, 0.0).raceWith(new TrajectoryGeneration(this, goalPose, field2d));
+      return PathToPose(goalPose, 0.0);
     }
     
   }
@@ -388,7 +399,7 @@ public class DriveSubsystem extends SubsystemBase {
     );
 
 
-    return new ParallelRaceGroup(pathfindingCommand, new TrajectoryGeneration(this, goalPose, field2d));
+    return pathfindingCommand;
   }
 
   public Command AlignToTagFar(int goalTag){
@@ -396,14 +407,14 @@ public class DriveSubsystem extends SubsystemBase {
     if (goalTag == 0){
       goalPose = getCurrentPose();
     } else {
-      goalPose = PositionCalculations.getStraightOutPose(goalTag);
+      goalPose = PositionCalculations.getStraightOutPose(goalTag, 1.5);
     }
     return PathToPose(goalPose, 0.0);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Distance to Goal (m)", getDistanceToPose(VisionConstants.kTagLayout.getTagPose(DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7).get().toPose2d()));
+    SmartDashboard.putNumber("Distance To Hub (m)", getDistanceToPose(AlignmentConstants.HubPose));
     SmartDashboard.putBoolean("Aligned to Goal", aligned);
     if (Vision.getResult1() != null){
       Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1());
@@ -464,10 +475,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Pose2d getCurrentPose() {
     return poseEstimator.getLatestPose();
-  }
-
-  public double getDistanceToGoal(){
-    return PhotonUtils.getDistanceToPose(getCurrentPose(), field2d.getObject("Goal Pose").getPose());
   }
 
   public Field2d getField(){
