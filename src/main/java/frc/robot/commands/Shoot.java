@@ -6,16 +6,12 @@ import static edu.wpi.first.units.Units.Radians;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.FuelSim;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot;
@@ -30,6 +26,7 @@ public class Shoot extends Command {
     private final DriveSubsystem driveData;
     private final HoodIO hood;
     private final FlywheelIO flywheel;
+    private final IntakeRollersSparkFlex intakeRollerData;
     // private final PassthroughIO passthrough;
     private final double feedRPM;
     private final boolean stopFlywheelOnEnd;
@@ -49,6 +46,7 @@ public class Shoot extends Command {
         this.driveData = driveData;
         this.hood = hood;
         this.flywheel = flywheel;
+        this.intakeRollerData = rollers;
         // this.passthrough = passthrough;
         this.feedRPM = feedRPM;
         this.stopFlywheelOnEnd = stopFlywheelOnEnd;
@@ -57,7 +55,7 @@ public class Shoot extends Command {
             addRequirements(flywheel);
         }
 
-        addRequirements(rollers);
+        // addRequirements(passthrough);
     }
 
     private Translation3d launchVel(LinearVelocity vel, Angle angle) {
@@ -98,10 +96,10 @@ public class Shoot extends Command {
         boolean flyReady = flywheel.atTarget(50);
         boolean aligned = driveData.getAligned();
         
-        if (Robot.isSimulation()){
+        if (Robot.isSimulation()){ 
             double now = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
 
-            if (hoodReady && flyReady && aligned && now - lastShotTime > 0.5) {
+            if (hoodReady && flyReady && aligned && now - lastShotTime > 0.12 && intakeRollerData.hasBalls()) {
                 double kShooterEfficiency = 0.7;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
@@ -114,6 +112,7 @@ public class Shoot extends Command {
                 FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle())));
 
                 lastShotTime = now;
+                intakeRollerData.removeBall();
             }
             
         }

@@ -20,12 +20,12 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Configs;
+import frc.robot.Constants.ShooterConstants;
 
 public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     private final FlywheelSim shooterSim =
-        new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(2), 0.005, 1), DCMotor.getNeoVortex(2), 0.0);
+        new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(2), 0.00043, 1), DCMotor.getNeoVortex(2), 0.0);
 
     private double targetVelocityRpm = 0;
     private double wheelAngle = 0.0;

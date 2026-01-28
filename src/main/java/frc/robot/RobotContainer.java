@@ -5,7 +5,6 @@
 package frc.robot;
 
 import frc.FuelSim;
-import frc.GryphonLib.PositionCalculations;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
@@ -14,27 +13,29 @@ import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.HomeHood;
 import frc.robot.commands.PrepareSOTM;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.ShootAllInHopper;
 import frc.robot.commands.Intake.IntakeDeploy;
 import frc.robot.commands.Intake.IntakeStow;
+import frc.robot.commands.Intake.RunIntakeRollers;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Flywheel.FlywheelSparkFlex;
 
-import java.util.Set;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -53,7 +54,7 @@ public class RobotContainer {
   private final HoodIO m_hood = Robot.isReal() ? new HoodTalonFX() : new HoodSimTalonFX();
   private final IntakeRollersSparkFlex m_intakeRollers = new IntakeRollersSparkFlex();
 
-  private Command runIntakeRollers = new RunCommand(()->m_intakeRollers.intake(), m_intakeRollers).withName("Intaking");
+  private Command runIntakeRollers = new RunIntakeRollers(m_intakeRollers);
 
   // Controllers
   private final CommandXboxController m_driverController =
@@ -61,14 +62,19 @@ public class RobotContainer {
   private final CommandXboxController m_operatorController =
       new CommandXboxController(OIConstants.kOperatorControllerPort);
 
+  private final SendableChooser<Command> autoChooser;
+
   public RobotContainer() {
     new Vision();
     configureDefaultCommands();
     configureButtonBindings();
     configureStateTriggers();
+    configureNamedCommands();
     if (Robot.isSimulation()){
       configureFuelSim();
     }
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   private void configureDefaultCommands() {
@@ -87,10 +93,8 @@ public class RobotContainer {
             m_drive)
             .withName("Basic Drive"));
 
-    m_intakeRollers.setDefaultCommand(
-      new RunCommand(()->{
-        m_intakeRollers.stop();
-      }, m_intakeRollers)
+    m_hood.setDefaultCommand(
+      new HomeHood(m_hood)
     );
   }
 
@@ -99,15 +103,17 @@ public class RobotContainer {
     m_driverController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
     m_driverController.rightBumper()
       .whileTrue(new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose, true))
-      .whileTrue(new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeValues, AlignmentConstants.HubPose));
+      .whileTrue(new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeValues, AlignmentConstants.HubPose))
+      .onFalse(new RunCommand(()->m_flywheel.setVelocity(1000), m_flywheel));
     m_driverController.x().whileTrue(new RunCommand(()->m_intakeDeploy.set(0.2), m_intakeDeploy)).onFalse(new RunCommand(()->m_intakeDeploy.set(0.0), m_intakeDeploy));
     m_driverController.a().whileTrue(new RunCommand(()->m_intakeDeploy.set(-0.2), m_intakeDeploy)).onFalse(new RunCommand(()->m_intakeDeploy.set(0.0), m_intakeDeploy));
     m_driverController.rightTrigger().whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, 0));
 
-    m_driverController.leftTrigger().onTrue(new IntakeDeploy(m_intakeDeploy)).whileTrue(runIntakeRollers);
+    m_driverController.leftTrigger()
+      .onTrue(new IntakeDeploy(m_intakeDeploy))
+      .whileTrue(runIntakeRollers);
     m_driverController.leftBumper().onTrue(new IntakeStow(m_intakeDeploy));
     m_driverController.b().whileTrue(new HomeHood(m_hood));
-    m_driverController.leftTrigger().whileTrue(new RunCommand(()->m_intakeRollers.intake(), m_intakeRollers));
     
 
     // m_operatorController.a().onTrue(new InstantCommand(m_drive::stop, m_drive));
@@ -142,9 +148,9 @@ public class RobotContainer {
     );
 
     instance.registerIntake(
-        -0.635/2, 0.635/2, (-0.737/2) - IntakeConstants.kIntakeLengthMeters, -0.737/2, // robot-centric coordinates for bounding box
-        () -> (SmartDashboard.getBoolean("Intake Deployed", true) && runIntakeRollers.isScheduled()), // (optional) BooleanSupplier for whether the intake should be active at a given moment
-        new Runnable() {public void run() {};}); // (optional) Runnable called whenever a fuel is intaked
+        -(0.635 + 2*IntakeConstants.kIntakeLengthMeters)/2, -(0.635)/2, -(0.737)/2, (0.737)/2, // robot-centric coordinates for bounding box
+        () -> (SmartDashboard.getBoolean("Intake Deployed", true) && !m_intakeRollers.isFull()), // (optional) BooleanSupplier for whether the intake should be active at a given moment
+        new Runnable() {public void run() {m_intakeRollers.addBall();};}); // (optional) Runnable called whenever a fuel is intaked
 
     instance.start();
 
@@ -154,18 +160,30 @@ public class RobotContainer {
       })
       .withName("Reset Fuel")
       .ignoringDisable(true));
+    
+      CommandScheduler.getInstance().schedule(Commands.runOnce(() -> {
+          FuelSim.getInstance().clearFuel();
+          FuelSim.getInstance().spawnStartingFuel();
+      })
+      .withName("Reset Fuel")
+      .ignoringDisable(true));
+  }
+
+  public void configureNamedCommands(){
+    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers));
+    NamedCommands.registerCommand("Prepare to Shoot", 
+      new ParallelCommandGroup(
+        new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
+        new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeValues, AlignmentConstants.HubPose)
+      )
+    );
+    NamedCommands.registerCommand("Deploy Intake", new IntakeDeploy(m_intakeDeploy));
+    NamedCommands.registerCommand("Stow Intake", new IntakeStow(m_intakeDeploy));
+    NamedCommands.registerCommand("Run Intake", runIntakeRollers);
   }
     
-
   /** Returns the autonomous command. */
   public Command getAutonomousCommand() {
-    // return m_drive.PathToPose(new Pose2d(new Translation2d(4, 6), new Rotation2d(3*Math.PI/4)), 0).andThen(
-    //   m_drive.PathToPose(new Pose2d(new Translation2d(12, 2), new Rotation2d(11*Math.PI/6)), 0)
-    // );
-
-    return m_drive.goToPose(new Pose2d(new Translation2d(4, 6), new Rotation2d(3*Math.PI/4))).andThen(
-      m_drive.goToPose(new Pose2d(new Translation2d(12, 2), new Rotation2d(11*Math.PI/6)))
-    );
-  
+    return autoChooser.getSelected();
   }
 }

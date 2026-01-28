@@ -11,7 +11,6 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 
 public class FuelSim {
     private static final double PERIOD = 0.02; // sec

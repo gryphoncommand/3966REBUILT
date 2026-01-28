@@ -18,6 +18,8 @@ public class IntakeRollersSparkFlex extends SubsystemBase {
   private final SparkClosedLoopController closedLoopController = rollerMotor.getClosedLoopController();
   private final RelativeEncoder encoder = rollerMotor.getEncoder();
 
+  private int simBalls = 8;
+
   private double targetReference = 0;
   private ControlType currentControlType = ControlType.kVelocity;
 
@@ -81,4 +83,28 @@ public class IntakeRollersSparkFlex extends SubsystemBase {
   public SubsystemBase returnSubsystem() {
     return this;
   }
+
+  // These should go to the spindexer
+
+  public void addBall(){
+        simBalls += 1;
+        if (simBalls >= 41){
+            simBalls = 40;
+        }
+    }
+
+    public void removeBall(){
+        simBalls -= 1;
+        if (simBalls < 0){
+            simBalls = 0;
+        }
+    }
+
+    public boolean hasBalls(){
+        return simBalls > 0;
+    }
+
+    public boolean isFull(){
+      return simBalls == 40;
+    }
 }

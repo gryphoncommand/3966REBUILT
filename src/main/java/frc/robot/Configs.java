@@ -192,8 +192,8 @@ public final class Configs {
                 slot0ConfigsDrive.kS = 0.0;
                 slot0ConfigsDrive.kV = 0.0;
                 slot0ConfigsDrive.kA = 0.0;
-                slot0ConfigsDrive.kP = 5.0;
-                slot0ConfigsDrive.kI = 10.0; 
+                slot0ConfigsDrive.kP = 0.0;
+                slot0ConfigsDrive.kI = 1.0; 
                 slot0ConfigsDrive.kD = 0.0;
 
                 flywheelFXConfig.CurrentLimits.withSupplyCurrentLimitEnable(false);

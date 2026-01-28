@@ -4,12 +4,9 @@
     import edu.wpi.first.math.geometry.Rotation2d;
     import edu.wpi.first.math.kinematics.ChassisSpeeds;
     import edu.wpi.first.units.measure.Time;
-    import edu.wpi.first.wpilibj.DriverStation;
-    import edu.wpi.first.wpilibj.DriverStation.Alliance;
     import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
     import edu.wpi.first.wpilibj2.command.Command;
     import frc.robot.subsystems.Hood.HoodIO;
-    import frc.robot.Constants.AlignmentConstants;
     import frc.robot.Robot;
     import frc.robot.subsystems.DriveSubsystem;
     import frc.robot.subsystems.Flywheel.FlywheelIO;
@@ -51,7 +48,7 @@
         SmartDashboard.putBoolean("SOTM Goal Calculating", true);
 
         // TODO: This is a placeholder, make it do a few iterations to converge on a shot time from the interpolator
-        Time shotTime = Seconds.of(0.7);
+        Time shotTime = Seconds.of(0.5);
         
         ChassisSpeeds shotMovement = ChassisSpeeds.fromRobotRelativeSpeeds(driveData.getCurrentSpeeds(), Rotation2d.fromDegrees(Robot.isReal() ? driveData.getHeading() : driveData.getCurrentPose().getRotation().getDegrees()));
         shotMovement.vxMetersPerSecond = -shotMovement.vxMetersPerSecond;
