@@ -183,17 +183,17 @@ public final class Constants {
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
 
     public static List<ShooterState> FakeValues = List.of(
-      new ShooterState(1.0, 70, 4000),
-      new ShooterState(1.5, 60, 4500),
-      new ShooterState(3.0, 55, 5200),
-      new ShooterState(4.5, 50, 5800),
-      new ShooterState(6.0, 45, 6000)
+      new ShooterState(1.0, 70, 4000, 1),
+      new ShooterState(1.5, 60, 4500, 2),
+      new ShooterState(3.0, 55, 5200, 3),
+      new ShooterState(4.5, 50, 5800, 4),
+      new ShooterState(6.0, 45, 6000, 5)
     );
   }
 
   public static class AlignmentConstants {
     public static final PIDController turnPID = new PIDController(2.0, 0.0, 0.0);
-    {turnPID.enableContinuousInput(-Math.PI, Math.PI);}
+    static {turnPID.enableContinuousInput(-Math.PI, Math.PI);}
 
     public static final Pose2d RedHubPose = new Pose2d(11.916, 4.055, new Rotation2d());
     public static final Pose2d BlueHubPose = new Pose2d(4.624, 4.055, new Rotation2d());

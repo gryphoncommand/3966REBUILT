@@ -27,8 +27,8 @@ public class SetShooterToDefinedState extends Command {
   @Override
   public void execute() {
     
-    hood.setAngle(state.hoodAngleDeg);
-    flywheel.setVelocity(state.flywheelRPM);
+    hood.setAngle(state.hoodAngleDeg());
+    flywheel.setVelocity(state.flywheelRPM());
   }
 
   @Override

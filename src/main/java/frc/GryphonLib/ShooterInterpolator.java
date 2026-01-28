@@ -9,7 +9,7 @@ public class ShooterInterpolator {
       List<ShooterState> table,
       double distanceMeters) {
 
-    if (distanceMeters <= table.get(0).distanceMeters) {
+    if (distanceMeters <= table.get(0).distanceMeters()) {
       return table.get(0);
     }
 
@@ -17,15 +17,17 @@ public class ShooterInterpolator {
       ShooterState a = table.get(i);
       ShooterState b = table.get(i + 1);
 
-      if (distanceMeters <= b.distanceMeters) {
+      if (distanceMeters <= b.distanceMeters()) {
         double t =
-            (distanceMeters - a.distanceMeters) /
-            (b.distanceMeters - a.distanceMeters);
+            (distanceMeters - a.distanceMeters()) /
+            (b.distanceMeters() - a.distanceMeters());
 
         return new ShooterState(
             distanceMeters,
-            MathUtil.interpolate(a.hoodAngleDeg, b.hoodAngleDeg, t),
-            MathUtil.interpolate(a.flywheelRPM, b.flywheelRPM, t));
+            MathUtil.interpolate(a.hoodAngleDeg(), b.hoodAngleDeg(), t),
+            MathUtil.interpolate(a.flywheelRPM(), b.flywheelRPM(), t),
+            MathUtil.interpolate(a.flightTimeSec(), b.flightTimeSec(), t)
+        );
       }
     }
 
