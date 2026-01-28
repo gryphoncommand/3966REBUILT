@@ -26,9 +26,9 @@ public class PositionCalculations {
         return translatedGoalPose.transformBy(new Transform2d(0, 0, new Rotation2d(Math.PI)));
     }
 
-    public static Pose2d getStraightOutPose(int tag){
+    public static Pose2d getStraightOutPose(int tag, double dist){
         Pose2d tagPose = kTagLayout.getTagPose(tag).get().toPose2d();
-        Pose2d goalPose = translateCoordinates(()->tagPose, tagPose.getRotation().getDegrees(), 1.5);
+        Pose2d goalPose = translateCoordinates(()->tagPose, tagPose.getRotation().getDegrees(), dist);
 
         return goalPose.transformBy(new Transform2d(0, 0, new Rotation2d(Math.PI/2)));
         // return goalPose.transformBy(new Transform2d(0, 0, new Rotation2d(Math.PI)));

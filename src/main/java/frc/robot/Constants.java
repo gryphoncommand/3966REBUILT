@@ -7,6 +7,8 @@ package frc.robot;
 import java.util.List;
 
 import com.pathplanner.lib.path.PathConstraints;
+
+import frc.GryphonLib.AllianceFlipUtil;
 import frc.GryphonLib.ShooterState;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -16,6 +18,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -24,6 +27,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.math.Matrix;
 
@@ -49,9 +54,9 @@ public final class Constants {
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(27.5);
+    public static final double kTrackWidth = Units.inchesToMeters(21.5);
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(27.5);
+    public static final double kWheelBase = Units.inchesToMeters(25.5);
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         new Translation2d(kWheelBase / 2, kTrackWidth / 2), // Front Left
@@ -159,9 +164,8 @@ public final class Constants {
             new Transform3d(new Translation3d(Units.inchesToMeters(6.25), -Units.inchesToMeters(12), Units.inchesToMeters(11.75)), new Rotation3d(Math.PI, camPitch3, camYaw3));
     public static final Transform3d kCamToRobot3 = kRobotToCam3.inverse();
 
-
-    // The layout of the AprilTags on the field
-    public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    public static AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+    
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
@@ -177,10 +181,12 @@ public final class Constants {
     public static double kHoodGearRatio = 200;
     public static double kHoodLengthMeters = Units.inchesToMeters(5);
 
-    // difference is 46.5922 degrees
-    public static double kHoodMaxAngleDeg = 70;
-    public static double kHoodMinAngleDeg = 25;
+    public static double kHoodMaxAngleDeg = 55.44;
+    public static double kHoodMinAngleDeg = 22.6;
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
+
+    public static Transform2d kRobotToShooter = new Transform2d(0.2619756, 0.0, new Rotation2d(Math.PI/2));
+
 
     public static List<ShooterState> FakeValues = List.of(
       new ShooterState(1.0, 70, 4000, 1),
@@ -191,12 +197,32 @@ public final class Constants {
     );
   }
 
+  public static class IntakeConstants {
+    public static int kRollerCanID = 13;
+    public static double kIntakeSpeedRPM = 2500;
+
+    public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (14/36)
+    public static double kIntakeDeployAngle = Units.degreesToRotations(0);
+    public static double kIntakeStowAngle = Units.degreesToRotations(140);
+    public static int kDeployCanID = 14;
+    public static double kIntakeLengthMeters = Units.inchesToMeters(14.678);
+  }
+
   public static class AlignmentConstants {
     public static final PIDController turnPID = new PIDController(2.0, 0.0, 0.0);
     static {turnPID.enableContinuousInput(-Math.PI, Math.PI);}
 
     public static final Pose2d RedHubPose = new Pose2d(11.916, 4.055, new Rotation2d());
     public static final Pose2d BlueHubPose = new Pose2d(4.624, 4.055, new Rotation2d());
+
+    public static final Pose2d HubPose = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? RedHubPose : BlueHubPose;
+
+    public static final Pose2d BlueAllianceZoneEnd = new Pose2d(4.3, 0, new Rotation2d());
+    public static final Pose2d RedAllianceZoneEnd = new Pose2d(12.2, 0, new Rotation2d());
+
+    public static final Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(2.412, 2.2688, new Rotation2d()));
+    public static final Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(2.412, 5.707, new Rotation2d()));
+    
     
 
     // Tolerances

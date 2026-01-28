@@ -1,21 +1,20 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Hood.HoodIO;
-import frc.robot.Constants.AlignmentConstants;
-import frc.robot.Robot;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Flywheel.FlywheelIO;
-import frc.GryphonLib.ShooterState;
-import frc.GryphonLib.ShooterInterpolator;
+    import edu.wpi.first.math.geometry.Pose2d;
+    import edu.wpi.first.math.geometry.Rotation2d;
+    import edu.wpi.first.math.kinematics.ChassisSpeeds;
+    import edu.wpi.first.units.measure.Time;
+    import edu.wpi.first.wpilibj.DriverStation;
+    import edu.wpi.first.wpilibj.DriverStation.Alliance;
+    import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+    import edu.wpi.first.wpilibj2.command.Command;
+    import frc.robot.subsystems.Hood.HoodIO;
+    import frc.robot.Constants.AlignmentConstants;
+    import frc.robot.Robot;
+    import frc.robot.subsystems.DriveSubsystem;
+    import frc.robot.subsystems.Flywheel.FlywheelIO;
+    import frc.GryphonLib.ShooterState;
+    import frc.GryphonLib.ShooterInterpolator;
 
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -28,6 +27,7 @@ public class PrepareSOTM extends Command {
     private final DriveSubsystem driveData;
     private final List<ShooterState> table;
     private Pose2d goalPose;
+    private Pose2d effectiveGoalPose;
 
     public PrepareSOTM(
             HoodIO hood,
@@ -39,6 +39,7 @@ public class PrepareSOTM extends Command {
         this.flywheel = flywheel;
         this.driveData = driveData;
         this.table = table;
+        this.goalPose = goalPose;
 
         addRequirements(hood.returnSubsystem(),
                 flywheel.returnSubsystem());
@@ -62,8 +63,8 @@ public class PrepareSOTM extends Command {
         shotMovement.vyMetersPerSecond = -shotMovement.vyMetersPerSecond;
         shotMovement.omegaRadiansPerSecond = 0;
 
-        goalPose = hubPose.exp(shotMovement.toTwist2d(shotTime.in(Seconds)));
-        driveData.getField().getObject("SOTM Goal").setPose(goalPose);
+        effectiveGoalPose = goalPose.exp(shotMovement.toTwist2d(shotTime.in(Seconds)));
+        driveData.getField().getObject("SOTM Goal").setPose(effectiveGoalPose);
 
         double distanceToGoal = driveData.getDistanceToPose(goalPose);
         
@@ -89,7 +90,8 @@ public class PrepareSOTM extends Command {
 
     @Override
     public boolean isFinished() {
-        return hood.atTarget(3.0) && flywheel.atTarget(50);
+        return false;
+        // return hood.atTarget(3.0) && flywheel.atTarget(50);
     }
 
     @Override

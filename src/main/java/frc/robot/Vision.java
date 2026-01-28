@@ -40,14 +40,14 @@ public class Vision extends SubsystemBase {
         if (!results1.isEmpty()){
             result1 = results1.get(results1.size() - 1);
         }
-        var results2 = camera2.getAllUnreadResults();
-        if (!results2.isEmpty()){
-            result2 = results2.get(results2.size() - 1);
-        }
-        var results3 = camera3.getAllUnreadResults();
-        if (!results3.isEmpty()){
-            result3 = results3.get(results3.size() - 1);
-        }
+        // var results2 = camera2.getAllUnreadResults();
+        // if (!results2.isEmpty()){
+        //     result2 = results2.get(results2.size() - 1);
+        // }
+        // var results3 = camera3.getAllUnreadResults();
+        // if (!results3.isEmpty()){
+        //     result3 = results3.get(results3.size() - 1);
+        // }
     }
 
     public static PhotonPipelineResult getResult1() {
@@ -111,21 +111,24 @@ public class Vision extends SubsystemBase {
         return 0;
     }
 
-    public static Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam1(Pose2d prevEstimatedRobotPose, PhotonPipelineResult result) {
-        poseEstimator1.setReferencePose(prevEstimatedRobotPose);
+    public static Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam1(PhotonPipelineResult result) {
         if (result == null || !result.hasTargets()){
             return Optional.empty();
         }
-        if (result.getBestTarget().bestCameraToTarget.getTranslation().getNorm() > 2){
-            return Optional.empty();
+
+        Optional<EstimatedRobotPose> update = Optional.empty();
+        if (result.getTargets().size() > 1){
+            update = poseEstimator1.estimateCoprocMultiTagPose(result);
         }
-        var update = poseEstimator1.estimateAverageBestTargetsPose(result);
+        else {
+            update = poseEstimator1.estimateLowestAmbiguityPose(result);
+        }
+        
         
         return update;
     }
 
     public static Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam2(Pose2d prevEstimatedRobotPose, PhotonPipelineResult result) {
-        poseEstimator2.setReferencePose(prevEstimatedRobotPose);
         if (result == null || !result.hasTargets()){
             return Optional.empty();
         }
@@ -138,7 +141,6 @@ public class Vision extends SubsystemBase {
     }
 
     public static Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam3(Pose2d prevEstimatedRobotPose, PhotonPipelineResult result) {
-        poseEstimator3.setReferencePose(prevEstimatedRobotPose);
         if (result == null || !result.hasTargets()){
             return Optional.empty();
         }

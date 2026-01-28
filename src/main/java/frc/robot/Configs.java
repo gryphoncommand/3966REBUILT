@@ -5,10 +5,11 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
-import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ShooterConstants;
 
@@ -32,11 +33,9 @@ public final class Configs {
                 slot0ConfigsDrive.kI = 0; 
                 slot0ConfigsDrive.kD = 0;
 
-                var motionMagicConfigs = driveConfig.MotionMagic;
 
-                motionMagicConfigs.MotionMagicAcceleration = frc.robot.subsystems.MAXSwerveModule.mpsToRps(DriveConstants.kMaxSpeedMetersPerSecond*5);
-
-                driveConfig.CurrentLimits.withSupplyCurrentLimit(90).withSupplyCurrentLimitEnable(true);
+                driveConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 1/5;
+                driveConfig.CurrentLimits.withSupplyCurrentLimit(60).withSupplyCurrentLimitEnable(true);
                 
                 // Motor behavior
                 driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -102,6 +101,72 @@ public final class Configs {
         }
     }
 
+    public static final class IntakeRollerConfig {
+        public static final SparkFlexConfig intakeRollerConfig = new SparkFlexConfig();
+
+        static {
+                intakeRollerConfig
+                    .idleMode(IdleMode.kBrake)
+                    .smartCurrentLimit(80)
+                    .inverted(true)
+                    .openLoopRampRate(0)
+                    .closedLoopRampRate(0);
+                intakeRollerConfig.encoder
+                    .positionConversionFactor(1)
+                    .velocityConversionFactor(1);
+                intakeRollerConfig.closedLoop
+                    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                    .pid(0.0, 0.0, 0.0)
+                    .outputRange(-1, 1);        
+                intakeRollerConfig.closedLoop.feedForward
+                    .kV(0.002);
+                    
+        }
+    }
+
+    public static final class IntakeDeployConfig {
+        public static final SparkMaxConfig IntakeDeployConfig = new SparkMaxConfig();
+
+        static {
+                IntakeDeployConfig
+                        .idleMode(IdleMode.kBrake)
+                        .smartCurrentLimit(80)
+                        .inverted(true)
+                        .openLoopRampRate(0)
+                        .closedLoopRampRate(0);
+                IntakeDeployConfig.encoder
+                    .positionConversionFactor(IntakeConstants.kIntakeDeployGearRatio)
+                    .velocityConversionFactor(IntakeConstants.kIntakeDeployGearRatio);
+                IntakeDeployConfig.closedLoop
+                    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                    // These are example gains you may need to them for your own robot!
+                    .pid(0.3, 0, 0)
+                    .outputRange(-0.9, 0.9);
+        }
+
+        public static final TalonFXConfiguration deploySimConfig = new TalonFXConfiguration();
+
+        static {
+                var slot0ConfigsDrive = deploySimConfig.Slot0;
+                // PID + FF tuning
+                slot0ConfigsDrive.kS = 0;
+                slot0ConfigsDrive.kV = 0;
+                slot0ConfigsDrive.kA = 0;
+                slot0ConfigsDrive.kP = 3.0;
+                slot0ConfigsDrive.kI = 0; 
+                slot0ConfigsDrive.kD = 0.7;
+
+                deploySimConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+
+                deploySimConfig.CurrentLimits.withSupplyCurrentLimit(50).withSupplyCurrentLimitEnable(true);
+                
+                // Motor behavior
+                deploySimConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+                
+                deploySimConfig.MotorOutput.withInverted(InvertedValue.CounterClockwise_Positive);
+        }
+    }
+
     public static final class FlywheelConfig {
         public static final SparkFlexConfig flywheelConfig = new SparkFlexConfig();
         public static final TalonFXConfiguration flywheelFXConfig = new TalonFXConfiguration();
@@ -119,7 +184,7 @@ public final class Configs {
                 flywheelConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains need to them for your own robot!
-                    .pid(5, 2, 0)
+                    .pid(8, 2, 0)
                     .outputRange(-0.95, 0.95);
 
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
@@ -127,9 +192,9 @@ public final class Configs {
                 slot0ConfigsDrive.kS = 0.0;
                 slot0ConfigsDrive.kV = 0.0;
                 slot0ConfigsDrive.kA = 0.0;
-                slot0ConfigsDrive.kP = 10.0;
-                slot0ConfigsDrive.kI = 0.0; 
-                slot0ConfigsDrive.kD = 1.0;
+                slot0ConfigsDrive.kP = 0.0;
+                slot0ConfigsDrive.kI = 1.0; 
+                slot0ConfigsDrive.kD = 0.0;
 
                 flywheelFXConfig.CurrentLimits.withSupplyCurrentLimitEnable(false);
                 

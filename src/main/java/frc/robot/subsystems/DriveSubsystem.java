@@ -12,7 +12,6 @@ import java.util.Set;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonUtils;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -41,7 +40,6 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -50,13 +48,11 @@ import frc.robot.Vision;
 import frc.GryphonLib.MovementCalculations;
 import frc.GryphonLib.PositionCalculations;
 import frc.littletonUtils.PoseEstimator;
+import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.VisionConstants;
-import frc.robot.commands.TrajectoryGeneration;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -74,10 +70,10 @@ public class DriveSubsystem extends SubsystemBase {
   private double gyroOffset = 0.0;
 
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
-  private static Vector<N3> LLStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(10));
-  private static Matrix<N3, N1> LLstdevsMat = new Matrix<>(LLStdDevs.getStorage());
-  private static Vector<N3> ArduStdDevs = VecBuilder.fill(0.2, 0.2, Units.degreesToRadians(10));
-  private static Matrix<N3, N1> ArdustdevsMat = new Matrix<>(ArduStdDevs.getStorage());
+  private static Vector<N3> SingleTagStdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10));
+  private static Matrix<N3, N1> SingleTagStdDevsMat = new Matrix<>(SingleTagStdDevs.getStorage());
+  private static Vector<N3> MultiTagStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(5));
+  private static Matrix<N3, N1> MultiTagStdDevsMat = new Matrix<>(MultiTagStdDevs.getStorage());
   private final PoseEstimator poseEstimator;
   private final Field2d field2d = new Field2d();
   private final StructArrayPublisher<SwerveModuleState> publisher;
@@ -177,6 +173,9 @@ public class DriveSubsystem extends SubsystemBase {
           builder.addDoubleProperty("Robot Angle", ()->getRotation().getRadians(), null);
       }
     });
+
+    field2d.getObject("Depot Passing Pose").setPose(AlignmentConstants.PassingPoseDepot);
+    field2d.getObject("Outpost Passing Pose").setPose(AlignmentConstants.PassingPoseOutpost);
 
     RobotConfig config;
     try{
@@ -344,6 +343,10 @@ public class DriveSubsystem extends SubsystemBase {
     return createPath(waypoint, AutoConstants.constraints, new GoalEndState(0.0, waypoint.getRotation()));
   }
 
+  public ChassisSpeeds getCurrentSpeedsFieldRelative(){
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), getRotation());
+  }
+
   public Command goToPose(Pose2d goalPose){
     ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), getRotation());
     if (MovementCalculations.getVelocityMagnitude(getCurrentSpeeds()).in(MetersPerSecond) > 0.5){
@@ -352,11 +355,11 @@ public class DriveSubsystem extends SubsystemBase {
       return Commands.defer(
         () -> AutoBuilder.followPath(getPathFromWaypoint(goalPose)),
         Set.of(this)
-      ).raceWith(new TrajectoryGeneration(this, goalPose, field2d));
+      );
     } else {
       SmartDashboard.putBoolean("Included Previous Speed in Path", false);
       SmartDashboard.putNumber("Speed at start of path", MovementCalculations.getVelocityMagnitude(fieldRelativeSpeeds).in(MetersPerSecond));
-      return PathToPose(goalPose, 0.0).raceWith(new TrajectoryGeneration(this, goalPose, field2d));
+      return PathToPose(goalPose, 0.0);
     }
     
   }
@@ -388,7 +391,7 @@ public class DriveSubsystem extends SubsystemBase {
     );
 
 
-    return new ParallelRaceGroup(pathfindingCommand, new TrajectoryGeneration(this, goalPose, field2d));
+    return pathfindingCommand;
   }
 
   public Command AlignToTagFar(int goalTag){
@@ -396,31 +399,46 @@ public class DriveSubsystem extends SubsystemBase {
     if (goalTag == 0){
       goalPose = getCurrentPose();
     } else {
-      goalPose = PositionCalculations.getStraightOutPose(goalTag);
+      goalPose = PositionCalculations.getStraightOutPose(goalTag, 1.5);
     }
     return PathToPose(goalPose, 0.0);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Distance to Goal (m)", getDistanceToPose(VisionConstants.kTagLayout.getTagPose(DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7).get().toPose2d()));
+    SmartDashboard.putNumber("Distance To Hub (m)", getDistanceToPose(AlignmentConstants.HubPose));
     SmartDashboard.putBoolean("Aligned to Goal", aligned);
     if (Vision.getResult1() != null){
-      Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(getCurrentPose(), Vision.getResult1());
+      Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1());
       if (visionBotPose1.isPresent()){
-        poseEstimator.addVisionData(List.of(visionBotPose1.get()), LLstdevsMat);
+        SmartDashboard.putBoolean("Camera 1 Finding Pose", true);
+        if (visionBotPose1.get().targetsUsed.size() > 1){
+          poseEstimator.addVisionData(List.of(visionBotPose1.get()), MultiTagStdDevsMat);
+        } else{
+          poseEstimator.addVisionData(List.of(visionBotPose1.get()), SingleTagStdDevsMat);
+        }
         field2d.getObject("Camera1 Pose Guess").setPose(visionBotPose1.get().estimatedPose.toPose2d());
+      } else{
+        SmartDashboard.putBoolean("Camera 1 Finding Pose", false);
       }
     } if (Vision.getResult2() != null){
       Optional<EstimatedRobotPose> visionBotPose2 = Vision.getEstimatedGlobalPoseCam2(getCurrentPose(), Vision.getResult2());
       if (visionBotPose2.isPresent()){
-        poseEstimator.addVisionData(List.of(visionBotPose2.get()), ArdustdevsMat);
+        if (visionBotPose2.get().targetsUsed.size() > 1){
+          poseEstimator.addVisionData(List.of(visionBotPose2.get()), MultiTagStdDevsMat);
+        } else{
+          poseEstimator.addVisionData(List.of(visionBotPose2.get()), SingleTagStdDevsMat);
+        }
         field2d.getObject("Camera2 Pose Guess").setPose(visionBotPose2.get().estimatedPose.toPose2d());
       }
     } if (Vision.getResult3() != null){
-      Optional<EstimatedRobotPose> visionBotPose3 = Vision.getEstimatedGlobalPoseCam1(getCurrentPose(), Vision.getResult3());
+      Optional<EstimatedRobotPose> visionBotPose3 = Vision.getEstimatedGlobalPoseCam3(getCurrentPose(), Vision.getResult3());
       if (visionBotPose3.isPresent()){
-        poseEstimator.addVisionData(List.of(visionBotPose3.get()), ArdustdevsMat);
+        if (visionBotPose3.get().targetsUsed.size() > 1){
+          poseEstimator.addVisionData(List.of(visionBotPose3.get()), MultiTagStdDevsMat);
+        } else{
+          poseEstimator.addVisionData(List.of(visionBotPose3.get()), SingleTagStdDevsMat);
+        }
         field2d.getObject("Camera1 Pose Guess").setPose(visionBotPose3.get().estimatedPose.toPose2d());
       }
     } 
@@ -431,7 +449,7 @@ public class DriveSubsystem extends SubsystemBase {
       getCurrentSpeeds().toTwist2d(Timer.getTimestamp() - currentTimestamp)
       );
 
-      field2d.setRobotPose(getCurrentPose());
+      field2d.setRobotPose(poseEstimator.getLatestPose());
       publisher.set(getStates());
       desiredPublisher.set(getDesiredStates());
     SmartDashboard.putData("Field", field2d);
@@ -449,10 +467,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Pose2d getCurrentPose() {
     return poseEstimator.getLatestPose();
-  }
-
-  public double getDistanceToGoal(){
-    return PhotonUtils.getDistanceToPose(getCurrentPose(), field2d.getObject("Goal Pose").getPose());
   }
 
   public Field2d getField(){
