@@ -2,7 +2,8 @@ package frc.robot.commands;
 
     import edu.wpi.first.math.geometry.Pose2d;
     import edu.wpi.first.math.geometry.Rotation2d;
-    import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
     import edu.wpi.first.units.measure.Time;
     import edu.wpi.first.wpilibj.DriverStation;
     import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -26,7 +27,6 @@ public class PrepareSOTM extends Command {
     private final FlywheelIO flywheel;
     private final DriveSubsystem driveData;
     private final List<ShooterState> table;
-    private Pose2d goalPose;
     private Pose2d effectiveGoalPose;
 
     public PrepareSOTM(
@@ -39,7 +39,6 @@ public class PrepareSOTM extends Command {
         this.flywheel = flywheel;
         this.driveData = driveData;
         this.table = table;
-        this.goalPose = goalPose;
 
         addRequirements(hood.returnSubsystem(),
                 flywheel.returnSubsystem());
@@ -63,10 +62,10 @@ public class PrepareSOTM extends Command {
         shotMovement.vyMetersPerSecond = -shotMovement.vyMetersPerSecond;
         shotMovement.omegaRadiansPerSecond = 0;
 
-        effectiveGoalPose = goalPose.exp(shotMovement.toTwist2d(shotTime.in(Seconds)));
+        effectiveGoalPose = hubPose.exp(shotMovement.toTwist2d(shotTime.in(Seconds)));
         driveData.getField().getObject("SOTM Goal").setPose(effectiveGoalPose);
 
-        double distanceToGoal = driveData.getDistanceToPose(goalPose);
+        double distanceToGoal = driveData.getDistanceToPose(effectiveGoalPose);
         
         ShooterState state = ShooterInterpolator.interpolate(
                 table, distanceToGoal);

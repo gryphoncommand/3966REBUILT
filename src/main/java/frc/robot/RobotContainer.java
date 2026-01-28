@@ -103,7 +103,7 @@ public class RobotContainer {
     m_driverController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
     m_driverController.rightBumper()
       .whileTrue(new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose, true))
-      .whileTrue(new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeValues, AlignmentConstants.HubPose))
+      .whileTrue(new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeValues))
       .onFalse(new RunCommand(()->m_flywheel.setVelocity(1000), m_flywheel));
     m_driverController.x().whileTrue(new RunCommand(()->m_intakeDeploy.set(0.2), m_intakeDeploy)).onFalse(new RunCommand(()->m_intakeDeploy.set(0.0), m_intakeDeploy));
     m_driverController.a().whileTrue(new RunCommand(()->m_intakeDeploy.set(-0.2), m_intakeDeploy)).onFalse(new RunCommand(()->m_intakeDeploy.set(0.0), m_intakeDeploy));
@@ -122,7 +122,7 @@ public class RobotContainer {
     SmartDashboard.putData("Deploy Intake", new IntakeDeploy(m_intakeDeploy));
     SmartDashboard.putData("Stow Intake", new IntakeStow(m_intakeDeploy));
     SmartDashboard.putData("Align To Goal", new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose, true));
-    SmartDashboard.putData("Prepare SOTM", new RepeatCommand(new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeValues, AlignmentConstants.HubPose)));
+    SmartDashboard.putData("Prepare SOTM", new RepeatCommand(new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeValues)));
   }
 
 
@@ -174,7 +174,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
         new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
-        new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeValues, AlignmentConstants.HubPose)
+        new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeValues)
       )
     );
     NamedCommands.registerCommand("Deploy Intake", new IntakeDeploy(m_intakeDeploy));
