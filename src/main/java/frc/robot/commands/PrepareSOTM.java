@@ -1,17 +1,11 @@
 package frc.robot.commands;
 
     import edu.wpi.first.math.geometry.Pose2d;
-    import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-    import edu.wpi.first.units.measure.Time;
-    import edu.wpi.first.wpilibj.DriverStation;
-    import edu.wpi.first.wpilibj.DriverStation.Alliance;
+    import edu.wpi.first.math.kinematics.ChassisSpeeds;
     import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
     import edu.wpi.first.wpilibj2.command.Command;
     import frc.robot.subsystems.Hood.HoodIO;
     import frc.robot.Constants.AlignmentConstants;
-    import frc.robot.Robot;
     import frc.robot.subsystems.DriveSubsystem;
     import frc.robot.subsystems.Flywheel.FlywheelIO;
     import frc.GryphonLib.ShooterState;
@@ -49,38 +43,28 @@ public class PrepareSOTM extends Command {
     public void execute() {
         SmartDashboard.putBoolean("SOTM Goal Calculating", true);
 
-        // shot time from the interpolator
-        Time shotTime = Seconds.of(1.0);
+        Pose2d hubPose = AlignmentConstants.HubPose;
 
-        Pose2d hubPose = DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose
-                : AlignmentConstants.BlueHubPose;
+        ChassisSpeeds shotMovement = driveData.getCurrentSpeedsFieldRelative();
 
-        ChassisSpeeds shotMovement = ChassisSpeeds.fromRobotRelativeSpeeds(driveData.getCurrentSpeeds(),
-                Rotation2d.fromDegrees(Robot.isReal() ? driveData.getHeading()
-                        : driveData.getCurrentPose().getRotation().getDegrees()));
         shotMovement.vxMetersPerSecond = -shotMovement.vxMetersPerSecond;
         shotMovement.vyMetersPerSecond = -shotMovement.vyMetersPerSecond;
         shotMovement.omegaRadiansPerSecond = 0;
 
-        effectiveGoalPose = hubPose.exp(shotMovement.toTwist2d(shotTime.in(Seconds)));
-        driveData.getField().getObject("SOTM Goal").setPose(effectiveGoalPose);
-
-        double distanceToGoal = driveData.getDistanceToPose(effectiveGoalPose);
+        double distanceToGoal = driveData.getDistanceToPose(hubPose);
         
         ShooterState state = ShooterInterpolator.interpolate(
                 table, distanceToGoal);
 
         for (int i = 0; i < 20; i++) {
-            var timeOfFlight = state.flightTimeSec();
-            double offsetX = shotMovement.vxMetersPerSecond * timeOfFlight;
-            double offsetY = shotMovement.vyMetersPerSecond * timeOfFlight;
-            Pose2d lookaheadPose = new Pose2d(
-                    driveData.getCurrentPose().getTranslation().plus(new Translation2d(offsetX, offsetY)),
-                    driveData.getCurrentPose().getRotation());
-            distanceToGoal = driveData.getDistanceToPose(lookaheadPose);
+            var timeOfFlight = Seconds.of(state.flightTimeSec());
+            effectiveGoalPose = hubPose.exp(shotMovement.toTwist2d(timeOfFlight.in(Seconds)));
+            distanceToGoal = driveData.getDistanceToPose(effectiveGoalPose);
             state = ShooterInterpolator.interpolate(
                 table, distanceToGoal);
         }
+
+        driveData.getField().getObject("SOTM Goal").setPose(effectiveGoalPose);
         
 
         hood.setAngle(state.hoodAngleDeg());

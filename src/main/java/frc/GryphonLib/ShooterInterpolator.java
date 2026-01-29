@@ -1,41 +1,3 @@
-<<<<<<< HEAD
-package frc.GryphonLib;
-
-import java.util.List;
-import edu.wpi.first.math.MathUtil;
-
-public class ShooterInterpolator {
-
-  public static ShooterState interpolate(
-      List<ShooterState> table,
-      double distanceMeters) {
-
-    if (distanceMeters <= table.get(0).distanceMeters()) {
-      return table.get(0);
-    }
-
-    for (int i = 0; i < table.size() - 2; i++) {
-      ShooterState a = table.get(i);
-      ShooterState b = table.get(i + 1);
-
-      if (distanceMeters <= b.distanceMeters()) {
-        double t =
-            (distanceMeters - a.distanceMeters()) /
-            (b.distanceMeters() - a.distanceMeters());
-
-        return new ShooterState(
-            distanceMeters,
-            MathUtil.interpolate(a.hoodAngleDeg(), b.hoodAngleDeg(), t),
-            MathUtil.interpolate(a.flywheelRPM(), b.flywheelRPM(), t),
-            MathUtil.interpolate(a.flightTimeSec(), b.flightTimeSec(), t)
-        );
-      }
-    }
-
-    return table.get(table.size() - 1);
-  }
-}
-=======
 package frc.GryphonLib;
 
 import java.util.List;
@@ -72,4 +34,3 @@ public class ShooterInterpolator {
     return table.get(table.size() - 1);
   }
 }
->>>>>>> 6db3a62900c24fa6f7b016e61a0d782691877af0
