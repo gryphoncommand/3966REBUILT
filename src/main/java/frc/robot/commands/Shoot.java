@@ -18,7 +18,7 @@ import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Hood.HoodIO;
-import frc.robot.subsystems.Intake.IntakeRollersSparkFlex;
+import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
 
 public class Shoot extends Command {
 
@@ -26,7 +26,7 @@ public class Shoot extends Command {
     private final DriveSubsystem driveData;
     private final HoodIO hood;
     private final FlywheelIO flywheel;
-    private final IntakeRollersSparkFlex intakeRollerData;
+    private final IntakeRollersTalonFX intakeRollerData;
     // private final PassthroughIO passthrough;
     private final double feedRPM;
     private final boolean stopFlywheelOnEnd;
@@ -42,7 +42,7 @@ public class Shoot extends Command {
      * @param feedRPM roller velocity to use when feeding
      * @param stopFlywheelOnEnd if true, zeroes the flywheel when the command ends
      */
-    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersSparkFlex rollers, double feedRPM, boolean stopFlywheelOnEnd) {
+    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, double feedRPM, boolean stopFlywheelOnEnd) {
         this.driveData = driveData;
         this.hood = hood;
         this.flywheel = flywheel;
@@ -78,7 +78,7 @@ public class Shoot extends Command {
     /**
      * Convenience constructor that leaves the flywheel running when command ends.
      */
-    public Shoot(DriveSubsystem drive, HoodIO hood, FlywheelIO flywheel, IntakeRollersSparkFlex rollers, double feedRPM) {
+    public Shoot(DriveSubsystem drive, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, double feedRPM) {
         this(drive, hood, flywheel, rollers, feedRPM, false);
     }
 

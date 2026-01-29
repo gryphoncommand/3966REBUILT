@@ -43,7 +43,7 @@ import frc.robot.subsystems.Hood.*;
 import frc.robot.subsystems.Intake.IntakeDeployIO;
 import frc.robot.subsystems.Intake.IntakeDeploySimTalonFX;
 import frc.robot.subsystems.Intake.IntakeDeploySparkFlex;
-import frc.robot.subsystems.Intake.IntakeRollersSparkFlex;
+import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
 
 public class RobotContainer {
 
@@ -52,7 +52,7 @@ public class RobotContainer {
   private final IntakeDeployIO m_intakeDeploy = Robot.isReal() ? new IntakeDeploySparkFlex() : new IntakeDeploySimTalonFX();
   private final FlywheelIO m_flywheel = Robot.isReal() ? new FlywheelSparkFlex() : new FlywheelSimTalonFX();
   private final HoodIO m_hood = Robot.isReal() ? new HoodTalonFX() : new HoodSimTalonFX();
-  private final IntakeRollersSparkFlex m_intakeRollers = new IntakeRollersSparkFlex();
+  private final IntakeRollersTalonFX m_intakeRollers = new IntakeRollersTalonFX();
 
   private Command runIntakeRollers = new RunIntakeRollers(m_intakeRollers);
 

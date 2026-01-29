@@ -5,38 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "race",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Prepare to Shoot"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Shoot All Balls"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Deploy Intake"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "race",
           "data": {
             "commands": [
@@ -47,9 +15,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "parallel",
                 "data": {
-                  "name": "Run Intake"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Run Intake"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Deploy Intake"
+                      }
+                    }
+                  ]
                 }
               }
             ]

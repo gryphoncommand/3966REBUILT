@@ -19,7 +19,7 @@ import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Hood.HoodIO;
-import frc.robot.subsystems.Intake.IntakeRollersSparkFlex;
+import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
 
 /**
  * Shoots all balls currently recorded in the hopper (simBalls).
@@ -31,12 +31,12 @@ public class ShootAllInHopper extends Command {
 	private final DriveSubsystem driveData;
 	private final HoodIO hood;
 	private final FlywheelIO flywheel;
-	private final IntakeRollersSparkFlex intakeRollers;
+	private final IntakeRollersTalonFX intakeRollers;
 
 	private double lastShotTime = 0.0;
 	private static final double kShotIntervalSim = 0.15; // seconds between shots
 
-	public ShootAllInHopper(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersSparkFlex rollers) {
+	public ShootAllInHopper(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers) {
 		this.driveData = driveData;
 		this.hood = hood;
 		this.flywheel = flywheel;

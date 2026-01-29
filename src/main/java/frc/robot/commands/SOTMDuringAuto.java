@@ -19,5 +19,6 @@ public class SOTMDuringAuto extends Command {
 
     @Override
     public void execute() {
+        
     }
 }
