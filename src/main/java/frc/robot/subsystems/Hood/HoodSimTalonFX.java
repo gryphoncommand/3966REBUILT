@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ShooterConstants;
 
-    public class HoodSimTalonFX extends SubsystemBase implements HoodIO {
+public class HoodSimTalonFX extends SubsystemBase implements HoodIO {
 
     private final TalonFX hoodMotor =
         new TalonFX(ShooterConstants.kHoodCANID);
@@ -68,7 +68,7 @@ import frc.robot.Constants.ShooterConstants;
 
 
         hoodVisual.setAngle(
-            Units.radiansToDegrees(hoodSim.getAngleRads())
+            90 - Units.radiansToDegrees(hoodSim.getAngleRads())
         );
 
         SmartDashboard.putData("Hood Mech", mech2d);

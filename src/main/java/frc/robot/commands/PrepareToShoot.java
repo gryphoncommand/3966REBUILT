@@ -37,8 +37,8 @@ public class PrepareToShoot extends Command {
         ShooterInterpolator.interpolate(
             table, distanceSupplier.getAsDouble());
 
-    hood.setAngle(state.hoodAngleDeg);
-    flywheel.setVelocity(state.flywheelRPM);
+    hood.setAngle(state.hoodAngleDeg());
+    flywheel.setVelocity(state.flywheelRPM());
   }
 
   @Override
