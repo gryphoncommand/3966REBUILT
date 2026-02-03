@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -106,8 +107,9 @@ public class RobotContainer {
     m_driverController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
 
     m_driverController.rightBumper()
-      .whileTrue(new DeferredCommand(()->new PassOrShootCommand(m_drive, m_driverController, m_hood, m_flywheel), Set.of(m_drive, m_hood, m_flywheel)))
-      .onFalse(new RunCommand(()->m_flywheel.setVelocity(1000), m_flywheel));
+      .whileTrue(new RepeatCommand(new DeferredCommand(()->new PassOrShootCommand(m_drive, m_driverController, m_hood, m_flywheel), Set.of(m_drive, m_hood, m_flywheel))))
+      .onFalse(new RunCommand(()->m_flywheel.setVelocity(1000), m_flywheel))
+      .onFalse(new HomeHood(m_hood));
 
     m_driverController.rightTrigger().whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, 0));
 
@@ -131,6 +133,14 @@ public class RobotContainer {
 
 
   private void configureStateTriggers() {
+    // Trigger inAllianceZone = new Trigger(
+    //   ()->{
+    //     double x = m_drive.getCurrentPose().getX();
+    //     return DriverStation.getAlliance().get() == Alliance.Red ? x < AlignmentConstants.RedAllianceZoneEnd.getX() : x > AlignmentConstants.BlueAllianceZoneEnd.getX();
+    //   }
+    // );
+
+
     // Trigger ShooterReady = new Trigger(()->(m_flywheel.atTarget(50) && m_hood.atTarget(5)));
     // Trigger Aligned = new Trigger(m_drive::getAligned);
 

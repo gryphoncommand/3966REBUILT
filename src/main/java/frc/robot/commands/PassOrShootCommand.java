@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,9 +24,12 @@ public class PassOrShootCommand extends Command {
     private ConditionalCommand delegate;
     private ParallelCommandGroup passGroup;
     private ParallelCommandGroup shootGroup;
+    private boolean inAllianceZone;
+    private DriveSubsystem drive;
     
 
     public PassOrShootCommand(DriveSubsystem drive, CommandXboxController driverController, HoodIO hood, FlywheelIO flywheel) {
+        this.drive = drive;
         // declare requirements so scheduling conflicts are avoided
         addRequirements(drive, hood, flywheel);
 
@@ -56,10 +61,15 @@ public class PassOrShootCommand extends Command {
             passGroup,
             shootGroup,
             () -> {
-                double x = drive.getCurrentPose().getX();
+                Pose2d futurePose = drive.getCurrentPose().exp(drive.getCurrentSpeeds().toTwist2d(0.5));
+                double x = futurePose.getX();
                 return DriverStation.getAlliance().get() == Alliance.Red ? x < AlignmentConstants.RedAllianceZoneEnd.getX() : x > AlignmentConstants.BlueAllianceZoneEnd.getX();
             }
         );
+
+        Pose2d futurePose = drive.getCurrentPose().exp(drive.getCurrentSpeeds().toTwist2d(0.5));
+        double x = futurePose.getX();
+        inAllianceZone = DriverStation.getAlliance().get() == Alliance.Red ? x < AlignmentConstants.RedAllianceZoneEnd.getX() : x > AlignmentConstants.BlueAllianceZoneEnd.getX();
     }
 
     @Override
@@ -75,7 +85,10 @@ public class PassOrShootCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return delegate.isFinished();
+        Pose2d futurePose = drive.getCurrentPose().exp(drive.getCurrentSpeeds().toTwist2d(0.5));
+        double x = futurePose.getX();
+        boolean inAllianceNow = DriverStation.getAlliance().get() == Alliance.Red ? x < AlignmentConstants.RedAllianceZoneEnd.getX() : x > AlignmentConstants.BlueAllianceZoneEnd.getX();
+        return delegate.isFinished() || inAllianceNow != inAllianceZone;
     }
 
     @Override

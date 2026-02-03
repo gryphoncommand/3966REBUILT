@@ -190,7 +190,7 @@ public final class Constants {
 
     public static List<ShooterState> FakeShootingValues = List.of(
       new ShooterState(1.5, 25.0, 1600, 0.55),
-      new ShooterState(2  .5, 28.0, 1750, 0.68),
+      new ShooterState(2.5, 28.0, 1750, 0.68),
       new ShooterState(3.5, 32.0, 1900, 0.78),
       new ShooterState(4.5, 35.0, 2050, 0.85),
       new ShooterState(6.0, 38.0, 2400, 0.95)
@@ -219,7 +219,7 @@ public final class Constants {
   }
 
   public static class AlignmentConstants {
-    public static final PIDController turnPID = new PIDController(2.0, 0.0, 0.0);
+    public static final PIDController turnPID = new PIDController(3.0, 0.0, 0.0);
     static {turnPID.enableContinuousInput(-Math.PI, Math.PI);}
 
     public static final Pose2d RedHubPose = new Pose2d(11.916, 4.055, new Rotation2d());
