@@ -13,6 +13,7 @@ import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.HomeHood;
 import frc.robot.commands.PrepareSOTM;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.PassOrShootCommand;
 import frc.robot.commands.ShootAllInHopper;
 import frc.robot.commands.Intake.IntakeDeploy;
 import frc.robot.commands.Intake.IntakeStow;
@@ -21,6 +22,8 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Flywheel.FlywheelSparkFlex;
+
+import java.util.Set;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -34,6 +37,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
@@ -65,7 +69,6 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
 
   public RobotContainer() {
-    new Vision();
     configureDefaultCommands();
     configureButtonBindings();
     configureStateTriggers();
@@ -101,18 +104,19 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Driver bindings
     m_driverController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
+
     m_driverController.rightBumper()
-      .whileTrue(new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose, true))
-      .whileTrue(new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeValues))
+      .whileTrue(new DeferredCommand(()->new PassOrShootCommand(m_drive, m_driverController, m_hood, m_flywheel), Set.of(m_drive, m_hood, m_flywheel)))
       .onFalse(new RunCommand(()->m_flywheel.setVelocity(1000), m_flywheel));
-    m_driverController.x().whileTrue(new RunCommand(()->m_intakeDeploy.set(0.2), m_intakeDeploy)).onFalse(new RunCommand(()->m_intakeDeploy.set(0.0), m_intakeDeploy));
-    m_driverController.a().whileTrue(new RunCommand(()->m_intakeDeploy.set(-0.2), m_intakeDeploy)).onFalse(new RunCommand(()->m_intakeDeploy.set(0.0), m_intakeDeploy));
+
     m_driverController.rightTrigger().whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, 0));
 
     m_driverController.leftTrigger()
       .onTrue(new IntakeDeploy(m_intakeDeploy))
       .whileTrue(runIntakeRollers);
+
     m_driverController.leftBumper().onTrue(new IntakeStow(m_intakeDeploy));
+
     m_driverController.b().whileTrue(new HomeHood(m_hood));
     
 
@@ -122,7 +126,7 @@ public class RobotContainer {
     SmartDashboard.putData("Deploy Intake", new IntakeDeploy(m_intakeDeploy));
     SmartDashboard.putData("Stow Intake", new IntakeStow(m_intakeDeploy));
     SmartDashboard.putData("Align To Goal", new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose, true));
-    SmartDashboard.putData("Prepare SOTM", new RepeatCommand(new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeValues)));
+    SmartDashboard.putData("Prepare SOTM", new RepeatCommand(new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeShootingValues)));
   }
 
 
@@ -174,7 +178,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
         new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
-        new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeValues)
+        new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeShootingValues)
       )
     );
     NamedCommands.registerCommand("Deploy Intake", new IntakeDeploy(m_intakeDeploy));

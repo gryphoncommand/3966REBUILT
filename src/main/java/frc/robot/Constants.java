@@ -188,12 +188,21 @@ public final class Constants {
     public static Transform2d kRobotToShooter = new Transform2d(0.2619756, 0.0, new Rotation2d(Math.PI/2));
 
 
-    public static List<ShooterState> FakeValues = List.of(
+    public static List<ShooterState> FakeShootingValues = List.of(
       new ShooterState(1.5, 25.0, 1600, 0.55),
-      new ShooterState(2.5, 28.0, 1750, 0.68),
+      new ShooterState(2  .5, 28.0, 1750, 0.68),
       new ShooterState(3.5, 32.0, 1900, 0.78),
       new ShooterState(4.5, 35.0, 2050, 0.85),
       new ShooterState(6.0, 38.0, 2400, 0.95)
+    );
+
+    public static List<ShooterState> FakePassingValues = List.of(
+      new ShooterState(1.5, kHoodMaxAngleDeg, 1300, 0.55),
+      new ShooterState(2.5, 53, 1450, 0.68),
+      new ShooterState(3.5, 51, 1600, 0.78),
+      new ShooterState(4.5, 49, 1750, 0.85),
+      new ShooterState(6.0, 47, 1900, 0.95),
+      new ShooterState(8.0, 45, 2700, 0.95)
     );
   }
 

@@ -72,12 +72,12 @@ public class IntakeRollersTalonFX extends SubsystemBase {
     return this;
   }
 
-  // These should go to the spindexer
+  // TODO: These should go to the spindexer
 
   public void addBall(){
         simBalls += 1;
-        if (simBalls >= 41){
-            simBalls = 40;
+        if (simBalls >= 51){
+            simBalls = 50;
         }
     }
 
@@ -93,6 +93,6 @@ public class IntakeRollersTalonFX extends SubsystemBase {
     }
 
     public boolean isFull(){
-      return simBalls == 40;
+      return simBalls >= 50;
     }
 }

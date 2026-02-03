@@ -85,6 +85,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
+    new Vision();
     if (Robot.isReal()){
       m_frontLeft = new MAXSwerveModule(
         DriveConstants.kFrontLeftDrivingCanId,
