@@ -4,6 +4,11 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 import com.pathplanner.lib.commands.PathfindingCommand;
 
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -20,10 +25,16 @@ import frc.FuelSim;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot  {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+
+  public Robot(){
+    Logger.addDataReceiver(new NT4Publisher());
+    Logger.addDataReceiver(new WPILOGWriter());
+    Logger.start();
+  }
 
   /**
    * This function is run when the robot is first started up and should be used for any

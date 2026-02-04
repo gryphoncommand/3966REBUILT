@@ -1,10 +1,14 @@
 package frc.robot.subsystems.Intake;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
@@ -83,6 +87,7 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
 
         SmartDashboard.putData("Intake Deploy Mech", mech2d);
         SmartDashboard.putNumber("Intake Deploy Angle (deg)", getPosition());
+        Logger.recordOutput("Intake Position", new Pose3d(-0.29, 0, 0.33, new Rotation3d(0.0, Units.degreesToRadians(getPosition()), 0.0)));
     }
 
     /* ---------------- IntakeDeployIO ---------------- */

@@ -25,10 +25,14 @@ import frc.robot.subsystems.Flywheel.FlywheelSparkFlex;
 
 import java.util.Set;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -70,6 +74,7 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
 
   public RobotContainer() {
+    configureLogger();
     configureDefaultCommands();
     configureButtonBindings();
     configureStateTriggers();
@@ -194,6 +199,17 @@ public class RobotContainer {
     NamedCommands.registerCommand("Deploy Intake", new IntakeDeploy(m_intakeDeploy));
     NamedCommands.registerCommand("Stow Intake", new IntakeStow(m_intakeDeploy));
     NamedCommands.registerCommand("Run Intake", runIntakeRollers);
+  }
+
+  private void configureLogger(){
+    Logger.recordOutput(
+      "ZeroedComponentPoses", 
+      new Pose3d[] {
+        new Pose3d(),
+        new Pose3d(),
+        new Pose3d()
+      }
+    );
   }
     
   /** Returns the autonomous command. */
