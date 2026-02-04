@@ -199,6 +199,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Deploy Intake", new IntakeDeploy(m_intakeDeploy));
     NamedCommands.registerCommand("Stow Intake", new IntakeStow(m_intakeDeploy));
     NamedCommands.registerCommand("Run Intake", runIntakeRollers);
+    NamedCommands.registerCommand("Home Hood", new HomeHood(m_hood));
   }
 
   private void configureLogger(){

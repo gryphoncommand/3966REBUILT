@@ -1,10 +1,14 @@
 package frc.robot.subsystems.Hood;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
@@ -73,6 +77,7 @@ public class HoodSimTalonFX extends SubsystemBase implements HoodIO {
 
         SmartDashboard.putData("Hood Mech", mech2d);
         SmartDashboard.putNumber("Hood Angle (deg)", getAngle());
+        Logger.recordOutput("FinalComponentPoses/Hood Position", new Pose3d(0, 0.09, 0.41, new Rotation3d(Units.degreesToRadians(-getAngle() + ShooterConstants.kHoodMinAngleDeg), 0.0, 0.0)));
     }
 
 

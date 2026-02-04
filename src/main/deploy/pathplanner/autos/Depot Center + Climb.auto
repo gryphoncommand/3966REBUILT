@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Test 1"
+                  "pathName": "DepotLinePickup"
                 }
               },
               {
@@ -68,7 +68,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Shot to climb"
+                  "pathName": "Depot shot to climb"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Home Hood"
                 }
               }
             ]

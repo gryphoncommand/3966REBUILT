@@ -87,7 +87,7 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
 
         SmartDashboard.putData("Intake Deploy Mech", mech2d);
         SmartDashboard.putNumber("Intake Deploy Angle (deg)", getPosition());
-        Logger.recordOutput("Intake Position", new Pose3d(-0.29, 0, 0.33, new Rotation3d(0.0, Units.degreesToRadians(getPosition()), 0.0)));
+        Logger.recordOutput("FinalComponentPoses/Intake Position", new Pose3d(-0.29, 0, 0.33, new Rotation3d(0.0, Units.degreesToRadians(getPosition()), 0.0)));
     }
 
     /* ---------------- IntakeDeployIO ---------------- */
