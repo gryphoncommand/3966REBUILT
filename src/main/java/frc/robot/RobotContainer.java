@@ -32,7 +32,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -41,7 +40,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -125,6 +123,12 @@ public class RobotContainer {
     m_driverController.leftBumper().onTrue(new IntakeStow(m_intakeDeploy));
 
     m_driverController.b().whileTrue(new HomeHood(m_hood));
+
+    m_operatorController.start().onTrue(
+      new InstantCommand(()->{
+        Logger.recordOutput("Tuning/Current Shooter State", "new ShooterState(" +  String.valueOf(m_drive.getDistanceToPose(AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
+      })
+    );
     
 
     // m_operatorController.a().onTrue(new InstantCommand(m_drive::stop, m_drive));
