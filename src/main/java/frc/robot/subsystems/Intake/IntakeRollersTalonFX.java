@@ -14,8 +14,6 @@ import frc.robot.Constants.IntakeConstants;
 public class IntakeRollersTalonFX extends SubsystemBase {
   private final TalonFX rollerMotor = new TalonFX(IntakeConstants.kRollerCanID);
 
-  private int simBalls = 8;
-
   public VelocityVoltage m_controlRequest = new VelocityVoltage(3000);
 
   private double targetReference = 0;
@@ -73,26 +71,4 @@ public class IntakeRollersTalonFX extends SubsystemBase {
   }
 
   // TODO: These should go to the spindexer
-
-  public void addBall(){
-        simBalls += 1;
-        if (simBalls >= 51){
-            simBalls = 50;
-        }
-    }
-
-    public void removeBall(){
-        simBalls -= 1;
-        if (simBalls < 0){
-            simBalls = 0;
-        }
-    }
-
-    public boolean hasBalls(){
-        return simBalls > 0;
-    }
-
-    public boolean isFull(){
-      return simBalls >= 50;
-    }
 }

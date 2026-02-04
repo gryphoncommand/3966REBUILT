@@ -218,6 +218,19 @@ public final class Constants {
     public static double kIntakeLengthMeters = Units.inchesToMeters(14.678);
   }
 
+  public static class PassthroughConstants {
+    public static final int kPassthroughCanId = 13;
+    // TODO: fake and gay number
+    public static final double kRunVelocity = 1000;
+  }
+
+  public static class SpindexerConstants {
+    public static final int kSpindexerCanId = 15;
+    // Current draw in amps of active spindexer with at least 1 fuel
+    // TODO: also fake and gay
+    public static final double kActiveCurrent = 20;
+  }
+
   public static class AlignmentConstants {
     public static final PIDController turnPID = new PIDController(3.0, 0.0, 0.0);
     static {turnPID.enableContinuousInput(-Math.PI, Math.PI);}

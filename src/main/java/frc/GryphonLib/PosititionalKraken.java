@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PosititionalKraken extends SubsystemBase {
     
-    TalonFX krakenMotor = new TalonFX(13);
+    TalonFX krakenMotor = new TalonFX(62);
     TalonFXConfiguration krakenConfig = new TalonFXConfiguration();
 
     double targetReference;

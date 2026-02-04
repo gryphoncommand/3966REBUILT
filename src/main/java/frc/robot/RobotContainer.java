@@ -19,6 +19,8 @@ import frc.robot.commands.Intake.IntakeDeploy;
 import frc.robot.commands.Intake.IntakeStow;
 import frc.robot.commands.Intake.RunIntakeRollers;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Passthrough;
+import frc.robot.subsystems.Spindexer;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Flywheel.FlywheelSparkFlex;
@@ -60,6 +62,8 @@ public class RobotContainer {
   private final FlywheelIO m_flywheel = Robot.isReal() ? new FlywheelSparkFlex() : new FlywheelSimTalonFX();
   private final HoodIO m_hood = Robot.isReal() ? new HoodTalonFX() : new HoodSimTalonFX();
   private final IntakeRollersTalonFX m_intakeRollers = new IntakeRollersTalonFX();
+  private final Passthrough m_passthrough = new Passthrough();
+  private final Spindexer m_spindexer = new Spindexer();
 
   private Command runIntakeRollers = new RunIntakeRollers(m_intakeRollers);
 
@@ -114,7 +118,7 @@ public class RobotContainer {
       .onFalse(new RunCommand(()->m_flywheel.setVelocity(1000), m_flywheel))
       .onFalse(new HomeHood(m_hood));
 
-    m_driverController.rightTrigger().whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, 0));
+    m_driverController.rightTrigger().whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_passthrough, m_spindexer, 0));
 
     m_driverController.leftTrigger()
       .onTrue(new IntakeDeploy(m_intakeDeploy))
@@ -172,8 +176,8 @@ public class RobotContainer {
 
     instance.registerIntake(
         -(0.635 + 2*IntakeConstants.kIntakeLengthMeters)/2, -(0.635)/2, -(0.737)/2, (0.737)/2, // robot-centric coordinates for bounding box
-        () -> (SmartDashboard.getBoolean("Intake Deployed", true) && !m_intakeRollers.isFull()), // (optional) BooleanSupplier for whether the intake should be active at a given moment
-        new Runnable() {public void run() {m_intakeRollers.addBall();};}); // (optional) Runnable called whenever a fuel is intaked
+        () -> (SmartDashboard.getBoolean("Intake Deployed", true) && !m_spindexer.isFull()), // (optional) BooleanSupplier for whether the intake should be active at a given moment
+        new Runnable() {public void run() {m_spindexer.addBall();};}); // (optional) Runnable called whenever a fuel is intaked
 
     instance.start();
 
@@ -193,7 +197,7 @@ public class RobotContainer {
   }
 
   public void configureNamedCommands(){
-    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers));
+    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_passthrough, m_spindexer));
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
         new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),

@@ -11,11 +11,14 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.FuelSim;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Passthrough;
+import frc.robot.subsystems.Spindexer;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Hood.HoodIO;
 import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
@@ -27,7 +30,8 @@ public class Shoot extends Command {
     private final HoodIO hood;
     private final FlywheelIO flywheel;
     private final IntakeRollersTalonFX intakeRollerData;
-    // private final PassthroughIO passthrough;
+    private final Passthrough passthrough;
+    private final Spindexer spindexer;
     private final double feedRPM;
     private final boolean stopFlywheelOnEnd;
     private double lastShotTime = 0;
@@ -42,12 +46,13 @@ public class Shoot extends Command {
      * @param feedRPM roller velocity to use when feeding
      * @param stopFlywheelOnEnd if true, zeroes the flywheel when the command ends
      */
-    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, double feedRPM, boolean stopFlywheelOnEnd) {
+    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Passthrough passthrough, Spindexer spindexer, double feedRPM, boolean stopFlywheelOnEnd) {
         this.driveData = driveData;
         this.hood = hood;
         this.flywheel = flywheel;
         this.intakeRollerData = rollers;
-        // this.passthrough = passthrough;
+        this.passthrough = passthrough;
+        this.spindexer = spindexer;
         this.feedRPM = feedRPM;
         this.stopFlywheelOnEnd = stopFlywheelOnEnd;
 
@@ -55,7 +60,7 @@ public class Shoot extends Command {
             addRequirements(flywheel);
         }
 
-        // addRequirements(passthrough);
+        addRequirements(passthrough);
     }
 
     private Translation3d launchVel(LinearVelocity vel, Angle angle) {
@@ -78,15 +83,15 @@ public class Shoot extends Command {
     /**
      * Convenience constructor that leaves the flywheel running when command ends.
      */
-    public Shoot(DriveSubsystem drive, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, double feedRPM) {
-        this(drive, hood, flywheel, rollers, feedRPM, false);
+    public Shoot(DriveSubsystem drive, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Passthrough passthrough, Spindexer spindexer, double feedRPM) {
+        this(drive, hood, flywheel, rollers, passthrough, spindexer, feedRPM, false);
     }
 
     @Override
     public void initialize() {
         setName("Shoot");
         // Rollers start stopped until shooter is ready.
-        // passthrough.stop();
+        passthrough.set(0);
     }
 
     @Override
@@ -97,9 +102,9 @@ public class Shoot extends Command {
         boolean aligned = driveData.getAligned();
         
         if (Robot.isSimulation()){ 
-            double now = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+            double now = Timer.getFPGATimestamp();
 
-            if (hoodReady && flyReady && aligned && now - lastShotTime > 0.12 && intakeRollerData.hasBalls()) {
+            if (hoodReady && flyReady && aligned && now - lastShotTime > 0.12 && spindexer.hasBalls()) {
                 double kShooterEfficiency = 0.7;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
@@ -112,7 +117,7 @@ public class Shoot extends Command {
                 FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle())));
 
                 lastShotTime = now;
-                intakeRollerData.removeBall();
+                spindexer.removeBall();
             }
             
         }

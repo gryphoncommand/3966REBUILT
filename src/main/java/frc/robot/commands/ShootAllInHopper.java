@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -14,9 +15,13 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.FuelSim;
+import frc.robot.Constants.PassthroughConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.SpindexerConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Passthrough;
+import frc.robot.subsystems.Spindexer;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Hood.HoodIO;
 import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
@@ -32,16 +37,20 @@ public class ShootAllInHopper extends Command {
 	private final HoodIO hood;
 	private final FlywheelIO flywheel;
 	private final IntakeRollersTalonFX intakeRollers;
+	private final Passthrough passthrough;
+	private final Spindexer spindexer;
+	private final Debouncer endTrigger = new Debouncer(1);
 
 	private double lastShotTime = 0.0;
 	private static final double kShotIntervalSim = 0.15; // seconds between shots
 
-	public ShootAllInHopper(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers) {
+	public ShootAllInHopper(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Passthrough passthrough, Spindexer spindexer) {
 		this.driveData = driveData;
 		this.hood = hood;
 		this.flywheel = flywheel;
 		this.intakeRollers = rollers;
-
+		this.passthrough = passthrough;
+		this.spindexer = spindexer;
 	}
 
 	@Override
@@ -57,7 +66,7 @@ public class ShootAllInHopper extends Command {
 		if (Robot.isSimulation()) {
 			double now = Timer.getFPGATimestamp();
 
-			if (hoodReady && flyReady && now - lastShotTime > kShotIntervalSim && intakeRollers.hasBalls()) {
+			if (hoodReady && flyReady && now - lastShotTime > kShotIntervalSim && spindexer.hasBalls()) {
 				double kShooterEfficiency = 0.7;
 
 				double wheelRPM = flywheel.getVelocity(); // RPM
@@ -72,11 +81,11 @@ public class ShootAllInHopper extends Command {
 				FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle())));
 
 				lastShotTime = now;
-				intakeRollers.removeBall();
+				spindexer.removeBall();
 			} else {
                 if (hoodReady && flyReady){
                     // I dunno what i was thinking here lol
-                    //passthrough.run();
+                    passthrough.setVelocity(PassthroughConstants.kRunVelocity);
                 }
             }
 		}
@@ -102,7 +111,11 @@ public class ShootAllInHopper extends Command {
 	@Override
 	public boolean isFinished() {
 		// Finish when there are no more balls recorded in the intake/feeder.
-		return !intakeRollers.hasBalls();
+		if (Robot.isReal()) {
+			return endTrigger.calculate(spindexer.getCurrent() < SpindexerConstants.kActiveCurrent);
+		} else {
+			return !spindexer.hasBalls();
+		}
 	}
 
 	@Override
