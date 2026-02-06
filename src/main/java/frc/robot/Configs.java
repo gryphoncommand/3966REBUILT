@@ -108,11 +108,11 @@ public final class Configs {
             var slot0Configs = intakeRollerConfig.Slot0;
             // PID + FF tuning
             slot0Configs.kS = 0.0;
-            slot0Configs.kV = 0.0;
+            slot0Configs.kV = 0.12;
             slot0Configs.kA = 0.0;
-            slot0Configs.kP = 0.1;
-            slot0Configs.kI = 0.001; 
-            slot0Configs.kD = 5.0;
+            slot0Configs.kP = 0.0;
+            slot0Configs.kI = 0.0;
+            slot0Configs.kD = 0.0;
 
             intakeRollerConfig.CurrentLimits.withSupplyCurrentLimitEnable(false);
             
@@ -182,7 +182,7 @@ public final class Configs {
                 flywheelConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains need to them for your own robot!
-                    .pid(0.2, 0.01, 0)
+                    .pid(0.0001, 0, 0.0000005)
                     .outputRange(-0.95, 0.95);
 
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
@@ -191,7 +191,7 @@ public final class Configs {
                 slot0ConfigsDrive.kV = 0.0;
                 slot0ConfigsDrive.kA = 0.0;
                 slot0ConfigsDrive.kP = 0.0;
-                slot0ConfigsDrive.kI = 1.0; 
+                slot0ConfigsDrive.kI = 1.0;
                 slot0ConfigsDrive.kD = 0.0;
 
                 flywheelFXConfig.CurrentLimits.withSupplyCurrentLimitEnable(false);

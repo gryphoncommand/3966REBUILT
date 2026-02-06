@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -19,6 +20,7 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 
 import frc.robot.Configs;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
 public class MAXSwerveModule implements SwerveModuleIO {
@@ -33,6 +35,8 @@ public class MAXSwerveModule implements SwerveModuleIO {
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
   private final VelocityVoltage m_controlRequest = new VelocityVoltage(0);
+  private final SlewRateLimiter m_driveRateLimiter = new SlewRateLimiter(DriveConstants.kMaxAccelerationMetersPerSecondSquared);
+
   /**
    * Constructs a MAXSwerveModule and configures the driving and turning motor,
    * encoder, and PID controller. This configuration is specific to the REV
@@ -95,6 +99,7 @@ public class MAXSwerveModule implements SwerveModuleIO {
   public void setDesiredState(SwerveModuleState desiredState) {
     // Apply chassis angular offset to the desired state.
     SwerveModuleState correctedDesiredState = new SwerveModuleState();
+    desiredState.speedMetersPerSecond = m_driveRateLimiter.calculate(desiredState.speedMetersPerSecond);
     correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
     correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
 

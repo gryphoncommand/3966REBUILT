@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -22,6 +23,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import frc.robot.Configs;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
 public class SimSwerveModule implements SwerveModuleIO {
@@ -31,6 +33,8 @@ public class SimSwerveModule implements SwerveModuleIO {
   private final TalonFXSimState m_turningSim;
 
   final VelocityVoltage m_driveRequest = new VelocityVoltage(0);
+  private final SlewRateLimiter m_driveRateLimiter = new SlewRateLimiter(DriveConstants.kMaxAccelerationMetersPerSecondSquared);
+
   // final VelocityVoltage m_driveRequest = new VelocityVoltage(0);
   private final PositionVoltage m_turnControlRequest = new PositionVoltage(0);
 
@@ -121,6 +125,7 @@ public class SimSwerveModule implements SwerveModuleIO {
   public void setDesiredState(SwerveModuleState desiredState) {
     // Apply chassis angular offset to the desired state.
     SwerveModuleState correctedDesiredState = new SwerveModuleState();
+    desiredState.speedMetersPerSecond = m_driveRateLimiter.calculate(desiredState.speedMetersPerSecond);
     correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
     correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
 
