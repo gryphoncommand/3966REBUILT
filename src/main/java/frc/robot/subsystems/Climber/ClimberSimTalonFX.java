@@ -1,9 +1,13 @@
 package frc.robot.subsystems.Climber;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
@@ -20,128 +24,115 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Configs;
-import frc.robot.Constants.ShooterConstants;
+import edu.wpi.first.units.measure.Distance;
 
-public class ClimberSimTalonFX extends SubsystemBase {
+import frc.robot.Constants.ClimberConstants;
 
-    private final TalonFX hoodMotor =
-        new TalonFX(ShooterConstants.kHoodCANID);
-    private final TalonFXSimState hoodSimState =
-        hoodMotor.getSimState();
+public class ClimberSimTalonFX extends SubsystemBase implements ClimberIO {
 
-    double jKgMS = 0.001;// SingleJointedArmSim.estimateMOI(ShooterConstants.kHoodLengthMeters, Units.lbsToKilograms(1.5));
-    
+    private final TalonFX climberMotor = new TalonFX(ClimberConstants.kClimberCanID);
+    private final TalonFXSimState climberSimState = climberMotor.getSimState();
 
-    private final SingleJointedArmSim hoodSim = new SingleJointedArmSim(DCMotor.getKrakenX44(1), ShooterConstants.kHoodGearRatio, jKgMS, ShooterConstants.kHoodLengthMeters, Units.degreesToRadians(ShooterConstants.kHoodMinAngleDeg), Units.degreesToRadians(ShooterConstants.kHoodMaxAngleDeg), false, Units.degreesToRadians(ShooterConstants.kHoodMinAngleDeg));
+    // Moment of inertia for the spool (arbitrary)
+    private final double jKgMS = 10;
 
-    private double targetAngleDeg = 0;
+    // Model climber as a single-jointed arm sim
+    private final SingleJointedArmSim climberSim = new SingleJointedArmSim(
+        DCMotor.getKrakenX60(1),
+        ClimberConstants.kGearRatio,
+        jKgMS,
+        1.0, // unit length in meters, will scale
+        0,   // min position
+        Units.inchesToMeters(10), // max climber height
+        false,
+        0
+    );
 
-    private final Mechanism2d mech2d = new Mechanism2d(0.6, 0.6);
-    private final MechanismRoot2d root =
-        mech2d.getRoot("HoodRoot", 0.3, 0.3);
-    private final MechanismLigament2d hoodVisual =
-        root.append(new MechanismLigament2d("Hood", 0.25, 0, 10, new Color8Bit(Color.kBlack)));
+    private Distance targetPosition = Inches.of(0);
 
-    public ClimberSimTalonFX(){
-        hoodMotor.getConfigurator().apply(Configs.Hood.HoodConfig);
-        double rotorPos = hoodSim.getAngleRads() / (2 * Math.PI)* ShooterConstants.kHoodGearRatio;
+    private final Mechanism2d mech2d = new Mechanism2d(0.2, 0.6);
+    private final MechanismRoot2d root = mech2d.getRoot("climberRoot", 0.1, 0.0);
+    private final MechanismLigament2d climberVisual =
+        root.append(new MechanismLigament2d("climber", 0.0, 0, 10, new Color8Bit(Color.kRed)));
 
-        hoodSimState.setRawRotorPosition(rotorPos);
+    public ClimberSimTalonFX() {
+        double rotorPos = climberSim.getAngleRads() / (2 * Math.PI) * ClimberConstants.kGearRatio;
+        climberSimState.setRawRotorPosition(rotorPos);
     }
-    
-    
+
+    @Override
     public void periodic() {
-        hoodSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+        // Update sim with motor voltage
+        climberSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+        climberSim.setInputVoltage(climberSimState.getMotorVoltage());
+        climberSim.update(0.02); // 20 ms timestep
 
-        // Feed TalonFX output into physics sim
-        hoodSim.setInputVoltage(hoodSimState.getMotorVoltage());
-        hoodSim.update(0.02);
+        // Sync sim state back to TalonFX sensor
+        double rotorPosition = climberSim.getAngleRads() / (2 * Math.PI) * ClimberConstants.kGearRatio;
+        double rotorVelocity = climberSim.getVelocityRadPerSec() / (2 * Math.PI) * ClimberConstants.kGearRatio;
 
-        // Sync sim position back to TalonFX sensor
-        double rotorPosition =
-            hoodSim.getAngleRads() / (2 * Math.PI)
-            * ShooterConstants.kHoodGearRatio;
+        climberSimState.setRawRotorPosition(rotorPosition);
+        climberSimState.setRotorVelocity(rotorVelocity);
 
-        double rotorVelocity =
-            hoodSim.getVelocityRadPerSec() / (2 * Math.PI)
-            * ShooterConstants.kHoodGearRatio;
+        // Update visualization
+        climberVisual.setLength(Units.metersToInches(climberSim.getAngleRads()) * 0.5); // scaled
+        SmartDashboard.putData("Climber Mech", mech2d);
+        SmartDashboard.putNumber("Climber Position (in)", getPosition().in(Inches));
 
-        hoodSimState.setRawRotorPosition(rotorPosition);
-        hoodSimState.setRotorVelocity(rotorVelocity);
-
-
-        hoodVisual.setAngle(
-            90 - Units.radiansToDegrees(hoodSim.getAngleRads())
-        );
-
-        SmartDashboard.putData("Hood Mech", mech2d);
-        SmartDashboard.putNumber("Hood Angle (deg)", getAngle());
-        Logger.recordOutput("FinalComponentPoses/Hood Position", new Pose3d(0, 0.09, 0.41, new Rotation3d(Units.degreesToRadians(-getAngle() + ShooterConstants.kHoodMinAngleDeg), 0.0, 0.0)));
+        Logger.recordOutput("FinalComponentPoses/Climber Position", new Pose3d(0,0,getPosition().in(Meters), new Rotation3d()));
     }
 
-
-    
+    /** Percent output control (-1 to 1) */
+    @Override
     public void set(double speed) {
-        hoodMotor.set(speed);
+        climberMotor.set(speed);
     }
 
-    
-    public void setAngle(double degrees) {
-        targetAngleDeg = degrees;
-        SmartDashboard.putNumber("Requested Hood Position", degrees);
-        hoodMotor.setControl(
-            new PositionVoltage(
-                Units.degreesToRotations(degrees)
-                * ShooterConstants.kHoodGearRatio
-            ).withSlot(0)
-        );
+    /** Set climber target in Distance units */
+    @Override
+    public void setPosition(Distance point) {
+        targetPosition = point;
+        double rotations = point.in(Inches) * ClimberConstants.kMotorRotationsPerInch;
+        climberMotor.setControl(new PositionVoltage(rotations).withSlot(0));
+        SmartDashboard.putNumber("Requested Climber Position (in)", point.in(Inches));
     }
 
-    
-    public void stow() {
-        SmartDashboard.putNumber("Requested Hood Position", ShooterConstants.kHoodMinAngleDeg);
-        hoodMotor.setControl(
-            new PositionVoltage(
-                Units.degreesToRotations(ShooterConstants.kHoodMinAngleDeg)
-                * ShooterConstants.kHoodGearRatio
-            ).withSlot(0)
-        );
-    }
-
-    
+    /** Direct voltage control */
+    @Override
     public void setVoltage(double volts) {
-        hoodMotor.setControl(new VoltageOut(volts));
+        climberMotor.setControl(new VoltageOut(volts));
     }
 
-    
-    public void setEncoderPosition(double degrees) {
-        hoodSim.setState(
-            Units.degreesToRadians(degrees), 0);
+    /** Reset encoder position (inches) */
+    @Override
+    public void setEncoderPosition(double inches) {
+        climberSim.setState(Units.inchesToMeters(inches), 0);
     }
 
-    
-    public double getAngle() {
-        return Units.radiansToDegrees(hoodSim.getAngleRads());
+    /** Current climber position */
+    @Override
+    public Distance getPosition() {
+        return Inches.of(Units.metersToInches(climberSim.getAngleRads()));
     }
 
-    
-    public boolean atTarget(double thresholdDeg) {
-        return Math.abs(getAngle() - targetAngleDeg) < thresholdDeg;
+    /** True if within threshold of target */
+    @Override
+    public boolean atTarget(Distance threshold) {
+        return Math.abs(getPosition().in(Inches) - targetPosition.in(Inches)) < threshold.in(Inches);
     }
 
-    
+    @Override
     public SubsystemBase returnSubsystem() {
         return this;
     }
 
-    
+    @Override
     public double getStatorCurrent() {
-        return hoodMotor.getStatorCurrent().getValueAsDouble();
+        return climberMotor.getStatorCurrent().getValueAsDouble();
     }
 
-    
+    /** Stop the motor */
     public void stop() {
-        hoodMotor.setControl(new com.ctre.phoenix6.controls.NeutralOut());
+        climberMotor.setControl(new NeutralOut());
     }
 }

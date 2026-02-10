@@ -10,6 +10,7 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AlignToGoal;
+import frc.robot.commands.DeployClimber;
 import frc.robot.commands.HomeHood;
 import frc.robot.commands.PrepareSOTM;
 import frc.robot.commands.Shoot;
@@ -19,9 +20,14 @@ import frc.robot.commands.Intake.IntakeDeploy;
 import frc.robot.commands.Intake.IntakeStow;
 import frc.robot.commands.Intake.RunIntakeRollers;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Climber.ClimberIO;
+import frc.robot.subsystems.Climber.ClimberSimTalonFX;
+import frc.robot.subsystems.Climber.ClimberTalonFX;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Flywheel.FlywheelSparkFlex;
+
+import static edu.wpi.first.units.Units.Inches;
 
 import java.util.Set;
 
@@ -60,6 +66,7 @@ public class RobotContainer {
   private final FlywheelIO m_flywheel = Robot.isReal() ? new FlywheelSparkFlex() : new FlywheelSimTalonFX();
   private final HoodIO m_hood = Robot.isReal() ? new HoodTalonFX() : new HoodSimTalonFX();
   private final IntakeRollersTalonFX m_intakeRollers = new IntakeRollersTalonFX();
+  private final ClimberIO m_climber = new ClimberSimTalonFX();
 
   private Command runIntakeRollers = new RunIntakeRollers(m_intakeRollers);
 
@@ -123,6 +130,8 @@ public class RobotContainer {
     m_driverController.leftBumper().onTrue(new IntakeStow(m_intakeDeploy));
 
     m_driverController.b().whileTrue(new HomeHood(m_hood));
+
+    m_driverController.povDown().toggleOnTrue(new DeployClimber(m_climber));
 
     m_operatorController.start().onTrue(
       new InstantCommand(()->{

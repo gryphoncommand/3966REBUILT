@@ -250,4 +250,12 @@ public final class Constants {
     public static final double blue = 0.92;
     public static final double green = 0.73;
   }
+
+  public static class ClimberConstants{
+    public static double kGearRatio = 100;
+    // Base spool/travel step (0.124) divided by gearbox ratio gives inches per motor rotation
+    public static double kInchesPerMotorRotation = 0.124 / kGearRatio;
+    public static double kMotorRotationsPerInch = kGearRatio / 0.124;
+    public static int kClimberCanID = 13;
+  }
 }

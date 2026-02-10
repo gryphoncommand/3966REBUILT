@@ -12,6 +12,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.ClimberConstants;
 
 public final class Configs {
     public static final class MAXSwerveModule {
@@ -228,6 +229,27 @@ public final class Configs {
                 HoodConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
                 HoodConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Constants.ShooterConstants.kHoodMinAngleDeg * ShooterConstants.kHoodGearRatio / 360.0;
                 HoodConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        }
+    }
+
+    public static final class Climber {
+        public static final TalonFXConfiguration ClimberConfig = new TalonFXConfiguration();
+
+        static {
+                var slot0Configs = ClimberConfig.Slot0;
+                // PID + FF tuning
+                slot0Configs.kS = 0;
+                slot0Configs.kV = 0;
+                slot0Configs.kA = 0;
+                slot0Configs.kP = 1.0;
+                slot0Configs.kI = 0;
+                slot0Configs.kD = 0;
+
+                ClimberConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+                
+                // Motor behavior
+                ClimberConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        
         }
     }
 }
