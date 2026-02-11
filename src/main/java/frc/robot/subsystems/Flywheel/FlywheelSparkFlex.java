@@ -15,7 +15,7 @@ import frc.robot.Constants.ShooterConstants;
 
 public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   private final SparkFlex shooterMotor = new SparkFlex(ShooterConstants.kFlywheelCanID, MotorType.kBrushless);
-  private final SparkClosedLoopController closedLoopController = shooterMotor.getClosedLoopController();
+  private final SparkClosedLoopController pid = shooterMotor.getClosedLoopController();
   private final RelativeEncoder encoder = shooterMotor.getEncoder();
 
   private double targetReference = 0;
@@ -28,6 +28,7 @@ public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Shooter Velocity (RPM)", getVelocity());
+    SmartDashboard.putNumber("Desired Flywheel Speed", pid.getSetpoint());
   }
 
   @Override
@@ -38,12 +39,12 @@ public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   @Override
   public void setVelocity(double rpm) {
     targetReference = rpm;
-    closedLoopController.setSetpoint(rpm, ControlType.kVelocity);
+    pid.setSetpoint(rpm, ControlType.kVelocity);
     currentControlType = ControlType.kVelocity;
   }
 
   public void setPosition(double position){
-    closedLoopController.setSetpoint(position, ControlType.kPosition);
+    pid.setSetpoint(position, ControlType.kPosition);
     
     targetReference = position;
     currentControlType = ControlType.kPosition;
