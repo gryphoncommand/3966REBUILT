@@ -1,9 +1,18 @@
 package frc.robot.subsystems.Hood;
 
+import static edu.wpi.first.units.Units.Volts;
+
+import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
@@ -31,25 +40,27 @@ public class HoodTalonFX extends SubsystemBase implements HoodIO {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Hood Angle (deg)", getAngle());
+    SmartDashboard.putNumber("Applied Hood Volts", hoodMotor.getMotorVoltage().getValue().in(Volts));
+    Logger.recordOutput("FinalComponentPoses/Hood Position", new Pose3d(0, 0.09, 0.41, new Rotation3d(Units.degreesToRadians(-getAngle() + ShooterConstants.kHoodMinAngleDeg), 0.0, 0.0)));
   }
 
   @Override
   public void set(double speed) {
-    hoodMotor.set(speed);
+    setVoltage(speed * hoodMotor.getSupplyVoltage().getValue().in(Volts));
   }
 
   @Override
   public void setAngle(double degrees) {
     targetAngleDeg = degrees;
     SmartDashboard.putNumber("Requested Hood Position", degrees);
-      hoodMotor.setControl(positionRequest.withPosition(degrees * kRotationsPerDegree));
+    hoodMotor.setControl(positionRequest.withPosition(degrees * kRotationsPerDegree));
   }
 
   @Override
-    public void stow() {
-      SmartDashboard.putNumber("Requested Hood Position", ShooterConstants.kHoodMinAngleDeg);
-      hoodMotor.setControl(positionRequest.withPosition(ShooterConstants.kHoodMinAngleDeg * kRotationsPerDegree));
-    }
+  public void stow() {
+    SmartDashboard.putNumber("Requested Hood Position", ShooterConstants.kHoodMinAngleDeg);
+    hoodMotor.setControl(positionRequest.withPosition(ShooterConstants.kHoodMinAngleDeg * kRotationsPerDegree));
+  }
 
   @Override
   public void setVoltage(double volts) {

@@ -139,7 +139,7 @@ public final class Constants {
   }
 
   public static class VisionConstants {
-    public static final String kCameraName1 = "limelight";
+    public static final String kCameraName1 = "ShooterLL";
     public static final String kCameraName2 = "ArduR";
     public static final String kCameraName3 = "ArduL";
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center,
@@ -148,7 +148,7 @@ public final class Constants {
     private static final double camYaw1 = Units.degreesToRadians(90);
     
     public static final Transform3d kRobotToCam1 =
-            new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(14), Units.inchesToMeters(10)), new Rotation3d(0, camPitch1, camYaw1));
+            new Transform3d(new Translation3d(0.301, 0.254, 0.401), new Rotation3d(0, camPitch1, camYaw1));
     public static final Transform3d kCamToRobot1 = kRobotToCam1.inverse();
 
     // some of these probably need to be flipped
@@ -179,10 +179,10 @@ public final class Constants {
     public static int kFollowerWheelCanID = 10;
     public static int kHoodCANID = 11;
 
-    public static double kHoodGearRatio = 200;
+    public static double kHoodGearRatio = 198/10;
     public static double kHoodLengthMeters = Units.inchesToMeters(5);
 
-    public static double kHoodMaxAngleDeg = 55.44;
+    public static double kHoodMaxAngleDeg = 52.5;
     public static double kHoodMinAngleDeg = 22.6;
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
 

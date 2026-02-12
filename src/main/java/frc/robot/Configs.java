@@ -207,24 +207,33 @@ public final class Configs {
         public static final TalonFXConfiguration HoodConfig = new TalonFXConfiguration();
 
         static {
-                var slot0ConfigsDrive = HoodConfig.Slot0;
+                var slot0Configs = HoodConfig.Slot0;
                 // PID + FF tuning
-                slot0ConfigsDrive.kS = 0;
-                slot0ConfigsDrive.kV = 0;
-                slot0ConfigsDrive.kA = 0;
-                slot0ConfigsDrive.kP = 0.2;
-                slot0ConfigsDrive.kI = 0; 
-                slot0ConfigsDrive.kD = 0;
+                slot0Configs.kS = 0;
+                slot0Configs.kV = 0;
+                slot0Configs.kA = 0;
+                slot0Configs.kP = 1.6;
+                slot0Configs.kI = 0; 
+                slot0Configs.kD = 0;
+                slot0Configs.kG = 0.3;
 
                 HoodConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
                 HoodConfig.CurrentLimits.withSupplyCurrentLimit(50).withSupplyCurrentLimitEnable(true);
 
-                HoodConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+                HoodConfig.CurrentLimits.StatorCurrentLimit = 50.0;
                 HoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
+                HoodConfig.MotorOutput.PeakForwardDutyCycle = 0.13;
+                HoodConfig.MotorOutput.PeakReverseDutyCycle = 0.13;
+
+                HoodConfig.Voltage.PeakForwardVoltage = 1;
+                HoodConfig.Voltage.PeakReverseVoltage = -1;
                 
                 // Motor behavior
                 HoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+                HoodConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
                 HoodConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Constants.ShooterConstants.kHoodMaxAngleDeg * ShooterConstants.kHoodGearRatio / 360.0;
                 HoodConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;

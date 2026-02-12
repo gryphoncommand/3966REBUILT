@@ -33,6 +33,6 @@ public class SetShooterToDefinedState extends Command {
 
   @Override
   public boolean isFinished() {
-    return hood.atTarget(3.0) && flywheel.atTarget(50);
+    return hood.atTarget(1.0) && flywheel.atTarget(30);
   }
 }

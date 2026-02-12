@@ -1,8 +1,13 @@
 package frc.robot.subsystems.Hood;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Volts;
+
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -78,12 +83,13 @@ public class HoodSimTalonFX extends SubsystemBase implements HoodIO {
         SmartDashboard.putData("Hood Mech", mech2d);
         SmartDashboard.putNumber("Hood Angle (deg)", getAngle());
         Logger.recordOutput("FinalComponentPoses/Hood Position", new Pose3d(0, 0.09, 0.41, new Rotation3d(Units.degreesToRadians(-getAngle() + ShooterConstants.kHoodMinAngleDeg), 0.0, 0.0)));
+        SmartDashboard.putNumber("Applied Hood Volts", hoodSimState.getMotorVoltage());
     }
 
 
     @Override
     public void set(double speed) {
-        hoodMotor.set(speed);
+        setVoltage(speed * hoodMotor.getSupplyVoltage().getValue().in(Volts));
     }
 
     @Override

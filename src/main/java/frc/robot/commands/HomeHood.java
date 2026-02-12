@@ -19,7 +19,7 @@ public class HomeHood extends Command {
   public void initialize() {
     timer.restart();
     // Drive slowly downwards
-    hood.setVoltage(-1.0); 
+    hood.setVoltage(-0.2); 
   }
 
   @Override
@@ -29,8 +29,7 @@ public class HomeHood extends Command {
 
   @Override
   public boolean isFinished() {
-    // Wait 0.5s for the motor to start moving, then check if current > 20 Amps
-    return timer.get() > 0.5 && hood.getStatorCurrent() > 20.0;
+    return timer.get() > 0.5 && hood.getStatorCurrent() < -2;
   }
 
   @Override

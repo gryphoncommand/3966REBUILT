@@ -30,7 +30,7 @@ public class IntakeDeploySparkFlex extends SubsystemBase implements IntakeDeploy
     public SparkFlex intakeDeployMotor = new SparkFlex(IntakeConstants.kDeployCanID, MotorType.kBrushless);
     public RelativeEncoder intakeDeployEncoder = intakeDeployMotor.getEncoder();
     public SparkClosedLoopController pid;
-    public AbsoluteEncoder m_absoluteEncoder = intakeDeployMotor.getAbsoluteEncoder();
+    public AbsoluteEncoder m_absoluteEncoder;
 
     private final Mechanism2d mech2d = new Mechanism2d(0.6, 0.6);
     private final MechanismRoot2d root =
@@ -48,6 +48,7 @@ public class IntakeDeploySparkFlex extends SubsystemBase implements IntakeDeploy
     }
 
     private void initializeEncoderFromAbsolute() {
+        m_absoluteEncoder = intakeDeployMotor.getAbsoluteEncoder();
         double absRotations = -m_absoluteEncoder.getPosition();
         double absDegrees = Units.rotationsToDegrees(absRotations);
         double gearRatio = 36.0 / 14.0;
@@ -62,6 +63,11 @@ public class IntakeDeploySparkFlex extends SubsystemBase implements IntakeDeploy
 
     @Override
     public void periodic() {
+        double absRotations = -m_absoluteEncoder.getPosition();
+        double absDegrees = Units.rotationsToDegrees(absRotations);
+        double gearRatio = 36.0 / 14.0;
+        double mechDegrees = (absDegrees * gearRatio) + 140;
+        SmartDashboard.putNumber("Absolute Encoder Reported Degrees", mechDegrees);
         SmartDashboard.putNumber("Intake Position", intakeDeployEncoder.getPosition());
         SmartDashboard.putNumber("Desired Intake Position", pid.getSetpoint());
         intakeVisual.setAngle(Units.rotationsToDegrees(getPosition()));
