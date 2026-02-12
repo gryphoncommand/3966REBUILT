@@ -176,7 +176,7 @@ public final class Constants {
 
   public static class ShooterConstants {
     public static int kFlywheelCanID = 9;
-    public static int kBackWheelCanID = 10;
+    public static int kFollowerWheelCanID = 10;
     public static int kHoodCANID = 11;
 
     public static double kHoodGearRatio = 200;
@@ -213,8 +213,9 @@ public final class Constants {
 
 
     public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (14/36)
-    public static double kIntakeDeployAngle = Units.degreesToRotations(0);
-    public static double kIntakeStowAngle = Units.degreesToRotations(140);
+    public static double kShaftToIntakeDeployRatio = 36/14;
+    public static double kIntakeDeployAngle = 0;
+    public static double kIntakeStowAngle = 140;
     public static int kDeployCanID = 14;
     public static double kIntakeLengthMeters = Units.inchesToMeters(14.678);
   }

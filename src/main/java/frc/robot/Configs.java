@@ -134,12 +134,12 @@ public final class Configs {
                         .closedLoopRampRate(0);
                 IntakeDeployConfig.encoder
                     .positionConversionFactor(IntakeConstants.kIntakeDeployGearRatio)
-                    .velocityConversionFactor(IntakeConstants.kIntakeDeployGearRatio);
+                    .velocityConversionFactor(IntakeConstants.kIntakeDeployGearRatio/60);
                 IntakeDeployConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(0.3, 0, 0)
-                    .outputRange(-0.9, 0.9);
+                    .pid(0.05, 0, 0)
+                    .outputRange(-0.4, 0.4);
         }
 
         public static final TalonFXConfiguration deploySimConfig = new TalonFXConfiguration();
