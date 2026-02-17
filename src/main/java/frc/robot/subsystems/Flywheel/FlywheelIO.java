@@ -11,10 +11,14 @@ public interface FlywheelIO extends Subsystem {
   void setVoltage(double volts);
 
   void setEncoderPosition(double position);
+  
+  double getPosition();
 
   double getVelocity();
 
   boolean atTarget(double threshold);
 
   SubsystemBase returnSubsystem();
+
+  double getVoltage();
 }

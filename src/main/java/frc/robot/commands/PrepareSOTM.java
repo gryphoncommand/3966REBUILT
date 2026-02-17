@@ -1,19 +1,22 @@
 package frc.robot.commands;
 
-    import edu.wpi.first.math.geometry.Pose2d;
-    import edu.wpi.first.math.kinematics.ChassisSpeeds;
-    import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-    import edu.wpi.first.wpilibj2.command.Command;
-    import frc.robot.subsystems.Hood.HoodIO;
-    import frc.robot.Constants.AlignmentConstants;
-    import frc.robot.subsystems.DriveSubsystem;
-    import frc.robot.subsystems.Flywheel.FlywheelIO;
-    import frc.GryphonLib.ShooterState;
-    import frc.GryphonLib.ShooterInterpolator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Hood.HoodIO;
+import frc.robot.Constants.AlignmentConstants;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Flywheel.FlywheelIO;
+import frc.GryphonLib.ShooterState;
+import frc.GryphonLib.ShooterInterpolator;
 
 import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.List;
+
+import org.photonvision.PhotonUtils;
 
 public class PrepareSOTM extends Command {
 
@@ -37,6 +40,7 @@ public class PrepareSOTM extends Command {
         addRequirements(hood.returnSubsystem(),
                 flywheel.returnSubsystem());
         SmartDashboard.putBoolean("SOTM Goal Calculating", false);
+        setName("Prepare SOTM");
     }
 
     @Override
@@ -47,19 +51,21 @@ public class PrepareSOTM extends Command {
 
         ChassisSpeeds shotMovement = driveData.getCurrentSpeedsFieldRelative();
 
+        Pose2d shooterPose = driveData.getCurrentPose().plus(ShooterConstants.kRobotToShooter);
+
         shotMovement.vxMetersPerSecond = -shotMovement.vxMetersPerSecond;
         shotMovement.vyMetersPerSecond = -shotMovement.vyMetersPerSecond;
         shotMovement.omegaRadiansPerSecond = 0;
 
-        double distanceToGoal = driveData.getDistanceToPose(hubPose);
+        double distanceToGoal = PhotonUtils.getDistanceToPose(shooterPose, hubPose);
         
         ShooterState state = ShooterInterpolator.interpolate(
                 table, distanceToGoal);
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 5; i++) {
             var timeOfFlight = Seconds.of(state.flightTimeSec());
             effectiveGoalPose = hubPose.exp(shotMovement.toTwist2d(timeOfFlight.in(Seconds)));
-            distanceToGoal = driveData.getDistanceToPose(effectiveGoalPose);
+            distanceToGoal = PhotonUtils.getDistanceToPose(shooterPose, effectiveGoalPose);
             state = ShooterInterpolator.interpolate(
                 table, distanceToGoal);
         }

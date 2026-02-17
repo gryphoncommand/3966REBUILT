@@ -19,7 +19,7 @@ public class HomeHood extends Command {
   public void initialize() {
     timer.restart();
     // Drive slowly downwards
-    hood.setVoltage(-0.2); 
+    hood.setVoltage(-0.5); 
   }
 
   @Override
@@ -29,7 +29,7 @@ public class HomeHood extends Command {
 
   @Override
   public boolean isFinished() {
-    return timer.get() > 0.5 && hood.getStatorCurrent() < -2;
+    return timer.get() > 0.5 && Math.abs(hood.getStatorCurrent()) > 2;
   }
 
   @Override

@@ -36,7 +36,7 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
     private final SingleJointedArmSim intakeSim =
         new SingleJointedArmSim(
             DCMotor.getNeoVortex(1),
-            IntakeConstants.kIntakeDeployGearRatio,
+            IntakeConstants.kShaftToIntakeDeployRatio,
             jKgMS,
             IntakeConstants.kIntakeLengthMeters,
             Units.degreesToRadians(20),
@@ -56,7 +56,7 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
         intakeMotor.getConfigurator().apply(Configs.IntakeDeployConfig.deploySimConfig);
         double rotorPos =
             intakeSim.getAngleRads() / (2 * Math.PI)
-            * IntakeConstants.kIntakeDeployGearRatio;
+            * IntakeConstants.kShaftToIntakeDeployRatio;
 
         intakeSimState.setRawRotorPosition(rotorPos);
     }
@@ -72,11 +72,11 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
         // Sync sim position back to TalonFX sensor
         double rotorPosition =
             intakeSim.getAngleRads() / (2 * Math.PI)
-            * IntakeConstants.kIntakeDeployGearRatio;
+            * IntakeConstants.kShaftToIntakeDeployRatio;
 
         double rotorVelocity =
             intakeSim.getVelocityRadPerSec() / (2 * Math.PI)
-            * IntakeConstants.kIntakeDeployGearRatio;
+            * IntakeConstants.kShaftToIntakeDeployRatio;
 
         intakeSimState.setRawRotorPosition(rotorPosition);
         intakeSimState.setRotorVelocity(rotorVelocity);
@@ -107,7 +107,7 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
         intakeMotor.setControl(
             new PositionVoltage(
                 Units.degreesToRotations(simAngleDeg)
-                * IntakeConstants.kIntakeDeployGearRatio
+                * IntakeConstants.kShaftToIntakeDeployRatio
             ).withSlot(0)
         );
     }

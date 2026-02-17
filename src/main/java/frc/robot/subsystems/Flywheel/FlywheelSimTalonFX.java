@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Flywheel;
 
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -86,7 +87,12 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
 
     @Override
     public void setVoltage(double volts) {
-        m_flywheelMotor.setControl(new VoltageOut(volts));
+        m_flywheelMotor.setVoltage(volts);
+    }
+
+    @Override
+    public double getPosition() {
+        return m_flywheelMotor.getPosition().getValue().in(Rotations);
     }
 
     @Override
@@ -109,5 +115,10 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     @Override
     public SubsystemBase returnSubsystem() {
         return this;
+    }
+
+    @Override
+    public double getVoltage() {
+        return m_flywheelMotor.getMotorVoltage().getValue().in(Volts);
     }
 }

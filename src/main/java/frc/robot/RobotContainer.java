@@ -11,8 +11,10 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AlignToGoal;
+import frc.robot.commands.FlywheelSysID;
 import frc.robot.commands.HomeHood;
 import frc.robot.commands.PrepareSOTM;
+import frc.robot.commands.ResetShooter;
 import frc.robot.commands.SetShooterToDefinedState;
 import frc.robot.commands.SetToDashboardSpeeds;
 import frc.robot.commands.Shoot;
@@ -28,18 +30,17 @@ import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Flywheel.FlywheelSparkFlex;
 
 import java.util.Set;
-import java.util.jar.Attributes.Name;
 
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.PhotonUtils;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,8 +51,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Hood.*;
 import frc.robot.subsystems.Intake.IntakeDeployIO;
 import frc.robot.subsystems.Intake.IntakeDeploySimTalonFX;
@@ -78,6 +79,7 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
 
   public RobotContainer() {
+    new Vision();
     configureLogger();
     configureDefaultCommands();
     configureButtonBindings();
@@ -87,6 +89,7 @@ public class RobotContainer {
       configureFuelSim();
     }
     autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).SysIDDynamic());
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
@@ -109,37 +112,44 @@ public class RobotContainer {
 
   private void configureButtonBindings() {
     // Driver bindings
-    m_driverController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
+    m_operatorController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
 
-    // m_driverController.rightBumper()
-    //   .whileTrue(new RepeatCommand(new DeferredCommand(()->new PassOrShootCommand(m_drive, m_driverController, m_hood, m_flywheel), Set.of(m_drive, m_hood, m_flywheel))))
-    //   .onFalse(new RunCommand(()->m_flywheel.setVelocity(1000), m_flywheel))
-    //   .onFalse(new HomeHood(m_hood));
+    m_driverController.rightBumper()
+      .whileTrue(new RepeatCommand(new DeferredCommand(()->new PassOrShootCommand(m_drive, m_driverController, m_hood, m_flywheel), Set.of(m_drive, m_hood, m_flywheel))))
+      .onFalse(new RunCommand(()->m_flywheel.setVelocity(1000), m_flywheel))
+      .onFalse(new HomeHood(m_hood));
 
-    // m_driverController.rightTrigger().whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, 0));
+    m_driverController.rightTrigger().whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, 0));
     m_driverController.leftTrigger()
       .onTrue(new IntakeDeploy(m_intakeDeploy))
       .whileTrue(runIntakeRollers);
-    m_driverController.leftBumper().onTrue(new IntakeStow(m_intakeDeploy));
+    m_driverController.leftBumper().whileTrue(new IntakeStow(m_intakeDeploy));
     m_driverController.a().whileTrue(new HomeIntake(m_intakeDeploy));
     m_driverController.b().whileTrue(new HomeHood(m_hood));
-
-
-    m_operatorController.a().whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, new ShooterState(1, 50, 3000, 2)));
-
     
-    m_operatorController.leftBumper().whileTrue(new RunCommand(()->m_intakeDeploy.set(0.2), m_intakeDeploy)).onFalse(new InstantCommand(()->m_intakeDeploy.set(0), m_intakeDeploy));
-    m_operatorController.rightBumper().whileTrue(new RunCommand(()->m_intakeDeploy.set(-0.2), m_intakeDeploy)).onFalse(new InstantCommand(()->m_intakeDeploy.set(0), m_intakeDeploy));
+
     m_operatorController.a().whileTrue(new HomeHood(m_hood));
     m_operatorController.x().toggleOnTrue(new SetToDashboardSpeeds(m_hood, m_flywheel));
 
+    SequentialCommandGroup testHood = new SequentialCommandGroup(
+      new SetShooterToDefinedState(m_hood, m_flywheel, new ShooterState(1, 45, 3000, 0.7)),
+      new SetShooterToDefinedState(m_hood, m_flywheel, new ShooterState(1, 50, 4000, 0.7)),
+      new SetShooterToDefinedState(m_hood, m_flywheel, new ShooterState(1, 30, 2000, 0.7)),
+      new SetShooterToDefinedState(m_hood, m_flywheel, new ShooterState(1, 45, 3500, 0.7)),
+      new ResetShooter(m_hood, m_flywheel)
+    );
+
+    m_operatorController.y().onTrue(testHood);
+
     m_operatorController.start().onTrue(
       new InstantCommand(()->{
-        Logger.recordOutput("Tuning/Current Shooter State", "new ShooterState(" +  String.valueOf(m_drive.getDistanceToPose(AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
+        Pose2d shooterPose = m_drive.getCurrentPose().plus(ShooterConstants.kRobotToShooter);
+        Logger.recordOutput("Tuning/Current Shooter State", "new ShooterState(" +  String.valueOf(PhotonUtils.getDistanceToPose(shooterPose, AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
       })
     );
-  }
 
+  }
+ 
 
   private void configureStateTriggers() {
     // Trigger inAllianceZone = new Trigger(
@@ -197,7 +207,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
         new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
-        new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeShootingValues)
+        new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.RealShootingValues)
       )
     );
     NamedCommands.registerCommand("Deploy Intake", new IntakeDeploy(m_intakeDeploy));

@@ -5,6 +5,7 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -128,17 +129,17 @@ public final class Configs {
         static {
                 IntakeDeployConfig
                         .idleMode(IdleMode.kBrake)
-                        .smartCurrentLimit(80)
+                        .smartCurrentLimit(40)
                         .inverted(true)
                         .openLoopRampRate(0)
                         .closedLoopRampRate(0);
                 IntakeDeployConfig.encoder
-                    .positionConversionFactor(IntakeConstants.kIntakeDeployGearRatio)
-                    .velocityConversionFactor(IntakeConstants.kIntakeDeployGearRatio/60);
+                    .positionConversionFactor(IntakeConstants.kShaftToIntakeDeployRatio)
+                    .velocityConversionFactor(IntakeConstants.kShaftToIntakeDeployRatio/60);
                 IntakeDeployConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(0.05, 0, 0)
+                    .pid(0.01, 0, 0)
                     .outputRange(-0.4, 0.4);
         }
 
@@ -171,8 +172,8 @@ public final class Configs {
 
         static {
                 flywheelConfig
-                        .idleMode(IdleMode.kBrake)
-                        .smartCurrentLimit(60)
+                        .idleMode(IdleMode.kCoast)
+                        .smartCurrentLimit(70)
                         .inverted(false)
                         .openLoopRampRate(0)
                         .closedLoopRampRate(0);
@@ -182,10 +183,12 @@ public final class Configs {
                 flywheelConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(0.0, 0, 0.0)
+                    .pid(0.0003, 0.0, 0.0)
+                    .iZone(100)
                     .outputRange(-1, 1);
                 flywheelConfig.closedLoop.feedForward
-                    .kV(0.0018);
+                    .kV(0.00186)
+                    .kA(0);
 
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
                 // PID + FF tuning
@@ -209,13 +212,15 @@ public final class Configs {
         static {
                 var slot0Configs = HoodConfig.Slot0;
                 // PID + FF tuning
-                slot0Configs.kS = 0;
+                slot0Configs.kS = 0.3;
                 slot0Configs.kV = 0;
                 slot0Configs.kA = 0;
-                slot0Configs.kP = 1.6;
-                slot0Configs.kI = 0; 
-                slot0Configs.kD = 0;
+                slot0Configs.kP = 2.5;
+                slot0Configs.kI = 0.1; 
+                slot0Configs.kD = 0.0;
                 slot0Configs.kG = 0.3;
+                slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
+
 
                 HoodConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 

@@ -8,11 +8,9 @@ import java.util.List;
 
 import com.pathplanner.lib.path.PathConstraints;
 
-import frc.GryphonLib.AllianceFlipUtil;
-import frc.GryphonLib.ShooterState;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -30,7 +28,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import edu.wpi.first.math.Matrix;
+import frc.GryphonLib.AllianceFlipUtil;
+import frc.GryphonLib.ShooterState;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -197,6 +196,10 @@ public final class Constants {
       new ShooterState(6.0, 38.0, 2400, 0.95)
     );
 
+    public static List<ShooterState> RealShootingValues = List.of(
+      new ShooterState(3.3, 30.0, 2400, 0.78)
+    );
+
     public static List<ShooterState> FakePassingValues = List.of(
       new ShooterState(1.5, kHoodMaxAngleDeg, 1300, 0.55),
       new ShooterState(2.5, 53, 1450, 0.68),
@@ -213,9 +216,9 @@ public final class Constants {
 
 
     public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (14/36)
-    public static double kShaftToIntakeDeployRatio = 36/14;
+    public static double kShaftToIntakeDeployRatio = 36/16;
     public static double kIntakeDeployAngle = 0;
-    public static double kIntakeStowAngle = 140;
+    public static double kIntakeStowAngle = Units.degreesToRotations(140);
     public static int kDeployCanID = 14;
     public static double kIntakeLengthMeters = Units.inchesToMeters(14.678);
   }

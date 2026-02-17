@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Flywheel;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -8,6 +10,7 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
@@ -15,6 +18,7 @@ import frc.robot.Constants.ShooterConstants;
 
 public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   private final SparkFlex shooterMotor = new SparkFlex(ShooterConstants.kFlywheelCanID, MotorType.kBrushless);
+  private final SparkFlex followerMotor = new SparkFlex(ShooterConstants.kFollowerWheelCanID, MotorType.kBrushless);
   private final SparkClosedLoopController pid = shooterMotor.getClosedLoopController();
   private final RelativeEncoder encoder = shooterMotor.getEncoder();
 
@@ -23,12 +27,14 @@ public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
 
   public FlywheelSparkFlex() {
     shooterMotor.configure(Configs.FlywheelConfig.flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    followerMotor.configure(Configs.FlywheelConfig.flywheelConfig.follow(ShooterConstants.kFlywheelCanID, true), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Shooter Velocity (RPM)", getVelocity());
     SmartDashboard.putNumber("Desired Flywheel Speed", pid.getSetpoint());
+    Logger.recordOutput("Flywheel Applied Output", shooterMotor.getAppliedOutput());
   }
 
   @Override
@@ -56,13 +62,17 @@ public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   }
 
   @Override
+  public double getPosition() {
+      return encoder.getPosition();
+  }
+
+  @Override
   public void setEncoderPosition(double position) {
     encoder.setPosition(position);
   }
 
   @Override
   public double getVelocity() {
-    // convert to RPM if needed
     return encoder.getVelocity();
   }
 
@@ -78,5 +88,10 @@ public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   @Override
   public SubsystemBase returnSubsystem() {
     return this;
+  }
+
+  @Override
+  public double getVoltage() {
+      return shooterMotor.get() * RobotController.getBatteryVoltage();
   }
 }

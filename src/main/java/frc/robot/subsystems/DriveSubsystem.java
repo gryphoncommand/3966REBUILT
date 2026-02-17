@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonUtils;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -345,7 +346,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public ChassisSpeeds getCurrentSpeedsFieldRelative(){
-    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), getRotation());
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), new Rotation2d(Units.degreesToRadians(getHeading())));
   }
 
   public Command goToPose(Pose2d goalPose){
@@ -407,7 +408,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Distance To Hub (m)", getDistanceToPose(AlignmentConstants.HubPose));
+    SmartDashboard.putNumber("Distance To Hub (m)", PhotonUtils.getDistanceToPose(getCurrentPose(), AlignmentConstants.RedHubPose));
     SmartDashboard.putBoolean("Aligned to Goal", aligned);
     if (Vision.getResult1() != null){
       Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1());

@@ -17,7 +17,6 @@ import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
@@ -28,7 +27,6 @@ import frc.robot.Constants.IntakeConstants;
 
 public class IntakeDeploySparkFlex extends SubsystemBase implements IntakeDeployIO {
     public SparkFlex intakeDeployMotor = new SparkFlex(IntakeConstants.kDeployCanID, MotorType.kBrushless);
-    public RelativeEncoder intakeDeployEncoder = intakeDeployMotor.getEncoder();
     public SparkClosedLoopController pid;
     public AbsoluteEncoder m_absoluteEncoder;
 
@@ -51,14 +49,12 @@ public class IntakeDeploySparkFlex extends SubsystemBase implements IntakeDeploy
         m_absoluteEncoder = intakeDeployMotor.getAbsoluteEncoder();
         double absRotations = -m_absoluteEncoder.getPosition();
         double absDegrees = Units.rotationsToDegrees(absRotations);
-        double gearRatio = 36.0 / 14.0;
+        double gearRatio = IntakeConstants.kShaftToIntakeDeployRatio;
         double mechDegrees = (absDegrees * gearRatio) + 140;
 
         SmartDashboard.putNumber("Absolute Encoder Reported Shaft Degrees", absDegrees);
 
         SmartDashboard.putNumber("Absolute Encoder Reported Mechanism Degrees", mechDegrees);
-
-        intakeDeployEncoder.setPosition(Units.degreesToRotations(mechDegrees));
     }
 
     @Override
@@ -68,7 +64,6 @@ public class IntakeDeploySparkFlex extends SubsystemBase implements IntakeDeploy
         double gearRatio = 36.0 / 14.0;
         double mechDegrees = (absDegrees * gearRatio) + 140;
         SmartDashboard.putNumber("Absolute Encoder Reported Degrees", mechDegrees);
-        SmartDashboard.putNumber("Intake Position", intakeDeployEncoder.getPosition());
         SmartDashboard.putNumber("Desired Intake Position", pid.getSetpoint());
         intakeVisual.setAngle(Units.rotationsToDegrees(getPosition()));
         Logger.recordOutput("FinalComponentPoses/Intake Position", new Pose3d(-0.29, 0, 0.33, new Rotation3d(0.0, Units.degreesToRadians(getPosition()), 0.0)));
@@ -96,12 +91,12 @@ public class IntakeDeploySparkFlex extends SubsystemBase implements IntakeDeploy
 
     @Override
     public double getVelocity() {
-        return intakeDeployEncoder.getVelocity();
+        return m_absoluteEncoder.getVelocity();
     }
 
     @Override
     public double getPosition() {
-        return intakeDeployEncoder.getPosition();
+        return m_absoluteEncoder.getPosition();
     }
 
     @Override
@@ -116,7 +111,7 @@ public class IntakeDeploySparkFlex extends SubsystemBase implements IntakeDeploy
 
     @Override
     public void setEncoderPosition(double rotations) {
-        intakeDeployEncoder.setPosition(rotations);
+        // Idk :/
     }
 
     @Override
