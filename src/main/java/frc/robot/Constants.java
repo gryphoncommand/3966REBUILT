@@ -210,6 +210,11 @@ public final class Constants {
     );
   }
 
+  public static class IndexerConstants {
+    public static int kSpindexerCanID = 13;
+    
+  }
+
   public static class IntakeConstants {
     public static int kRollerCanID = 12;
     public static double kIntakeSpeedRPM = 5972;
