@@ -60,19 +60,17 @@ public class ShootAllInHopper extends Command {
 			if (hoodReady && flyReady && now - lastShotTime > kShotIntervalSim && intakeRollers.hasBalls()) {
 				double kShooterEfficiency = 0.7;
 
-				double wheelRPM = flywheel.getVelocity(); // RPM
-				double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60.0;
-				double wheelRadius = Units.inchesToMeters(2.0);
-				double ballSpeed = wheelRadPerSec * wheelRadius * kShooterEfficiency;
+                double wheelRPM = flywheel.getVelocity(); // RPM
+                double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;
+                double wheelRadius = Units.inchesToMeters(2);
+                double ballSpeed = wheelRadPerSec * wheelRadius * kShooterEfficiency;
 
-				Pose2d ballPose2d = driveData.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter);
-				Translation3d initialPosition =
-					new Translation3d(ballPose2d.getX(), ballPose2d.getY(), Units.inchesToMeters(17.701451));
+                Pose2d ballPose2d = driveData.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter);
+                Translation3d initialPosition = new Translation3d(ballPose2d.getX(), ballPose2d.getY(), Units.inchesToMeters(17.701451));
+                FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle())));
 
-				FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle())));
-
-				lastShotTime = now;
-				intakeRollers.removeBall();
+                lastShotTime = now;
+                intakeRollers.removeBall();
 			} else {
                 if (hoodReady && flyReady){
                     // I dunno what i was thinking here lol
@@ -83,21 +81,21 @@ public class ShootAllInHopper extends Command {
 	}
 
 	private Translation3d launchVel(LinearVelocity vel, Angle angle) {
-		Pose3d robot = new Pose3d(driveData.getCurrentPose());
-		ChassisSpeeds fieldSpeeds = driveData.getCurrentSpeedsFieldRelative();
+        Pose3d robot = new Pose3d(driveData.getCurrentPose());
+        ChassisSpeeds fieldSpeeds = driveData.getCurrentSpeedsFieldRelative();
 
-		double horizontalVel = Math.cos(angle.in(Radians)) * vel.in(MetersPerSecond);
-		double verticalVel = Math.sin(angle.in(Radians)) * vel.in(MetersPerSecond);
-		double xVel =
-				horizontalVel * Math.cos(robot.getRotation().toRotation2d().getRadians() + Math.PI / 2);
-		double yVel =
-				horizontalVel * Math.sin(robot.getRotation().toRotation2d().getRadians() + Math.PI / 2);
+        double horizontalVel = Math.cos(angle.in(Radians)) * vel.in(MetersPerSecond);
+        double verticalVel = Math.sin(angle.in(Radians)) * vel.in(MetersPerSecond);
+        double xVel =
+                horizontalVel * Math.cos(robot.getRotation().toRotation2d().getRadians() + Math.PI / 2);
+        double yVel =
+                horizontalVel * Math.sin(robot.getRotation().toRotation2d().getRadians() + Math.PI / 2);
 
-		xVel += fieldSpeeds.vxMetersPerSecond;
-		yVel += fieldSpeeds.vyMetersPerSecond;
+        xVel += fieldSpeeds.vxMetersPerSecond;
+        yVel += fieldSpeeds.vyMetersPerSecond;
 
-		return new Translation3d(xVel, yVel, verticalVel);
-	}
+        return new Translation3d(xVel, yVel, verticalVel);
+    }
 
 	@Override
 	public boolean isFinished() {

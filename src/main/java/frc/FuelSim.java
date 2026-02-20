@@ -5,12 +5,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.Logger;
 
 public class FuelSim {
     private static final double PERIOD = 0.02; // sec
@@ -237,16 +239,13 @@ public class FuelSim {
             }
         }
     }
-
-    private StructArrayPublisher<Translation3d> fuelPublisher = NetworkTableInstance.getDefault()
-            .getStructArrayTopic("Fuel Simulation/Fuels", Translation3d.struct)
-            .publish();
     
     /**
      * Adds array of `Translation3d`'s to NetworkTables at "/Fuel Simulation/Fuels"
      */
     public void logFuels() {
-        fuelPublisher.set(fuels.stream().map((fuel) -> fuel.pos).toArray(Translation3d[]::new));
+        Logger.recordOutput("Fuels", fuels.stream().map((fuel) -> fuel.pos).toArray(Translation3d[]::new));
+        Logger.recordOutput("Fuels Scored", (DriverStation.getAlliance().get() == Alliance.Blue ? Hub.BLUE_HUB : Hub.RED_HUB).score);
     }
 
     /**
