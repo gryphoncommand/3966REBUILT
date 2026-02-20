@@ -13,13 +13,14 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.FlywheelSysID;
 import frc.robot.commands.HomeHood;
+import frc.robot.commands.PassCommand;
 import frc.robot.commands.PrepareSOTM;
 import frc.robot.commands.ResetShooter;
 import frc.robot.commands.SetShooterToDefinedState;
 import frc.robot.commands.SetToDashboardSpeeds;
 import frc.robot.commands.Shoot;
-import frc.robot.commands.PassOrShootCommand;
 import frc.robot.commands.ShootAllInHopper;
+import frc.robot.commands.Indexing.RunPreIndexer;
 import frc.robot.commands.Intake.HomeIntake;
 import frc.robot.commands.Intake.IntakeDeploy;
 import frc.robot.commands.Intake.IntakeStow;
@@ -41,6 +42,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -54,6 +57,9 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Hood.*;
+import frc.robot.subsystems.Indexer.Kicker;
+import frc.robot.subsystems.Indexer.PreIndexer;
+import frc.robot.subsystems.Indexer.Spindexer;
 import frc.robot.subsystems.Intake.IntakeDeployIO;
 import frc.robot.subsystems.Intake.IntakeDeploySimTalonFX;
 import frc.robot.subsystems.Intake.IntakeDeploySparkFlex;
@@ -65,6 +71,9 @@ public class RobotContainer {
   private final DriveSubsystem m_drive = new DriveSubsystem();
   private final IntakeDeployIO m_intakeDeploy = Robot.isReal() ? new IntakeDeploySparkFlex() : new IntakeDeploySimTalonFX();
   private final FlywheelIO m_flywheel = Robot.isReal() ? new FlywheelSparkFlex() : new FlywheelSimTalonFX();
+  private final Kicker m_kicker = new Kicker();
+  private final PreIndexer m_preIndexer = new PreIndexer();
+  private final Spindexer m_spindexer = new Spindexer();
   private final HoodIO m_hood = Robot.isReal() ? new HoodTalonFX() : new HoodSimTalonFX();
   private final IntakeRollersTalonFX m_intakeRollers = new IntakeRollersTalonFX();
 
@@ -115,15 +124,26 @@ public class RobotContainer {
     m_operatorController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
 
     m_driverController.rightBumper()
-      .whileTrue(new RepeatCommand(new DeferredCommand(()->new PassOrShootCommand(m_drive, m_driverController, m_hood, m_flywheel), Set.of(m_drive, m_hood, m_flywheel))))
+      .whileTrue(new RepeatCommand(new DeferredCommand(()->
+        new ParallelCommandGroup(
+            new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose, true),
+            new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeShootingValues)
+        ), Set.of(m_drive, m_hood, m_flywheel))))
       .onFalse(new RunCommand(()->m_flywheel.setVelocity(1000), m_flywheel))
       .onFalse(new HomeHood(m_hood));
 
-    m_driverController.rightTrigger().whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, 0));
+    m_driverController.rightTrigger().whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer));
     m_driverController.leftTrigger()
       .onTrue(new IntakeDeploy(m_intakeDeploy))
+      .whileTrue(new RunPreIndexer(m_preIndexer))
       .whileTrue(runIntakeRollers);
     m_driverController.leftBumper().whileTrue(new IntakeStow(m_intakeDeploy));
+    m_driverController.x().whileTrue(
+      new RepeatCommand(new DeferredCommand(()->
+        new PassCommand(m_drive, m_driverController, m_hood, m_flywheel)
+        , Set.of(m_drive, m_hood, m_flywheel)
+      ))
+    );
     m_driverController.a().whileTrue(new HomeIntake(m_intakeDeploy));
     m_driverController.b().whileTrue(new HomeHood(m_hood));
     

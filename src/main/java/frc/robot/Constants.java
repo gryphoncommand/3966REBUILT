@@ -212,7 +212,11 @@ public final class Constants {
 
   public static class IndexerConstants {
     public static int kSpindexerCanID = 13;
-    
+    public static int kPreIndexerCanID = 15;
+    public static int kKickerCanID = 16;
+
+    public static double kSpindexerGearRatio = 4;
+    public static double kKickerGearRatio = 28/24;
   }
 
   public static class IntakeConstants {

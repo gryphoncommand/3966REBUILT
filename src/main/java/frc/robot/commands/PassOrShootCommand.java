@@ -78,7 +78,6 @@ public class PassOrShootCommand extends Command {
 
     @Override
     public void execute() {
-        // condition: are we past the alliance zone end?
         delegate.execute();
     }
 

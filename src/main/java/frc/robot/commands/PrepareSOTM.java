@@ -37,8 +37,7 @@ public class PrepareSOTM extends Command {
         this.driveData = driveData;
         this.table = table;
 
-        addRequirements(hood.returnSubsystem(),
-                flywheel.returnSubsystem());
+        addRequirements(hood, flywheel);
         SmartDashboard.putBoolean("SOTM Goal Calculating", false);
         setName("Prepare SOTM");
     }

@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -123,6 +124,27 @@ public final class Configs {
         }
     }
 
+    public static final class PreIndexerConfig {
+        public static final TalonFXConfiguration PreIndexerConfig = new TalonFXConfiguration();
+
+        static {
+            var slot0Configs = PreIndexerConfig.Slot0;
+            // PID + FF tuning
+            slot0Configs.kS = 0.0;
+            slot0Configs.kV = 0.12;
+            slot0Configs.kA = 0.0;
+            slot0Configs.kP = 0.0;
+            slot0Configs.kI = 0.0;
+            slot0Configs.kD = 0.0;
+
+            PreIndexerConfig.CurrentLimits.withSupplyCurrentLimitEnable(false);
+            
+            // Motor behavior
+            PreIndexerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+                    
+        }
+    }
+
     public static final class IntakeDeployConfig {
         public static final SparkMaxConfig IntakeDeployConfig = new SparkMaxConfig();
 
@@ -205,6 +227,57 @@ public final class Configs {
                 flywheelFXConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         }
     }
+
+    public static final class KickerConfig {
+        public static final SparkFlexConfig kickerConfig = new SparkFlexConfig();
+
+        static {
+                kickerConfig
+                        .idleMode(IdleMode.kBrake)
+                        .smartCurrentLimit(40)
+                        .inverted(false)
+                        .openLoopRampRate(0)
+                        .closedLoopRampRate(0);
+                kickerConfig.encoder
+                    .positionConversionFactor(IndexerConstants.kKickerGearRatio)
+                    .velocityConversionFactor(IndexerConstants.kKickerGearRatio/60);
+                kickerConfig.closedLoop
+                    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                    // These are example gains you may need to them for your own robot!
+                    .pid(0.0003, 0.0, 0.0)
+                    .iZone(100)
+                    .outputRange(-0.9, 0.9);
+                kickerConfig.closedLoop.feedForward
+                    .kV(0.00186)
+                    .kA(0);
+        }
+    }
+
+    public static final class SpindexerConfig {
+        public static final SparkFlexConfig SpindexerConfig = new SparkFlexConfig();
+
+        static {
+                SpindexerConfig
+                        .idleMode(IdleMode.kBrake)
+                        .smartCurrentLimit(40)
+                        .inverted(false)
+                        .openLoopRampRate(0)
+                        .closedLoopRampRate(0);
+                SpindexerConfig.encoder
+                    .positionConversionFactor(IndexerConstants.kSpindexerGearRatio)
+                    .velocityConversionFactor(IndexerConstants.kSpindexerGearRatio/60);
+                SpindexerConfig.closedLoop
+                    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                    // These are example gains you may need to them for your own robot!
+                    .pid(0.0003, 0.0, 0.0)
+                    .iZone(100)
+                    .outputRange(-0.9, 0.9);
+                SpindexerConfig.closedLoop.feedForward
+                    .kV(0.00186)
+                    .kA(0);
+        }
+    }
+
 
     public static final class Hood {
         public static final TalonFXConfiguration HoodConfig = new TalonFXConfiguration();
