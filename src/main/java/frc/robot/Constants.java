@@ -220,7 +220,7 @@ public final class Constants {
 
     public static double kPreIndexerSpeed = 1000;
     public static double kSpindexerSpeed = 2000;
-    public static double kKickerSpeed = 2000;
+    public static double kKickerSpeed = 4000;
     
   }
 

@@ -1,5 +1,8 @@
 package frc.robot.subsystems.Indexer;
 
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -37,7 +40,6 @@ public class Kicker extends SubsystemBase {
     public void setVelocity(double rpm) {
         targetReference = rpm;
         pid.setSetpoint(rpm, ControlType.kVelocity);
-
     }
 
     public void setPosition(double position){
@@ -59,7 +61,7 @@ public class Kicker extends SubsystemBase {
     }
 
     public double getVelocity() {
-        return encoder.getVelocity();
+        return RotationsPerSecond.of(encoder.getVelocity()).in(RPM);
     }
 
     public boolean atTarget(double threshold) {

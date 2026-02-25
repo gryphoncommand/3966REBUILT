@@ -1,6 +1,7 @@
 package frc.robot.commands.Indexing;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.IndexerConstants;
 import frc.robot.subsystems.Indexer.PreIndexer;
 
 public class RunPreIndexer extends Command {
@@ -15,7 +16,7 @@ public class RunPreIndexer extends Command {
     @Override
     public void initialize() {
         setName("Pre-Indexer Running");
-        preIndexer.setVelocity(200);
+        preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed);
     }
 
     @Override

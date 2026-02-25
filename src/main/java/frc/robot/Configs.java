@@ -184,13 +184,13 @@ public final class Configs {
                 flywheelConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(0.0001, 0.0, 0.0)
+                    .pid(0.0001, 0.0, 0.000001)
                     .iZone(100)
                     .outputRange(-1, 1);
                 flywheelConfig.closedLoop.feedForward
                     .kS(0.01911)
                     .kV(0.00186)
-                    .kA(0);
+                    .kA(0.5);
 
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
                 // PID + FF tuning
@@ -221,7 +221,7 @@ public final class Configs {
                 slot0Configs.kI = 0;
                 slot0Configs.kD = 0;
 
-                ClimberConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+                ClimberConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
                 ClimberConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
                 
@@ -259,7 +259,7 @@ public final class Configs {
                 kickerConfig
                         .idleMode(IdleMode.kBrake)
                         .smartCurrentLimit(40)
-                        .inverted(true)
+                        .inverted(false)
                         .openLoopRampRate(0)
                         .closedLoopRampRate(0);
                 kickerConfig.encoder
@@ -268,11 +268,11 @@ public final class Configs {
                 kickerConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(0.0003, 0.0, 0.0)
+                    .pid(0.0, 0.0, 0.0)
                     .iZone(100)
                     .outputRange(-0.9, 0.9);
                 kickerConfig.closedLoop.feedForward
-                    .kV(0.00186)
+                    .kV(0.012)
                     .kA(0);
         }
     }

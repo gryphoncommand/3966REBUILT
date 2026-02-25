@@ -22,6 +22,7 @@ import frc.robot.commands.SetShooterToDefinedState;
 import frc.robot.commands.SetToDashboardSpeeds;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootAllInHopper;
+import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.commands.Intake.HomeIntake;
 import frc.robot.commands.Intake.IntakeDeploy;
 import frc.robot.commands.Intake.IntakeStow;
@@ -168,13 +169,9 @@ public class RobotContainer {
     m_operatorController.x().toggleOnTrue(new SetToDashboardSpeeds(m_hood, m_flywheel));
     m_operatorController.povUp().whileTrue(new RunCommand(()->m_climber.set(0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0.0), m_climber));
     m_operatorController.povDown().whileTrue(new RunCommand(()->m_climber.set(-0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0.0), m_climber));
-    m_operatorController.b().whileTrue(new RunCommand(()->m_spindexer.set(0.8), m_spindexer)).onFalse(new RunCommand(()->m_spindexer.set(0.0), m_spindexer));
-    m_operatorController.y().whileTrue(new RunCommand(()->m_spindexer.set(-0.8), m_spindexer)).onFalse(new RunCommand(()->m_spindexer.set(0.0), m_spindexer));
-    m_operatorController.leftBumper().whileTrue(new RunCommand(()->m_kicker.set(0.6), m_kicker)).onFalse(new RunCommand(()->m_kicker.set(0.0), m_kicker));
-    m_operatorController.rightBumper().whileTrue(new RunCommand(()->m_kicker.set(-0.6), m_kicker)).onFalse(new RunCommand(()->m_kicker.set(0.0), m_kicker));
-    m_operatorController.povLeft().whileTrue(new RunCommand(()->m_preIndexer.set(0.1), m_preIndexer)).onFalse(new RunCommand(()->m_preIndexer.set(0.0), m_preIndexer));
-    m_operatorController.povRight().whileTrue(new RunCommand(()->m_preIndexer.set(-0.1), m_preIndexer)).onFalse(new RunCommand(()->m_preIndexer.set(0.0), m_preIndexer));
-
+    FeedShooterFactory testFactory = new FeedShooterFactory(m_kicker, m_preIndexer, m_spindexer);
+    m_operatorController.leftBumper().whileTrue(new RunCommand(()->testFactory.start(true), m_kicker, m_preIndexer, m_spindexer)).onFalse(new RunCommand(()->testFactory.stop(), m_kicker, m_preIndexer, m_spindexer));
+    m_operatorController.rightBumper().whileTrue(new RunCommand(()->testFactory.start(false), m_kicker, m_preIndexer, m_spindexer)).onFalse(new RunCommand(()->testFactory.stop(), m_kicker, m_preIndexer, m_spindexer));
 
     m_operatorController.start().onTrue(
       new InstantCommand(()->{
