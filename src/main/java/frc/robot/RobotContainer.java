@@ -55,6 +55,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Hood.*;
 import frc.robot.subsystems.Indexer.Kicker;
@@ -103,7 +104,7 @@ public class RobotContainer {
   }
 
   private void configureDefaultCommands() {
-    m_drive.setDefaultCommand(
+    m_drive.setDefaultCommand(  
         new RunCommand(
             () -> {
               double forward = m_driverController.getLeftY();
@@ -117,6 +118,15 @@ public class RobotContainer {
             },
             m_drive)
             .withName("Basic Drive"));
+    m_preIndexer.setDefaultCommand(
+      new RunCommand(()->{
+        if (m_driverController.leftTrigger().getAsBoolean()){
+          m_preIndexer.setVelocity(200);
+        } else {
+          m_preIndexer.setVelocity(0);
+        }
+      }, m_preIndexer)
+    );
   }
 
   private void configureButtonBindings() {
@@ -132,11 +142,11 @@ public class RobotContainer {
       .onFalse(new RunCommand(()->m_flywheel.setVelocity(1000), m_flywheel))
       .onFalse(new HomeHood(m_hood));
 
-    m_driverController.rightTrigger().whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer));
+    m_driverController.rightTrigger().whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     m_driverController.leftTrigger()
       .onTrue(new IntakeDeploy(m_intakeDeploy))
-      .whileTrue(new RunPreIndexer(m_preIndexer))
       .whileTrue(runIntakeRollers);
+      
     m_driverController.leftBumper().whileTrue(new IntakeStow(m_intakeDeploy));
     m_driverController.x().whileTrue(
       new RepeatCommand(new DeferredCommand(()->

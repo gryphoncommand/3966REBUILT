@@ -135,10 +135,12 @@ public class Shoot extends Command {
         if (hoodReady && flyReady && indexingStopped) {
             passthroughFactory.start(spindexerDirection);
             indexingStopped = false;
-        } else {
+        } else if (!hoodReady && flyReady) {
             passthroughFactory.stop();
             indexingStopped = true;
         }
+
+        passthroughFactory.periodic();
     }
 
     @Override

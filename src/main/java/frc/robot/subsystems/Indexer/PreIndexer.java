@@ -25,7 +25,7 @@ public class PreIndexer extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("PreIndexer RPM", preIndexerMotor.getVelocity().getValue().in(RPM));
-        SmartDashboard.putNumber("Desired PreIndexer RMP", targetRPM);
+        SmartDashboard.putNumber("Desired PreIndexer RPM", targetRPM);
     }
 
     public void set(double speed) {
@@ -40,6 +40,10 @@ public class PreIndexer extends SubsystemBase {
 
     public AngularVelocity getVelocity(){
         return preIndexerMotor.getVelocity().getValue();
+    }
+
+    public double getTargetRPM(){
+        return targetRPM;
     }
 
     public boolean atTarget(double threshold){

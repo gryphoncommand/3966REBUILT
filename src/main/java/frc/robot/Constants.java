@@ -233,7 +233,7 @@ public final class Constants {
   }
 
   public static class AlignmentConstants {
-    public static final PIDController turnPID = new PIDController(3.0, 0.0, 0.0);
+    public static final PIDController turnPID = new PIDController(1.0, 0.0, 0.001);
     static {turnPID.enableContinuousInput(-Math.PI, Math.PI);}
 
     public static final Pose2d RedHubPose = new Pose2d(11.916, 4.055, new Rotation2d());
