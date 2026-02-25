@@ -217,6 +217,11 @@ public final class Constants {
 
     public static double kSpindexerGearRatio = 4;
     public static double kKickerGearRatio = 28/24;
+
+    public static double kPreIndexerSpeed = 1000;
+    public static double kSpindexerSpeed = 2000;
+    public static double kKickerSpeed = 2000;
+    
   }
 
   public static class ClimberConstants{
@@ -235,7 +240,7 @@ public final class Constants {
     public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (14/36)
     public static double kShaftToIntakeDeployRatio = 36/16;
     public static double kIntakeDeployAngle = 0;
-    public static double kIntakeStowAngle = Units.degreesToRotations(140);
+    public static double kIntakeStowAngle = 0.85;
     public static int kDeployCanID = 14;
     public static double kIntakeLengthMeters = Units.inchesToMeters(14.678);
   }

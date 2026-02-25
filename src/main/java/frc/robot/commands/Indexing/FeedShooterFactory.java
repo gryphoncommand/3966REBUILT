@@ -1,5 +1,6 @@
 package frc.robot.commands.Indexing;
 
+import frc.robot.Constants.IndexerConstants;
 import frc.robot.subsystems.Indexer.Kicker;
 import frc.robot.subsystems.Indexer.PreIndexer;
 import frc.robot.subsystems.Indexer.Spindexer;
@@ -18,9 +19,9 @@ public class FeedShooterFactory {
     
     public void start(boolean spindexerDirection){
         running = true;
-        kicker.setVelocity(100);
-        preIndexer.setVelocity(200);
-        double spindexerSpeed = spindexerDirection ? 300 : -300;
+        kicker.setVelocity(IndexerConstants.kKickerSpeed);
+        preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed);
+        double spindexerSpeed = spindexerDirection ? IndexerConstants.kSpindexerSpeed : -IndexerConstants.kSpindexerSpeed;
         spindexer.setVelocity(spindexerSpeed);
     }
 

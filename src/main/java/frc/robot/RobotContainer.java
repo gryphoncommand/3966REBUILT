@@ -7,6 +7,7 @@ package frc.robot;
 import frc.FuelSim;
 import frc.GryphonLib.ShooterState;
 import frc.robot.Constants.AlignmentConstants;
+import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -103,7 +104,7 @@ public class RobotContainer {
       configureFuelSim();
     }
     autoChooser = AutoBuilder.buildAutoChooser();
-    autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).SysIDDynamic());
+    autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
@@ -125,7 +126,7 @@ public class RobotContainer {
     m_preIndexer.setDefaultCommand(
       new RunCommand(()->{
         if (m_driverController.leftTrigger().getAsBoolean()){
-          m_preIndexer.setVelocity(200);
+          m_preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed);
         } else {
           m_preIndexer.setVelocity(0);
         }
@@ -165,16 +166,15 @@ public class RobotContainer {
 
     m_operatorController.a().whileTrue(new HomeHood(m_hood));
     m_operatorController.x().toggleOnTrue(new SetToDashboardSpeeds(m_hood, m_flywheel));
+    m_operatorController.povUp().whileTrue(new RunCommand(()->m_climber.set(0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0.0), m_climber));
+    m_operatorController.povDown().whileTrue(new RunCommand(()->m_climber.set(-0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0.0), m_climber));
+    m_operatorController.b().whileTrue(new RunCommand(()->m_spindexer.set(0.8), m_spindexer)).onFalse(new RunCommand(()->m_spindexer.set(0.0), m_spindexer));
+    m_operatorController.y().whileTrue(new RunCommand(()->m_spindexer.set(-0.8), m_spindexer)).onFalse(new RunCommand(()->m_spindexer.set(0.0), m_spindexer));
+    m_operatorController.leftBumper().whileTrue(new RunCommand(()->m_kicker.set(0.6), m_kicker)).onFalse(new RunCommand(()->m_kicker.set(0.0), m_kicker));
+    m_operatorController.rightBumper().whileTrue(new RunCommand(()->m_kicker.set(-0.6), m_kicker)).onFalse(new RunCommand(()->m_kicker.set(0.0), m_kicker));
+    m_operatorController.povLeft().whileTrue(new RunCommand(()->m_preIndexer.set(0.1), m_preIndexer)).onFalse(new RunCommand(()->m_preIndexer.set(0.0), m_preIndexer));
+    m_operatorController.povRight().whileTrue(new RunCommand(()->m_preIndexer.set(-0.1), m_preIndexer)).onFalse(new RunCommand(()->m_preIndexer.set(0.0), m_preIndexer));
 
-    SequentialCommandGroup testHood = new SequentialCommandGroup(
-      new SetShooterToDefinedState(m_hood, m_flywheel, new ShooterState(1, 45, 3000, 0.7)),
-      new SetShooterToDefinedState(m_hood, m_flywheel, new ShooterState(1, 50, 4000, 0.7)),
-      new SetShooterToDefinedState(m_hood, m_flywheel, new ShooterState(1, 30, 2000, 0.7)),
-      new SetShooterToDefinedState(m_hood, m_flywheel, new ShooterState(1, 45, 3500, 0.7)),
-      new ResetShooter(m_hood, m_flywheel)
-    );
-
-    m_operatorController.y().onTrue(testHood);
 
     m_operatorController.start().onTrue(
       new InstantCommand(()->{

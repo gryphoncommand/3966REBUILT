@@ -20,7 +20,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class ClimberTalonFX extends SubsystemBase implements ClimberIO {
 
-	private final TalonFX climberMotor = new TalonFX(ShooterConstants.kHoodCANID);
+	private final TalonFX climberMotor = new TalonFX(ClimberConstants.kClimberCanID);
 
 	private static final double kRotationsPerInch = 1.0 / ClimberConstants.kInchesPerMotorRotation;
 

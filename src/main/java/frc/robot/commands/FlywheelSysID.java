@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
@@ -27,11 +28,21 @@ public class FlywheelSysID {
         );
     }
 
-    public Command SysIDQuasistatic(){
-        return routine.quasistatic(Direction.kForward);
+    public Command SysIDQuasistatic(Direction direction){
+        return routine.quasistatic(direction);
     }
 
-    public Command SysIDDynamic(){
-        return routine.dynamic(Direction.kForward);
+    public Command SysIDDynamic(Direction direction){
+        return routine.dynamic(direction);
+    }
+
+    public SequentialCommandGroup doAllSysID(){
+        SequentialCommandGroup sysId = new SequentialCommandGroup(
+            this.SysIDQuasistatic(Direction.kForward),
+            this.SysIDQuasistatic(Direction.kReverse),
+            this.SysIDDynamic(Direction.kForward),
+            this.SysIDDynamic(Direction.kReverse)
+        );
+        return sysId;
     }
 }

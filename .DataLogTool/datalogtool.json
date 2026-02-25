@@ -1,5 +1,8 @@
 {
   "download": {
-    "serverTeam": "3966"
+    "localDir": "C:\\Users\\VioletY\\Desktop",
+    "remoteDir": "/home/lvuser/logs/",
+    "serverTeam": "3966",
+    "visible": false
   }
 }

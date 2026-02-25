@@ -40,31 +40,27 @@ public class IntakeDeploySparkFlex extends SubsystemBase implements IntakeDeploy
         intakeDeployMotor.configure(Configs.IntakeDeployConfig.IntakeDeployConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         pid = intakeDeployMotor.getClosedLoopController();
+        m_absoluteEncoder = intakeDeployMotor.getAbsoluteEncoder();
 
-        initializeEncoderFromAbsolute();
         SmartDashboard.putData("Intake Deploy Mech", mech2d);
     }
 
-    private void initializeEncoderFromAbsolute() {
-        m_absoluteEncoder = intakeDeployMotor.getAbsoluteEncoder();
-        double absRotations = -m_absoluteEncoder.getPosition();
+    private double getMechPosition(double absRotations) {
         double absDegrees = Units.rotationsToDegrees(absRotations);
         double gearRatio = IntakeConstants.kShaftToIntakeDeployRatio;
-        double mechDegrees = (absDegrees * gearRatio) + 140;
+        double mechDegrees = (absDegrees / gearRatio);
 
         SmartDashboard.putNumber("Absolute Encoder Reported Shaft Degrees", absDegrees);
 
         SmartDashboard.putNumber("Absolute Encoder Reported Mechanism Degrees", mechDegrees);
+
+        return mechDegrees;
     }
 
     @Override
     public void periodic() {
-        double absRotations = -m_absoluteEncoder.getPosition();
-        double absDegrees = Units.rotationsToDegrees(absRotations);
-        double gearRatio = 36.0 / 14.0;
-        double mechDegrees = (absDegrees * gearRatio) + 140;
-        SmartDashboard.putNumber("Absolute Encoder Reported Degrees", mechDegrees);
         SmartDashboard.putNumber("Desired Intake Position", pid.getSetpoint());
+        SmartDashboard.putNumber("Intake Position", m_absoluteEncoder.getPosition());
         intakeVisual.setAngle(Units.rotationsToDegrees(getPosition()));
         Logger.recordOutput("FinalComponentPoses/Intake Position", new Pose3d(-0.29, 0, 0.33, new Rotation3d(0.0, Units.degreesToRadians(getPosition()), 0.0)));
     }
@@ -96,7 +92,7 @@ public class IntakeDeploySparkFlex extends SubsystemBase implements IntakeDeploy
 
     @Override
     public double getPosition() {
-        return m_absoluteEncoder.getPosition();
+        return getMechPosition(m_absoluteEncoder.getPosition());
     }
 
     @Override

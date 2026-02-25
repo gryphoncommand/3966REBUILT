@@ -138,9 +138,9 @@ public final class Configs {
                     .positionConversionFactor(IntakeConstants.kShaftToIntakeDeployRatio)
                     .velocityConversionFactor(IntakeConstants.kShaftToIntakeDeployRatio/60);
                 IntakeDeployConfig.closedLoop
-                    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                    .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(0.01, 0, 0)
+                    .pid(1.3, 0, 0.2)
                     .outputRange(-0.4, 0.4);
         }
 
@@ -184,10 +184,11 @@ public final class Configs {
                 flywheelConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(0.0003, 0.0, 0.0)
+                    .pid(0.0001, 0.0, 0.0)
                     .iZone(100)
                     .outputRange(-1, 1);
                 flywheelConfig.closedLoop.feedForward
+                    .kS(0.01911)
                     .kV(0.00186)
                     .kA(0);
 
@@ -219,6 +220,8 @@ public final class Configs {
                 slot0Configs.kP = 1.0;
                 slot0Configs.kI = 0;
                 slot0Configs.kD = 0;
+
+                ClimberConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
                 ClimberConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
                 
@@ -256,7 +259,7 @@ public final class Configs {
                 kickerConfig
                         .idleMode(IdleMode.kBrake)
                         .smartCurrentLimit(40)
-                        .inverted(false)
+                        .inverted(true)
                         .openLoopRampRate(0)
                         .closedLoopRampRate(0);
                 kickerConfig.encoder
