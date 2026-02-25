@@ -219,6 +219,14 @@ public final class Constants {
     public static double kKickerGearRatio = 28/24;
   }
 
+  public static class ClimberConstants{
+    public static double kGearRatio = 25;
+    // Base spool/travel step (0.124) divided by gearbox ratio gives inches per motor rotation
+    public static double kInchesPerMotorRotation = 0.124 / kGearRatio;
+    public static double kMotorRotationsPerInch = kGearRatio / 0.124;
+    public static int kClimberCanID = 17;
+  }
+
   public static class IntakeConstants {
     public static int kRollerCanID = 12;
     public static double kIntakeSpeedRPM = 5972;

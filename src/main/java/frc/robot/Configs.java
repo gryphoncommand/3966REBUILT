@@ -124,27 +124,6 @@ public final class Configs {
         }
     }
 
-    public static final class PreIndexerConfig {
-        public static final TalonFXConfiguration PreIndexerConfig = new TalonFXConfiguration();
-
-        static {
-            var slot0Configs = PreIndexerConfig.Slot0;
-            // PID + FF tuning
-            slot0Configs.kS = 0.0;
-            slot0Configs.kV = 0.12;
-            slot0Configs.kA = 0.0;
-            slot0Configs.kP = 0.0;
-            slot0Configs.kI = 0.0;
-            slot0Configs.kD = 0.0;
-
-            PreIndexerConfig.CurrentLimits.withSupplyCurrentLimitEnable(false);
-            
-            // Motor behavior
-            PreIndexerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-                    
-        }
-    }
-
     public static final class IntakeDeployConfig {
         public static final SparkMaxConfig IntakeDeployConfig = new SparkMaxConfig();
 
@@ -225,6 +204,48 @@ public final class Configs {
                 
                 // Motor behavior
                 flywheelFXConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        }
+    }
+
+    public static final class Climber {
+        public static final TalonFXConfiguration ClimberConfig = new TalonFXConfiguration();
+
+        static {
+                var slot0Configs = ClimberConfig.Slot0;
+                // PID + FF tuning
+                slot0Configs.kS = 0;
+                slot0Configs.kV = 0;
+                slot0Configs.kA = 0;
+                slot0Configs.kP = 1.0;
+                slot0Configs.kI = 0;
+                slot0Configs.kD = 0;
+
+                ClimberConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+                
+                // Motor behavior
+                ClimberConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        
+        }
+    }
+
+       public static final class PreIndexerConfig {
+        public static final TalonFXConfiguration PreIndexerConfig = new TalonFXConfiguration();
+
+        static {
+            var slot0Configs = PreIndexerConfig.Slot0;
+            // PID + FF tuning
+            slot0Configs.kS = 0.0;
+            slot0Configs.kV = 0.12;
+            slot0Configs.kA = 0.0;
+            slot0Configs.kP = 0.0;
+            slot0Configs.kI = 0.0;
+            slot0Configs.kD = 0.0;
+
+            PreIndexerConfig.CurrentLimits.withSupplyCurrentLimitEnable(false);
+            
+            // Motor behavior
+            PreIndexerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+                    
         }
     }
 

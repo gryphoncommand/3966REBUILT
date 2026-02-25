@@ -11,6 +11,7 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AlignToGoal;
+import frc.robot.commands.DeployClimber;
 import frc.robot.commands.FlywheelSysID;
 import frc.robot.commands.HomeHood;
 import frc.robot.commands.PassCommand;
@@ -20,12 +21,14 @@ import frc.robot.commands.SetShooterToDefinedState;
 import frc.robot.commands.SetToDashboardSpeeds;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootAllInHopper;
-import frc.robot.commands.Indexing.RunPreIndexer;
 import frc.robot.commands.Intake.HomeIntake;
 import frc.robot.commands.Intake.IntakeDeploy;
 import frc.robot.commands.Intake.IntakeStow;
 import frc.robot.commands.Intake.RunIntakeRollers;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Climber.ClimberIO;
+import frc.robot.subsystems.Climber.ClimberSimTalonFX;
+import frc.robot.subsystems.Climber.ClimberTalonFX;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Flywheel.FlywheelSparkFlex;
@@ -77,6 +80,7 @@ public class RobotContainer {
   private final Spindexer m_spindexer = new Spindexer();
   private final HoodIO m_hood = Robot.isReal() ? new HoodTalonFX() : new HoodSimTalonFX();
   private final IntakeRollersTalonFX m_intakeRollers = new IntakeRollersTalonFX();
+  private final ClimberIO m_climber = Robot.isReal() ? new ClimberTalonFX() : new ClimberSimTalonFX();
 
   private Command runIntakeRollers = new RunIntakeRollers(m_intakeRollers);
 
@@ -156,6 +160,7 @@ public class RobotContainer {
     );
     m_driverController.a().whileTrue(new HomeIntake(m_intakeDeploy));
     m_driverController.b().whileTrue(new HomeHood(m_hood));
+    m_driverController.povDown().toggleOnTrue(new DeployClimber(m_climber));
     
 
     m_operatorController.a().whileTrue(new HomeHood(m_hood));
