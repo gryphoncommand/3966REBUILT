@@ -5,7 +5,6 @@
 package frc.robot;
 
 import frc.FuelSim;
-import frc.GryphonLib.ShooterState;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
@@ -17,13 +16,12 @@ import frc.robot.commands.FlywheelSysID;
 import frc.robot.commands.HomeHood;
 import frc.robot.commands.PassCommand;
 import frc.robot.commands.PrepareSOTM;
-import frc.robot.commands.ResetShooter;
 import frc.robot.commands.SetShooterToDefinedState;
 import frc.robot.commands.SetToDashboardSpeeds;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootAllInHopper;
 import frc.robot.commands.Indexing.FeedShooterFactory;
-import frc.robot.commands.Intake.HomeIntake;
+import frc.robot.commands.Indexing.RunPreIndexer;
 import frc.robot.commands.Intake.IntakeDeploy;
 import frc.robot.commands.Intake.IntakeStow;
 import frc.robot.commands.Intake.RunIntakeRollers;
@@ -59,7 +57,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Hood.*;
@@ -137,7 +134,7 @@ public class RobotContainer {
 
   private void configureButtonBindings() {
     // Driver bindings
-    m_operatorController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
+    m_driverController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
 
     m_driverController.rightBumper()
       .whileTrue(new RepeatCommand(new DeferredCommand(()->
@@ -148,10 +145,13 @@ public class RobotContainer {
       .onFalse(new RunCommand(()->m_flywheel.setVelocity(1000), m_flywheel))
       .onFalse(new HomeHood(m_hood));
 
-    m_driverController.rightTrigger().whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    m_driverController.rightTrigger().whileTrue(runIntakeRollers);
+    m_driverController.rightTrigger()
+        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     m_driverController.leftTrigger()
       .onTrue(new IntakeDeploy(m_intakeDeploy))
-      .whileTrue(runIntakeRollers);
+      .whileTrue(runIntakeRollers)
+      .whileTrue(new RunPreIndexer(m_preIndexer));
       
     m_driverController.leftBumper().whileTrue(new IntakeStow(m_intakeDeploy));
     m_driverController.x().whileTrue(
@@ -159,19 +159,38 @@ public class RobotContainer {
         new PassCommand(m_drive, m_driverController, m_hood, m_flywheel)
         , Set.of(m_drive, m_hood, m_flywheel)
       ))
-    );
-    m_driverController.a().whileTrue(new HomeIntake(m_intakeDeploy));
-    m_driverController.b().whileTrue(new HomeHood(m_hood));
-    m_driverController.povDown().toggleOnTrue(new DeployClimber(m_climber));
-    
+    )
+    .onFalse(new HomeHood(m_hood));
 
-    m_operatorController.a().whileTrue(new HomeHood(m_hood));
+    m_driverController.a().whileTrue(new HomeHood(m_hood));
+    m_driverController.b().whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kShooterStowState));
+    m_driverController.y()
+      .whileTrue(new RunCommand(()->m_intakeRollers.set(-0.3), m_intakeRollers))
+      .onFalse(new RunCommand(()->m_intakeRollers.set(0.0), m_intakeRollers));
+    m_driverController.povDown()
+    .toggleOnTrue(new DeployClimber(m_climber))
+    .onTrue(new RunCommand(()->m_flywheel.set(0), m_flywheel));
+    
+    m_operatorController.rightTrigger()
+        .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState))
+        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     m_operatorController.x().toggleOnTrue(new SetToDashboardSpeeds(m_hood, m_flywheel));
     m_operatorController.povUp().whileTrue(new RunCommand(()->m_climber.set(0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0.0), m_climber));
     m_operatorController.povDown().whileTrue(new RunCommand(()->m_climber.set(-0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0.0), m_climber));
+    m_operatorController.povLeft().onTrue(new RunCommand(()->m_climber.setEncoderPosition(0), m_climber));
+    
+
+    m_operatorController.leftTrigger()
+      .whileTrue(runIntakeRollers)
+      .whileTrue(new RunCommand(()->m_preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed), m_preIndexer))
+      .onFalse(new RunCommand(()->m_preIndexer.setVelocity(0), m_preIndexer));
     FeedShooterFactory testFactory = new FeedShooterFactory(m_kicker, m_preIndexer, m_spindexer);
-    m_operatorController.leftBumper().whileTrue(new RunCommand(()->testFactory.start(true), m_kicker, m_preIndexer, m_spindexer)).onFalse(new RunCommand(()->testFactory.stop(), m_kicker, m_preIndexer, m_spindexer));
-    m_operatorController.rightBumper().whileTrue(new RunCommand(()->testFactory.start(false), m_kicker, m_preIndexer, m_spindexer)).onFalse(new RunCommand(()->testFactory.stop(), m_kicker, m_preIndexer, m_spindexer));
+    m_operatorController.leftBumper()
+      .whileTrue(new RunCommand(()->testFactory.start(true), m_kicker, m_preIndexer, m_spindexer))
+      .onFalse(new RunCommand(()->testFactory.stop(), m_kicker, m_preIndexer, m_spindexer))
+      .whileTrue(runIntakeRollers)
+      // .whileTrue(new AgitateIntake(m_intakeDeploy))
+      .whileTrue(new RepeatCommand(new InstantCommand(()->testFactory.periodic())));
 
     m_operatorController.start().onTrue(
       new InstantCommand(()->{
@@ -179,7 +198,6 @@ public class RobotContainer {
         Logger.recordOutput("Tuning/Current Shooter State", "new ShooterState(" +  String.valueOf(PhotonUtils.getDistanceToPose(shooterPose, AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
       })
     );
-
   }
  
 

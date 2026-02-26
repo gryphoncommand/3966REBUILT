@@ -10,19 +10,19 @@ public interface ClimberIO extends Subsystem {
   void set(double speed);
 
   /** Set climber position */
-  void setPosition(Distance point);
+  void setPosition(double rots);
 
   /** Direct voltage control */
   void setVoltage(double volts);
 
-  /** Reset encoder position (inches) */
-  void setEncoderPosition(double inches);
+  /** Reset encoder position (rotations) */
+  void setEncoderPosition(double rotations);
 
   /** Current hood angle */
   Distance getPosition();
 
   /** True if within threshold of target */
-  boolean atTarget(Distance threshold);
+  boolean atTarget(double threshold);
 
   SubsystemBase returnSubsystem();
 

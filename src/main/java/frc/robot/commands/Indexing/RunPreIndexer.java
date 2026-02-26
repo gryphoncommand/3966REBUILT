@@ -26,6 +26,6 @@ public class RunPreIndexer extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        preIndexer.setVelocity(0);
+        preIndexer.set(0);
     }
 }

@@ -187,6 +187,8 @@ public final class Constants {
 
     public static Transform2d kRobotToShooter = new Transform2d(0.2619756, 0.0, new Rotation2d(Math.PI/2));
 
+    public static ShooterState kShooterStowState = new ShooterState(3, kHoodMinAngleDeg, 0, 1.2);
+    public static ShooterState kDefaultShooterState = new ShooterState(3, 35, 2000, 1.2);
 
     public static List<ShooterState> FakeShootingValues = List.of(
       new ShooterState(1.5, 25.0, 1600, 0.55),
@@ -218,29 +220,32 @@ public final class Constants {
     public static double kSpindexerGearRatio = 4;
     public static double kKickerGearRatio = 28/24;
 
-    public static double kPreIndexerSpeed = 1000;
-    public static double kSpindexerSpeed = 2000;
-    public static double kKickerSpeed = 4000;
+    public static double kPreIndexerSpeed = 500;
+    public static double kSpindexerSpeed = 3000;
+    public static double kKickerSpeed = 6500;
     
   }
 
   public static class ClimberConstants{
     public static double kGearRatio = 25;
+    public static double kMotorRotationsPer15Inch = 75;
     // Base spool/travel step (0.124) divided by gearbox ratio gives inches per motor rotation
-    public static double kInchesPerMotorRotation = 0.124 / kGearRatio;
-    public static double kMotorRotationsPerInch = kGearRatio / 0.124;
+    public static double kInchesPerMotorRotation = 15/kMotorRotationsPer15Inch;
+    public static double kMotorRotationsPerInch = 1/kInchesPerMotorRotation;
+    public static double kClimbPosition = 80;
     public static int kClimberCanID = 17;
   }
 
   public static class IntakeConstants {
     public static int kRollerCanID = 12;
-    public static double kIntakeSpeedRPM = 5972;
+    public static double kIntakeSpeedRPM = 500;
 
 
     public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (14/36)
     public static double kShaftToIntakeDeployRatio = 36/16;
-    public static double kIntakeDeployAngle = 0;
+    public static double kIntakeDeployAngle = 0.02;
     public static double kIntakeStowAngle = 0.85;
+    public static double kIntakeAgitateAngle = 0.15;
     public static int kDeployCanID = 14;
     public static double kIntakeLengthMeters = Units.inchesToMeters(14.678);
   }

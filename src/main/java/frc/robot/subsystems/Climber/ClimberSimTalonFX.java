@@ -91,11 +91,9 @@ public class ClimberSimTalonFX extends SubsystemBase implements ClimberIO {
 
     /** Set climber target in Distance units */
     @Override
-    public void setPosition(Distance point) {
-        targetPosition = point;
-        double rotations = point.in(Inches) * ClimberConstants.kMotorRotationsPerInch;
-        climberMotor.setControl(new PositionVoltage(rotations).withSlot(0));
-        SmartDashboard.putNumber("Requested Climber Position (in)", point.in(Inches));
+    public void setPosition(double rots) {
+        climberMotor.setControl(new PositionVoltage(rots).withSlot(0));
+        SmartDashboard.putNumber("Requested Climber Position (rots)", rots);
     }
 
     /** Direct voltage control */
@@ -106,8 +104,8 @@ public class ClimberSimTalonFX extends SubsystemBase implements ClimberIO {
 
     /** Reset encoder position (inches) */
     @Override
-    public void setEncoderPosition(double inches) {
-        climberSim.setState(Units.inchesToMeters(inches), 0);
+    public void setEncoderPosition(double rotations) {
+        climberSim.setState(Units.inchesToMeters(rotations*ClimberConstants.kInchesPerMotorRotation), 0);
     }
 
     /** Current climber position */
@@ -118,8 +116,8 @@ public class ClimberSimTalonFX extends SubsystemBase implements ClimberIO {
 
     /** True if within threshold of target */
     @Override
-    public boolean atTarget(Distance threshold) {
-        return Math.abs(getPosition().in(Inches) - targetPosition.in(Inches)) < threshold.in(Inches);
+    public boolean atTarget(double threshold) {
+        return Math.abs(getPosition().in(Inches) - targetPosition.in(Inches)) < threshold;
     }
 
     @Override

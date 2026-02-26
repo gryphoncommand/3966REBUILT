@@ -1,5 +1,7 @@
 package frc.robot.commands.Indexing;
 
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.subsystems.Indexer.Kicker;
 import frc.robot.subsystems.Indexer.PreIndexer;
@@ -10,6 +12,8 @@ public class FeedShooterFactory {
     private PreIndexer preIndexer;
     private Spindexer spindexer;
     private boolean running = false;
+    private boolean spindexerDirection;
+    private final Timer timer = new Timer();
 
     public FeedShooterFactory(Kicker kicker, PreIndexer preIndexer, Spindexer spindexer){
         this.kicker = kicker;
@@ -18,25 +22,32 @@ public class FeedShooterFactory {
     }
     
     public void start(boolean spindexerDirection){
+        this.spindexerDirection = spindexerDirection;
         running = true;
         kicker.setVelocity(IndexerConstants.kKickerSpeed);
         preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed);
         double spindexerSpeed = spindexerDirection ? IndexerConstants.kSpindexerSpeed : -IndexerConstants.kSpindexerSpeed;
         spindexer.setVelocity(spindexerSpeed);
+        timer.restart();
     }
 
     public void stop(){
-        kicker.setVelocity(0);
-        preIndexer.setVelocity(0);
-        spindexer.setVelocity(0);
+        kicker.set(0);
+        preIndexer.set(0);
+        spindexer.set(0);
         running = false;
     }
     
     public void periodic(){
         if (running){
-            if (preIndexer.getTargetRPM() != 200){
-                preIndexer.setVelocity(200);
+            if (preIndexer.getTargetRPM() != IndexerConstants.kPreIndexerSpeed){
+                preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed);
             }
+            if (timer.get() > 0.5 && spindexer.getStatorCurrent() > 50){
+                spindexerDirection = !spindexerDirection;
+                start(spindexerDirection);
+            }
+            SmartDashboard.putNumber("Spindexer Stator Current", spindexer.getStatorCurrent());
         }
     }
 }

@@ -190,7 +190,7 @@ public final class Configs {
                 flywheelConfig.closedLoop.feedForward
                     .kS(0.01911)
                     .kV(0.00186)
-                    .kA(0.5);
+                    .kA(0.9);
 
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
                 // PID + FF tuning
@@ -248,7 +248,6 @@ public final class Configs {
             
             // Motor behavior
             PreIndexerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-                    
         }
     }
 
@@ -272,7 +271,7 @@ public final class Configs {
                     .iZone(100)
                     .outputRange(-0.9, 0.9);
                 kickerConfig.closedLoop.feedForward
-                    .kV(0.012)
+                    .kV(0.016)
                     .kA(0);
         }
     }

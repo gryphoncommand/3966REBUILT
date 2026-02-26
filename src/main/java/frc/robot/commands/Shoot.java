@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.FuelSim;
 import frc.robot.Constants.ShooterConstants;
@@ -30,14 +31,12 @@ public class Shoot extends Command {
     private final HoodIO hood;
     private final FlywheelIO flywheel;
     private final IntakeRollersTalonFX intakeRollerData;
-    private final Kicker kicker;
-    private final PreIndexer preIndexer;
-    private final Spindexer spindexer;
     private final boolean stopFlywheelOnEnd;
     private double lastShotTime = 0;
     private boolean spindexerDirection = true;
     private FeedShooterFactory passthroughFactory;
     private boolean indexingStopped = true;
+    private boolean neeedAlign = true;
 
     /**
      * Shoot command: runs the flywheel (assumed already set) and only feeds balls
@@ -49,15 +48,13 @@ public class Shoot extends Command {
      * @param feedRPM roller velocity to use when feeding
      * @param stopFlywheelOnEnd if true, zeroes the flywheel when the command ends
      */
-    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, boolean stopFlywheelOnEnd) {
+    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, boolean stopFlywheelOnEnd, boolean neeedAlign) {
         this.driveData = driveData;
         this.hood = hood;
         this.flywheel = flywheel;
         this.intakeRollerData = rollers;
-        this.kicker = kicker;
-        this.preIndexer = preIndexer;
-        this.spindexer = spindexer;
         this.stopFlywheelOnEnd = stopFlywheelOnEnd;
+        this.neeedAlign = neeedAlign;
 
         if (stopFlywheelOnEnd){
             addRequirements(flywheel);
@@ -88,7 +85,7 @@ public class Shoot extends Command {
      * Convenience constructor that leaves the flywheel running when command ends.
      */
     public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer) {
-        this(driveData, hood, flywheel, rollers, kicker, preIndexer, spindexer, false);
+        this(driveData, hood, flywheel, rollers, kicker, preIndexer, spindexer, false, true);
     }
 
     @Override
@@ -102,17 +99,15 @@ public class Shoot extends Command {
     @Override
     public void execute() {
         // Only feed when both hood and flywheel report on-target
-        boolean hoodReady = hood.atTarget(3.0);
-        boolean flyReady = flywheel.atTarget(50);
+        boolean hoodReady = hood.atTarget(10.0);
+        boolean flyReady = flywheel.atTarget(500);
         boolean aligned = driveData.getAligned();
-
-        if (spindexer.getStatorCurrent() > 10){
-            spindexerDirection = !spindexerDirection;
-            indexingStopped = true;
-        }
+        if (!neeedAlign){
+            aligned = true;
+        } 
         
         if (Robot.isSimulation()){ 
-            double now = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+            double now = Timer.getFPGATimestamp();
 
             if (hoodReady && flyReady && aligned && now - lastShotTime > 0.12 && intakeRollerData.hasBalls()) {
                 double kShooterEfficiency = 0.7;
@@ -129,13 +124,12 @@ public class Shoot extends Command {
                 lastShotTime = now;
                 intakeRollerData.removeBall();
             }
-            
         }
 
-        if (hoodReady && flyReady && indexingStopped) {
+        if (hoodReady && flyReady && indexingStopped && aligned) {
             passthroughFactory.start(spindexerDirection);
             indexingStopped = false;
-        } else if (!hoodReady && flyReady) {
+        } else if (!aligned) {
             passthroughFactory.stop();
             indexingStopped = true;
         }

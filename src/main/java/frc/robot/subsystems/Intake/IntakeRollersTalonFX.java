@@ -72,6 +72,10 @@ public class IntakeRollersTalonFX extends SubsystemBase {
     return this;
   }
 
+  public double getTargetRPM(){
+    return targetReference;
+  }
+
   // TODO: These should go to the spindexer
 
   public void addBall(){

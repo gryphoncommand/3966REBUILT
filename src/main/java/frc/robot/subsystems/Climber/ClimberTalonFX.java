@@ -9,12 +9,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ClimberConstants;
-import frc.robot.Constants.ShooterConstants;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Rotations;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -28,10 +28,11 @@ public class ClimberTalonFX extends SubsystemBase implements ClimberIO {
 		climberMotor.getConfigurator().apply(Configs.Climber.ClimberConfig);
 	}
 
-	private double targetInches = 0.0;
+	private double targetRots = 0.0;
 
 	@Override
 	public void periodic() {
+		SmartDashboard.putNumber("Climber Position (Rots)", climberMotor.getPosition().getValue().in(Rotations));
 		SmartDashboard.putNumber("Climber Extension (in)", climberMotor.getPosition().getValueAsDouble() * ClimberConstants.kInchesPerMotorRotation);
 		Logger.recordOutput("FinalComponentPoses/Climber Position", new Pose3d(0,0,getPosition().in(Meters), new Rotation3d()));
 	}
@@ -42,14 +43,10 @@ public class ClimberTalonFX extends SubsystemBase implements ClimberIO {
 	}
 
 	@Override
-	public void setPosition(Distance point) {
-		double meters = point.in(Meters);
-		double inches = Units.metersToInches(meters);
-		double rotations = inches * kRotationsPerInch;
-
-		SmartDashboard.putNumber("Requested Climber Position (in)", inches);
-		climberMotor.setControl(new PositionVoltage(rotations).withSlot(0));
-		targetInches = inches;
+	public void setPosition(double rots) {
+		SmartDashboard.putNumber("Requested Climber Position (rots)", rots);
+		climberMotor.setControl(new PositionVoltage(rots).withSlot(0));
+		targetRots = rots;
 	}
 
 	@Override
@@ -58,8 +55,7 @@ public class ClimberTalonFX extends SubsystemBase implements ClimberIO {
 	}
 
 	@Override
-	public void setEncoderPosition(double inches) {
-		double rotations = inches * kRotationsPerInch;
+	public void setEncoderPosition(double rotations) {
 		climberMotor.setPosition(rotations);
 	}
 
@@ -72,11 +68,8 @@ public class ClimberTalonFX extends SubsystemBase implements ClimberIO {
 	}
 
 	@Override
-	public boolean atTarget(Distance threshold) {
-		double currentInches = climberMotor.getPosition().getValueAsDouble() * ClimberConstants.kInchesPerMotorRotation;
-		double thrMeters = threshold.in(Meters);
-		double thrInches = Units.metersToInches(thrMeters);
-		return Math.abs(currentInches - targetInches) < thrInches;
+	public boolean atTarget(double threshold) {
+		return Math.abs(climberMotor.getPosition().getValueAsDouble() - targetRots) < threshold;
 	}
 
 	@Override

@@ -208,6 +208,8 @@ public class DriveSubsystem extends SubsystemBase {
       },
       this // Reference to this subsystem to set requirements
     );
+
+    m_gyro.calibrate();
   }
 
   public void driveRobotRelativeChassis(ChassisSpeeds speeds) {
@@ -222,7 +224,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     var deliveredSpeeds = fieldRelative
     ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-      Rotation2d.fromDegrees(Robot.isReal() ? getHeading() : getCurrentPose().getRotation().getDegrees()))
+      (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()))
       : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered);
 
     
@@ -269,7 +271,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
-    gyroOffset = -m_gyro.getAngle(); // Set current yaw as zero
+    gyroOffset = m_gyro.getAngle(); // Set current yaw as zero
+    Pose2d currentPose = poseEstimator.getLatestPose();
+    poseEstimator.resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), new Rotation2d()));
   }
 
   public void setHeading(double angle) {
@@ -282,7 +286,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @return the robot's heading in degrees, from -180 to 180
    */
   public double getHeading() {
-    return m_gyro.getAngle(IMUAxis.kZ) + gyroOffset;
+    return -m_gyro.getAngle(IMUAxis.kZ) + gyroOffset;
   }
 
   /**
@@ -334,7 +338,10 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Rotation2d getRotation(){
-    return Rotation2d.fromDegrees(m_gyro.getAngle(IMUAxis.kZ) + gyroOffset);
+    // return getCurrentPose().getRotation();
+    return Rotation2d.fromDegrees(
+      -m_gyro.getAngle(IMUAxis.kZ) + gyroOffset
+    );
   }
 
   public void stop(){
@@ -346,7 +353,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public ChassisSpeeds getCurrentSpeedsFieldRelative(){
-    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), new Rotation2d(Units.degreesToRadians(getHeading())));
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), getRotation());
   }
 
   public Command goToPose(Pose2d goalPose){
@@ -449,7 +456,7 @@ public class DriveSubsystem extends SubsystemBase {
     poseEstimator.addDriveData(
       Timer.getTimestamp(),
       getCurrentSpeeds().toTwist2d(Timer.getTimestamp() - currentTimestamp)
-      );
+    );
 
       field2d.setRobotPose(poseEstimator.getLatestPose());
       publisher.set(getStates());
