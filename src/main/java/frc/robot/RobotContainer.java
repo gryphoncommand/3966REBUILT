@@ -133,34 +133,48 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
+    FeedShooterFactory testFactory = new FeedShooterFactory(m_kicker, m_preIndexer, m_spindexer);
     // Driver bindings
     m_driverController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
+    m_driverController.povRight().onTrue(
+      new InstantCommand(()->{
+        Pose2d shooterPose = m_drive.getCurrentPose().plus(ShooterConstants.kRobotToShooter);
+        SmartDashboard.putString("Current Shooter State", "new ShooterState(" +  String.valueOf(PhotonUtils.getDistanceToPose(shooterPose, AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
+      })
+    );
 
     m_driverController.rightBumper()
       .whileTrue(new RepeatCommand(new DeferredCommand(()->
         new ParallelCommandGroup(
             new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose, true),
-            new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.FakeShootingValues)
+            new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.RealShootingValues)
         ), Set.of(m_drive, m_hood, m_flywheel))))
       .onFalse(new RunCommand(()->m_flywheel.setVelocity(1000), m_flywheel))
       .onFalse(new HomeHood(m_hood));
 
     m_driverController.rightTrigger().whileTrue(runIntakeRollers);
     m_driverController.rightTrigger()
-        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        .whileTrue(new RunCommand(()->testFactory.start(true), m_kicker, m_preIndexer, m_spindexer))
+        .onFalse(new RunCommand(()->testFactory.stop(), m_kicker, m_preIndexer, m_spindexer))
+        .whileTrue(runIntakeRollers)
+        // .whileTrue(new AgitateIntake(m_intakeDeploy))
+        .whileTrue(new RepeatCommand(new InstantCommand(()->testFactory.periodic())));
+        // .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     m_driverController.leftTrigger()
       .onTrue(new IntakeDeploy(m_intakeDeploy))
       .whileTrue(runIntakeRollers)
       .whileTrue(new RunPreIndexer(m_preIndexer));
       
     m_driverController.leftBumper().whileTrue(new IntakeStow(m_intakeDeploy));
-    m_driverController.x().whileTrue(
-      new RepeatCommand(new DeferredCommand(()->
-        new PassCommand(m_drive, m_driverController, m_hood, m_flywheel)
-        , Set.of(m_drive, m_hood, m_flywheel)
-      ))
-    )
-    .onFalse(new HomeHood(m_hood));
+    m_driverController.x()
+    .toggleOnTrue(new SetToDashboardSpeeds(m_hood, m_flywheel));
+    // .whileTrue(
+    //   new RepeatCommand(new DeferredCommand(()->
+    //     new PassCommand(m_drive, m_driverController, m_hood, m_flywheel)
+    //     , Set.of(m_drive, m_hood, m_flywheel)
+    //   ))
+    // )
+    // .onFalse(new HomeHood(m_hood));
 
     m_driverController.a().whileTrue(new HomeHood(m_hood));
     m_driverController.b().whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kShooterStowState));
@@ -184,7 +198,6 @@ public class RobotContainer {
       .whileTrue(runIntakeRollers)
       .whileTrue(new RunCommand(()->m_preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed), m_preIndexer))
       .onFalse(new RunCommand(()->m_preIndexer.setVelocity(0), m_preIndexer));
-    FeedShooterFactory testFactory = new FeedShooterFactory(m_kicker, m_preIndexer, m_spindexer);
     m_operatorController.leftBumper()
       .whileTrue(new RunCommand(()->testFactory.start(true), m_kicker, m_preIndexer, m_spindexer))
       .onFalse(new RunCommand(()->testFactory.stop(), m_kicker, m_preIndexer, m_spindexer))
@@ -195,7 +208,7 @@ public class RobotContainer {
     m_operatorController.start().onTrue(
       new InstantCommand(()->{
         Pose2d shooterPose = m_drive.getCurrentPose().plus(ShooterConstants.kRobotToShooter);
-        Logger.recordOutput("Tuning/Current Shooter State", "new ShooterState(" +  String.valueOf(PhotonUtils.getDistanceToPose(shooterPose, AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
+        SmartDashboard.putString("Current Shooter State", "new ShooterState(" +  String.valueOf(PhotonUtils.getDistanceToPose(shooterPose, AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
       })
     );
   }

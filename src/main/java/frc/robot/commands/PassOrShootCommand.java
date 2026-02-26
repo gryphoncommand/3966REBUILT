@@ -52,7 +52,7 @@ public class PassOrShootCommand extends Command {
 
         shootGroup = new ParallelCommandGroup(
             new AlignToGoal(drive, driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose, true),
-            new PrepareSOTM(hood, flywheel, drive, ShooterConstants.FakeShootingValues)
+            new PrepareSOTM(hood, flywheel, drive, ShooterConstants.RealShootingValues)
         );
 
         // condition: are we past the alliance zone end?

@@ -185,21 +185,26 @@ public final class Constants {
     public static double kHoodMinAngleDeg = 22.6;
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
 
-    public static Transform2d kRobotToShooter = new Transform2d(0.2619756, 0.0, new Rotation2d(Math.PI/2));
+    public static Transform2d kRobotToShooter = new Transform2d(0.0, 0.0, new Rotation2d(Math.PI/2));
+    public static Transform2d kRobotToShooterReal = new Transform2d(-0.2619756, 0.0, new Rotation2d(Math.PI/2));
+
 
     public static ShooterState kShooterStowState = new ShooterState(3, kHoodMinAngleDeg, 0, 1.2);
     public static ShooterState kDefaultShooterState = new ShooterState(3, 35, 2000, 1.2);
 
     public static List<ShooterState> FakeShootingValues = List.of(
-      new ShooterState(1.5, 25.0, 1600, 0.55),
-      new ShooterState(2.5, 28.0, 1750, 0.68),
-      new ShooterState(3.5, 32.0, 1900, 0.78),
-      new ShooterState(4.5, 35.0, 2050, 0.85),
-      new ShooterState(6.0, 38.0, 2400, 0.95)
+      new ShooterState(1.5, 25.0, 1625, 0.55),
+      new ShooterState(2.5, 28.0, 1775, 0.68),
+      new ShooterState(3.5, 32.0, 1925, 0.78),
+      new ShooterState(4.5, 35.0, 2075, 0.85),
+      new ShooterState(6.0, 38.0, 2425, 0.95)
     );
 
     public static List<ShooterState> RealShootingValues = List.of(
-      new ShooterState(3.3, 30.0, 2400, 0.78)
+      new ShooterState(1.545, 23, 2375, 0.75),
+      new ShooterState(2.095, 26, 2625, 1),
+      new ShooterState(2.3634117146702667, 30, 2425, 0.9),
+      new ShooterState(3.1684995305101644, 35, 2525, 0.87)
     );
 
     public static List<ShooterState> FakePassingValues = List.of(
