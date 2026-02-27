@@ -6,6 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -47,6 +48,7 @@ public class AlignToGoal extends Command {
     @Override
     public void initialize() {
         turnPID.reset();
+        turnPID.setSetpoint(0.0);
     }
 
     @Override
@@ -66,10 +68,10 @@ public class AlignToGoal extends Command {
             drive.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter),
             goalPose
         );
-        SmartDashboard.putNumber("Yaw Align Error", yawError);
+        SmartDashboard.putNumber("Yaw Align Error", Units.radiansToDegrees(yawError));
 
         // PID output
-        double turn = turnPID.calculate(yawError, 0.0);
+        double turn = turnPID.calculate(yawError);
         turn = MathUtil.clamp(turn, -1.0, 1.0);
 
         // Drive with driver’s translation + auto-turn

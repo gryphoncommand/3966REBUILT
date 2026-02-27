@@ -185,8 +185,8 @@ public final class Constants {
     public static double kHoodMinAngleDeg = 22.6;
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
 
-    public static Transform2d kRobotToShooter = new Transform2d(0.0, 0.0, new Rotation2d(Math.PI/2));
-    public static Transform2d kRobotToShooterReal = new Transform2d(-0.2619756, 0.0, new Rotation2d(Math.PI/2));
+    public static Transform2d kRobotToShooterFake = new Transform2d(0.0, 0.0, new Rotation2d(Math.PI/2));
+    public static Transform2d kRobotToShooter = new Transform2d(0.2619756, 0.0, new Rotation2d(Math.PI/2));
 
 
     public static ShooterState kShooterStowState = new ShooterState(3, kHoodMinAngleDeg, 0, 1.2);
@@ -225,8 +225,8 @@ public final class Constants {
     public static double kSpindexerGearRatio = 4;
     public static double kKickerGearRatio = 28/24;
 
-    public static double kPreIndexerSpeed = 500;
-    public static double kSpindexerSpeed = 3000;
+    public static double kPreIndexerSpeed = 1000;
+    public static double kSpindexerSpeed = 5000;
     public static double kKickerSpeed = 6500;
     
   }

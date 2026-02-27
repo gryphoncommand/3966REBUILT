@@ -14,7 +14,6 @@ import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.DeployClimber;
 import frc.robot.commands.FlywheelSysID;
 import frc.robot.commands.HomeHood;
-import frc.robot.commands.PassCommand;
 import frc.robot.commands.PrepareSOTM;
 import frc.robot.commands.SetShooterToDefinedState;
 import frc.robot.commands.SetToDashboardSpeeds;
@@ -154,12 +153,9 @@ public class RobotContainer {
 
     m_driverController.rightTrigger().whileTrue(runIntakeRollers);
     m_driverController.rightTrigger()
-        .whileTrue(new RunCommand(()->testFactory.start(true), m_kicker, m_preIndexer, m_spindexer))
-        .onFalse(new RunCommand(()->testFactory.stop(), m_kicker, m_preIndexer, m_spindexer))
         .whileTrue(runIntakeRollers)
         // .whileTrue(new AgitateIntake(m_intakeDeploy))
-        .whileTrue(new RepeatCommand(new InstantCommand(()->testFactory.periodic())));
-        // .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     m_driverController.leftTrigger()
       .onTrue(new IntakeDeploy(m_intakeDeploy))
       .whileTrue(runIntakeRollers)
@@ -177,7 +173,10 @@ public class RobotContainer {
     // .onFalse(new HomeHood(m_hood));
 
     m_driverController.a().whileTrue(new HomeHood(m_hood));
-    m_driverController.b().whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kShooterStowState));
+    m_driverController.b()
+      .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState))
+      .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));;
+    m_driverController.povLeft().whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kShooterStowState));
     m_driverController.y()
       .whileTrue(new RunCommand(()->m_intakeRollers.set(-0.3), m_intakeRollers))
       .onFalse(new RunCommand(()->m_intakeRollers.set(0.0), m_intakeRollers));
@@ -210,6 +209,13 @@ public class RobotContainer {
         Pose2d shooterPose = m_drive.getCurrentPose().plus(ShooterConstants.kRobotToShooter);
         SmartDashboard.putString("Current Shooter State", "new ShooterState(" +  String.valueOf(PhotonUtils.getDistanceToPose(shooterPose, AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
       })
+    );
+
+    SmartDashboard.putData("Align To Hub",
+      new ParallelCommandGroup(
+        new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
+        new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.RealShootingValues)
+      )
     );
   }
  
