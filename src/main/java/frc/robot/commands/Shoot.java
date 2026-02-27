@@ -30,7 +30,7 @@ public class Shoot extends Command {
     private final DriveSubsystem driveData;
     private final HoodIO hood;
     private final FlywheelIO flywheel;
-    private final IntakeRollersTalonFX intakeRollerData;
+    private final Spindexer spindexer;
     private final boolean stopFlywheelOnEnd;
     private double lastShotTime = 0;
     private boolean spindexerDirection = true;
@@ -52,8 +52,8 @@ public class Shoot extends Command {
         this.driveData = driveData;
         this.hood = hood;
         this.flywheel = flywheel;
-        this.intakeRollerData = rollers;
         this.stopFlywheelOnEnd = stopFlywheelOnEnd;
+        this.spindexer = spindexer;
         this.neeedAlign = neeedAlign;
 
         if (stopFlywheelOnEnd){
@@ -99,7 +99,7 @@ public class Shoot extends Command {
     @Override
     public void execute() {
         // Only feed when both hood and flywheel report on-target
-        boolean hoodReady = hood.atTarget(10.0);
+        boolean hoodReady = hood.atTarget(3.0);
         boolean flyReady = flywheel.atTarget(500);
         boolean aligned = driveData.getAligned();
         if (!neeedAlign){
@@ -109,7 +109,7 @@ public class Shoot extends Command {
         if (Robot.isSimulation()){ 
             double now = Timer.getFPGATimestamp();
 
-            if (hoodReady && flyReady && aligned && now - lastShotTime > 0.12 && intakeRollerData.hasBalls()) {
+            if (hoodReady && flyReady && aligned && now - lastShotTime > 0.12 && spindexer.hasBalls()) {
                 double kShooterEfficiency = 0.7;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
@@ -122,14 +122,14 @@ public class Shoot extends Command {
                 FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle())));
 
                 lastShotTime = now;
-                intakeRollerData.removeBall();
+                spindexer.removeBall();
             }
         }
 
         if (hoodReady && flyReady && indexingStopped && aligned) {
             passthroughFactory.start(spindexerDirection);
             indexingStopped = false;
-        } else if (!aligned) {
+        } else if (!(aligned && flyReady && hoodReady)) {
             passthroughFactory.stop();
             indexingStopped = true;
         }

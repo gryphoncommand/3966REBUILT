@@ -19,6 +19,7 @@ public class Spindexer extends SubsystemBase {
     private SparkClosedLoopController pid = spindexerMotor.getClosedLoopController();
     private RelativeEncoder encoder = spindexerMotor.getEncoder();
     private double targetReference = 0.0;
+    private int simBalls = 8;
 
     public Spindexer(){
         spindexerMotor.configure(SpindexerConfig.SpindexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -81,5 +82,28 @@ public class Spindexer extends SubsystemBase {
 
     public double getStatorCurrent(){
         return spindexerMotor.getOutputCurrent();
+    }
+
+
+    public void addBall(){
+        simBalls += 1;
+        if (simBalls >= 51){
+            simBalls = 50;
+        }
+    }
+
+    public void removeBall(){
+        simBalls -= 1;
+        if (simBalls < 0){
+            simBalls = 0;
+        }
+    }
+
+    public boolean hasBalls(){
+        return simBalls > 0;
+    }
+
+    public boolean isFull(){
+      return simBalls >= 50;
     }
 }

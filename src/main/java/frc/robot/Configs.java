@@ -174,7 +174,7 @@ public final class Configs {
         static {
                 flywheelConfig
                         .idleMode(IdleMode.kCoast)
-                        .smartCurrentLimit(70)
+                        .smartCurrentLimit(90)
                         .inverted(false)
                         .openLoopRampRate(0)
                         .closedLoopRampRate(0);
@@ -184,13 +184,13 @@ public final class Configs {
                 flywheelConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(0.0001, 0.0, 0.000001)
+                    .pid(0.0001, 1e-6, 0.0)
                     .iZone(100)
                     .outputRange(-1, 1);
                 flywheelConfig.closedLoop.feedForward
-                    .kS(0.01911)
-                    .kV(0.00186)
-                    .kA(0.9);
+                    .kS(0.22004)
+                    .kV(0.00184)
+                    .kA(0.0);
 
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
                 // PID + FF tuning
@@ -292,7 +292,7 @@ public final class Configs {
                 SpindexerConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(0.0003, 0.0, 0.0)
+                    .pid(0.0001, 0.0, 0.0)
                     .iZone(100)
                     .outputRange(-0.9, 0.9);
                 SpindexerConfig.closedLoop.feedForward

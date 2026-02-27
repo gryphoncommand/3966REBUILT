@@ -178,6 +178,9 @@ public final class Constants {
     public static int kFollowerWheelCanID = 10;
     public static int kHoodCANID = 11;
 
+    public static double kFlywheelRPMOffset = 150;
+    public static double kPhaseDelay = 0.2;
+
     public static double kHoodGearRatio = 198/10;
     public static double kHoodLengthMeters = Units.inchesToMeters(5);
 
@@ -185,8 +188,7 @@ public final class Constants {
     public static double kHoodMinAngleDeg = 22.6;
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
 
-    public static Transform2d kRobotToShooterFake = new Transform2d(0.0, 0.0, new Rotation2d(Math.PI/2));
-    public static Transform2d kRobotToShooter = new Transform2d(0.2619756, 0.0, new Rotation2d(Math.PI/2));
+    public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(Math.PI/2));
 
 
     public static ShooterState kShooterStowState = new ShooterState(3, kHoodMinAngleDeg, 0, 1.2);
@@ -194,17 +196,19 @@ public final class Constants {
 
     public static List<ShooterState> FakeShootingValues = List.of(
       new ShooterState(1.5, 25.0, 1625, 0.55),
-      new ShooterState(2.5, 28.0, 1775, 0.68),
-      new ShooterState(3.5, 32.0, 1925, 0.78),
+      new ShooterState(2.5, 28.0, 1850, 0.77),
+      new ShooterState(3.5, 32.0, 1925, 0.82),
       new ShooterState(4.5, 35.0, 2075, 0.85),
       new ShooterState(6.0, 38.0, 2425, 0.95)
     );
 
     public static List<ShooterState> RealShootingValues = List.of(
       new ShooterState(1.545, 23, 2375, 0.75),
-      new ShooterState(2.095, 26, 2625, 1),
-      new ShooterState(2.3634117146702667, 30, 2425, 0.9),
-      new ShooterState(3.1684995305101644, 35, 2525, 0.87)
+      new ShooterState(2.095, 26, 2450, 1.1),
+      new ShooterState(2.493242591256782, 31, 2525, 1.15),
+      new ShooterState(3.1684995305101644, 35, 2650, 1.1),
+      new ShooterState(3.82, 38, 2680, 1.04)
+      
     );
 
     public static List<ShooterState> FakePassingValues = List.of(
@@ -226,7 +230,7 @@ public final class Constants {
     public static double kKickerGearRatio = 28/24;
 
     public static double kPreIndexerSpeed = 1000;
-    public static double kSpindexerSpeed = 5000;
+    public static double kSpindexerSpeed = 2000;
     public static double kKickerSpeed = 6500;
     
   }
@@ -237,7 +241,8 @@ public final class Constants {
     // Base spool/travel step (0.124) divided by gearbox ratio gives inches per motor rotation
     public static double kInchesPerMotorRotation = 15/kMotorRotationsPer15Inch;
     public static double kMotorRotationsPerInch = 1/kInchesPerMotorRotation;
-    public static double kClimbPosition = 80;
+    public static double kFullUpPosition = 80;
+    public static double kClimbPosition = 40;
     public static int kClimberCanID = 17;
   }
 

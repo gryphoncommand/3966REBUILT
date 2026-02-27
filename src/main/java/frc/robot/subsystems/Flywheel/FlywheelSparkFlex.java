@@ -33,7 +33,8 @@ public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   public void periodic() {
     SmartDashboard.putNumber("Shooter Velocity (RPM)", getVelocity());
     SmartDashboard.putNumber("Desired Flywheel Speed", pid.getSetpoint());
-    Logger.recordOutput("Flywheel Applied Output", shooterMotor.getAppliedOutput());
+    Logger.recordOutput("Flywheel Applied Output (Duty Cycle)", shooterMotor.getAppliedOutput());
+    Logger.recordOutput("Flywheel Applied Output (Volts)", getVoltage());
   }
 
   @Override

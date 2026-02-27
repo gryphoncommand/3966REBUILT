@@ -11,11 +11,13 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.GryphonLib.ShooterState;
 import frc.GryphonLib.ShooterInterpolator;
+import frc.littletonUtils.LoggedTunableNumber;
 
 import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.List;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
 
 public class PrepareSOTM extends Command {
@@ -25,6 +27,7 @@ public class PrepareSOTM extends Command {
     private final DriveSubsystem driveData;
     private final List<ShooterState> table;
     private Pose2d effectiveGoalPose;
+    private LoggedTunableNumber kPhaseDelay = new LoggedTunableNumber("Shooter Phase Delay", ShooterConstants.kPhaseDelay);
 
     public PrepareSOTM(
             HoodIO hood,
@@ -45,6 +48,8 @@ public class PrepareSOTM extends Command {
     @Override
     public void execute() {
         SmartDashboard.putBoolean("SOTM Goal Calculating", true);
+        //TODO: Test & Remove
+        Logger.recordOutput("Current Phase Delay", kPhaseDelay.get());
 
         Pose2d hubPose = AlignmentConstants.HubPose;
 
@@ -63,7 +68,7 @@ public class PrepareSOTM extends Command {
 
         for (int i = 0; i < 5; i++) {
             var timeOfFlight = Seconds.of(state.flightTimeSec());
-            effectiveGoalPose = hubPose.exp(shotMovement.toTwist2d(timeOfFlight.in(Seconds)));
+            effectiveGoalPose = hubPose.exp(shotMovement.toTwist2d(timeOfFlight.in(Seconds) + kPhaseDelay.getAsDouble()));
             distanceToGoal = PhotonUtils.getDistanceToPose(shooterPose, effectiveGoalPose);
             state = ShooterInterpolator.interpolate(
                 table, distanceToGoal);
@@ -71,9 +76,15 @@ public class PrepareSOTM extends Command {
 
         driveData.getField().getObject("SOTM Goal").setPose(effectiveGoalPose);
         
+        double rpm = state.flywheelRPM();
+
+        if(flywheel.getVoltage() > 7.5 && state.flywheelRPM()-flywheel.getVelocity() > 50){
+            rpm += ShooterConstants.kFlywheelRPMOffset;
+        }
+
 
         hood.setAngle(state.hoodAngleDeg());
-        flywheel.setVelocity(state.flywheelRPM());
+        flywheel.setVelocity(rpm);
     }
 
     @Override

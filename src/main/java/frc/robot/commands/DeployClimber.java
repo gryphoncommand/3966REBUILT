@@ -14,11 +14,11 @@ public class DeployClimber extends Command {
 
     @Override
     public void initialize() {
-        climber.setPosition(ClimberConstants.kClimbPosition);
+        climber.setPosition(ClimberConstants.kFullUpPosition);
     }
 
     @Override
     public void end(boolean interrupted) {
-        climber.setPosition(0);
+        climber.setPosition(ClimberConstants.kClimbPosition);
     }
 }

@@ -19,7 +19,7 @@ import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Hood.HoodIO;
-import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
+import frc.robot.subsystems.Indexer.Spindexer;
 
 /**
  * Shoots all balls currently recorded in the hopper (simBalls).
@@ -31,16 +31,16 @@ public class ShootAllInHopper extends Command {
 	private final DriveSubsystem driveData;
 	private final HoodIO hood;
 	private final FlywheelIO flywheel;
-	private final IntakeRollersTalonFX intakeRollers;
+	private final Spindexer spindexer;
 
 	private double lastShotTime = 0.0;
 	private static final double kShotIntervalSim = 0.15; // seconds between shots
 
-	public ShootAllInHopper(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers) {
+	public ShootAllInHopper(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, Spindexer spindexer) {
 		this.driveData = driveData;
 		this.hood = hood;
 		this.flywheel = flywheel;
-		this.intakeRollers = rollers;
+		this.spindexer = spindexer;
 
 	}
 
@@ -57,7 +57,7 @@ public class ShootAllInHopper extends Command {
 		if (Robot.isSimulation()) {
 			double now = Timer.getFPGATimestamp();
 
-			if (hoodReady && flyReady && now - lastShotTime > kShotIntervalSim && intakeRollers.hasBalls()) {
+			if (hoodReady && flyReady && now - lastShotTime > kShotIntervalSim && spindexer.hasBalls()) {
 				double kShooterEfficiency = 0.7;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
@@ -70,7 +70,7 @@ public class ShootAllInHopper extends Command {
                 FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle())));
 
                 lastShotTime = now;
-                intakeRollers.removeBall();
+                spindexer.removeBall();
 			} else {
                 if (hoodReady && flyReady){
                     // I dunno what i was thinking here lol
@@ -100,7 +100,7 @@ public class ShootAllInHopper extends Command {
 	@Override
 	public boolean isFinished() {
 		// Finish when there are no more balls recorded in the intake/feeder.
-		return !intakeRollers.hasBalls();
+		return !spindexer.hasBalls();
 	}
 
 	@Override
