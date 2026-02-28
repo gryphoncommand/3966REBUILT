@@ -203,13 +203,20 @@ public final class Constants {
     );
 
     public static List<ShooterState> RealShootingValues = List.of(
-      new ShooterState(1.545, 23, 2375, 0.75),
-      new ShooterState(2.095, 26, 2450, 1.1),
-      new ShooterState(2.493242591256782, 31, 2525, 1.15),
-      new ShooterState(3.1684995305101644, 35, 2650, 1.1),
-      new ShooterState(3.82, 38, 2680, 1.04)
-      
-    );
+      new ShooterState(1.545, 23.0, 2375, 0.75),
+      new ShooterState(1.820, 24.5, 2415, 0.92), // Interpolated
+      new ShooterState(2.095, 26.0, 2450, 1.10),
+      new ShooterState(2.300, 29.0, 2480, 1.12), // Interpolated
+      new ShooterState(2.493, 31.0, 2500, 1.15),
+      new ShooterState(2.850, 33.5, 2575, 1.13), // Interpolated
+      new ShooterState(3.168, 35.0, 2650, 1.10),
+      new ShooterState(3.500, 36.5, 2665, 1.07), // Interpolated
+      new ShooterState(3.820, 38.0, 2680, 1.04),
+      new ShooterState(4.150, 38.5, 2800, 1.07), // Interpolated
+      new ShooterState(4.414, 39.0, 2900, 1.10),
+      new ShooterState(4.800, 40.5, 3000, 1.18), // Extended Range
+      new ShooterState(5.250, 42.0, 3100, 1.25)  // Extended Range
+  );
 
     public static List<ShooterState> FakePassingValues = List.of(
       new ShooterState(1.5, kHoodMaxAngleDeg, 1300, 0.55),

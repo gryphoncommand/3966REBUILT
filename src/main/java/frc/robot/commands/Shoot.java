@@ -38,6 +38,7 @@ public class Shoot extends Command {
     private FeedShooterFactory passthroughFactory;
     private boolean indexingStopped = true;
     private boolean neeedAlign = true;
+    private boolean reachedSetpoint;
 
     /**
      * Shoot command: runs the flywheel (assumed already set) and only feeds balls
@@ -95,6 +96,7 @@ public class Shoot extends Command {
         // Rollers start stopped until shooter is ready.
         passthroughFactory.stop();
         indexingStopped = true;
+        reachedSetpoint = true;
     }
 
     @Override
@@ -106,12 +108,20 @@ public class Shoot extends Command {
         if (!neeedAlign){
             aligned = true;
         } 
+
+        if (flywheel.atTarget(100)){
+            reachedSetpoint = true;
+        }
+        
+        if (!reachedSetpoint){
+            return;
+        }
         
         if (Robot.isSimulation()){ 
             double now = Timer.getFPGATimestamp();
 
             if (hoodReady && flyReady && aligned && now - lastShotTime > 0.12 && spindexer.hasBalls()) {
-                double kShooterEfficiency = 0.7;
+                double kShooterEfficiency = 0.5;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
                 double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;

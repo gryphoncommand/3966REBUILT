@@ -40,6 +40,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -225,7 +226,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     var deliveredSpeeds = fieldRelative
     ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-      (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()))
+      (Robot.isReal() ? getRotation() : getCurrentPose().getRotation().plus(new Rotation2d(DriverStation.getAlliance().get() == Alliance.Blue ? 0 : Math.PI))))
       : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered);
 
     
@@ -274,7 +275,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void zeroHeading() {
     gyroOffset = m_gyro.getAngle(); // Set current yaw as zero
     Pose2d currentPose = poseEstimator.getLatestPose();
-    poseEstimator.resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), new Rotation2d()));
+    poseEstimator.resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), DriverStation.getAlliance().get() == Alliance.Blue ? new Rotation2d() : new Rotation2d(Math.PI)));
   }
 
   public void setHeading(double angle) {

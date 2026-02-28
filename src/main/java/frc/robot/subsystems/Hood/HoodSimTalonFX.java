@@ -32,10 +32,10 @@ public class HoodSimTalonFX extends SubsystemBase implements HoodIO {
     private final TalonFXSimState hoodSimState =
         hoodMotor.getSimState();
 
-    double jKgMS = 0.001;// SingleJointedArmSim.estimateMOI(ShooterConstants.kHoodLengthMeters, Units.lbsToKilograms(1.5));
+    double jKgMS = SingleJointedArmSim.estimateMOI(ShooterConstants.kHoodLengthMeters, Units.lbsToKilograms(1.5));
     
 
-    private final SingleJointedArmSim hoodSim = new SingleJointedArmSim(DCMotor.getKrakenX44(1), ShooterConstants.kHoodGearRatio, jKgMS, ShooterConstants.kHoodLengthMeters, Units.degreesToRadians(ShooterConstants.kHoodMinAngleDeg), Units.degreesToRadians(ShooterConstants.kHoodMaxAngleDeg), false, Units.degreesToRadians(ShooterConstants.kHoodMinAngleDeg));
+    private final SingleJointedArmSim hoodSim = new SingleJointedArmSim(DCMotor.getKrakenX44(1), ShooterConstants.kHoodGearRatio, jKgMS, ShooterConstants.kHoodLengthMeters, Units.degreesToRadians(ShooterConstants.kHoodMinAngleDeg), Units.degreesToRadians(ShooterConstants.kHoodMaxAngleDeg), true, Units.degreesToRadians(ShooterConstants.kHoodMinAngleDeg));
 
     private double targetAngleDeg = 0;
 
@@ -92,7 +92,7 @@ public class HoodSimTalonFX extends SubsystemBase implements HoodIO {
     @Override
     public void setAngle(double degrees) {
         targetAngleDeg = degrees;
-        SmartDashboard.putNumber("Requested Hood Position", degrees);
+        SmartDashboard.putNumber("Desired Hood Angle", degrees);
         hoodMotor.setControl(
             new PositionVoltage(
                 Units.degreesToRotations(degrees)

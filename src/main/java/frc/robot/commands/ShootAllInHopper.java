@@ -40,6 +40,7 @@ public class ShootAllInHopper extends Command {
     private FeedShooterFactory passthroughFactory;
     private boolean indexingStopped = true;
     private boolean neeedAlign = true;
+    private boolean reachedSetpoint;
 	private final Debouncer endTrigger = new Debouncer(1);
 
     /**
@@ -98,6 +99,7 @@ public class ShootAllInHopper extends Command {
         // Rollers start stopped until shooter is ready.
         passthroughFactory.stop();
         indexingStopped = true;
+        reachedSetpoint = false;
     }
 
     @Override
@@ -109,6 +111,14 @@ public class ShootAllInHopper extends Command {
         if (!neeedAlign){
             aligned = true;
         } 
+
+        if (flywheel.atTarget(100)){
+            reachedSetpoint = true;
+        }
+        
+        if (!reachedSetpoint){
+            return;
+        }
         
         if (Robot.isSimulation()){ 
             double now = Timer.getFPGATimestamp();

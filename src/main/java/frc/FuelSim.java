@@ -16,7 +16,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class FuelSim {
     private static final double PERIOD = 0.02; // sec
-    private static int subticks = 5;
+    private static int subticks = 1;
     private static final Translation3d GRAVITY = new Translation3d(0, 0, -9.81); // m/s^2
     private static final double FIELD_COR = 0.3;//Math.sqrt(22 / 51.5); // coefficient of restitution with the field
     private static final double FUEL_COR = 0.5; // coefficient of restitution with another fuel
@@ -28,6 +28,8 @@ public class FuelSim {
     private static final double FRICTION = 0.3; // proportion of horizontal velocity to lose per second while on ground
 
     private static FuelSim instance = null;
+
+    private static boolean recycle1Fuel = true;
 
     private static final Translation3d[] FIELD_XZ_LINE_STARTS = {
         new Translation3d(0, 0, 0),
@@ -182,6 +184,7 @@ public class FuelSim {
     }
 
     private ArrayList<Fuel> fuels = new ArrayList<Fuel>();
+    private Fuel singleFuel;
     private boolean running = false;
     private Supplier<Pose2d> robotSupplier = null;
     private Supplier<ChassisSpeeds> robotSpeedsSupplier = null;
@@ -212,30 +215,34 @@ public class FuelSim {
      * Spawns fuel in the neutral zone and depots
      */
     public void spawnStartingFuel() {
-        // Center fuel
-        Translation3d center = new Translation3d(FIELD_LENGTH / 2, FIELD_WIDTH / 2, FUEL_RADIUS);
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 6; j++) {
-                fuels.add(new Fuel(center.plus(new Translation3d(0.076 + 0.152 * j, 0.0254 + 0.076 + 0.152 * i,
-        0))));
-                fuels.add(new Fuel(center.plus(new Translation3d(-0.076 - 0.152 * j, 0.0254 + 0.076 + 0.152 * i,
-        0))));
-                fuels.add(new Fuel(center.plus(new Translation3d(0.076 + 0.152 * j, -0.0254 - 0.076 - 0.152 * i,
-        0))));
-                fuels.add(new Fuel(center.plus(new Translation3d(-0.076 - 0.152 * j, -0.0254 - 0.076 - 0.152 * i,
-        0))));
+        if (recycle1Fuel) {
+            singleFuel = new Fuel(new Translation3d(FIELD_LENGTH / 2, FIELD_WIDTH / 2, FUEL_RADIUS));
+        } else {
+            // Center fuel
+            Translation3d center = new Translation3d(FIELD_LENGTH / 2, FIELD_WIDTH / 2, FUEL_RADIUS);
+            for (int i = 0; i < 15; i++) {
+                for (int j = 0; j < 6; j++) {
+                    fuels.add(new Fuel(center.plus(new Translation3d(0.076 + 0.152 * j, 0.0254 + 0.076 + 0.152 * i,
+            0))));
+                    fuels.add(new Fuel(center.plus(new Translation3d(-0.076 - 0.152 * j, 0.0254 + 0.076 + 0.152 * i,
+            0))));
+                    fuels.add(new Fuel(center.plus(new Translation3d(0.076 + 0.152 * j, -0.0254 - 0.076 - 0.152 * i,
+            0))));
+                    fuels.add(new Fuel(center.plus(new Translation3d(-0.076 - 0.152 * j, -0.0254 - 0.076 - 0.152 * i,
+            0))));
+                }
             }
-        }
 
-        // Depots
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 4; j++) {
-                fuels.add(new Fuel(new Translation3d(0.076 + 0.152 * j, 5.95 + 0.076 + 0.152 * i, FUEL_RADIUS)));
-                fuels.add(new Fuel(new Translation3d(0.076 + 0.152 * j, 5.95 - 0.076 - 0.152 * i, FUEL_RADIUS)));
-                fuels.add(new Fuel(
-                        new Translation3d(FIELD_LENGTH - 0.076 - 0.152 * j, 2.09 + 0.076 + 0.152 * i, FUEL_RADIUS)));
-                fuels.add(new Fuel(
-                        new Translation3d(FIELD_LENGTH - 0.076 - 0.152 * j, 2.09 - 0.076 - 0.152 * i, FUEL_RADIUS)));
+            // Depots
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 4; j++) {
+                    fuels.add(new Fuel(new Translation3d(0.076 + 0.152 * j, 5.95 + 0.076 + 0.152 * i, FUEL_RADIUS)));
+                    fuels.add(new Fuel(new Translation3d(0.076 + 0.152 * j, 5.95 - 0.076 - 0.152 * i, FUEL_RADIUS)));
+                    fuels.add(new Fuel(
+                            new Translation3d(FIELD_LENGTH - 0.076 - 0.152 * j, 2.09 + 0.076 + 0.152 * i, FUEL_RADIUS)));
+                    fuels.add(new Fuel(
+                            new Translation3d(FIELD_LENGTH - 0.076 - 0.152 * j, 2.09 - 0.076 - 0.152 * i, FUEL_RADIUS)));
+                }
             }
         }
     }
@@ -244,7 +251,11 @@ public class FuelSim {
      * Adds array of `Translation3d`'s to NetworkTables at "/Fuel Simulation/Fuels"
      */
     public void logFuels() {
-        Logger.recordOutput("Fuels", fuels.stream().map((fuel) -> fuel.pos).toArray(Translation3d[]::new));
+        if (recycle1Fuel && singleFuel != null) {
+            Logger.recordOutput("Fuels", new Translation3d[]{singleFuel.pos});
+        } else {
+            Logger.recordOutput("Fuels", fuels.stream().map(f -> f.pos).toArray(Translation3d[]::new));
+        }
         Logger.recordOutput("Fuels Scored", (DriverStation.getAlliance().get() == Alliance.Blue ? Hub.BLUE_HUB : Hub.RED_HUB).score);
     }
 
@@ -306,18 +317,19 @@ public class FuelSim {
      */
     public void stepSim() {
         for (int i = 0; i < subticks; i++) {
-            for (Fuel fuel : fuels) {
-                fuel.update();
-            }
+            if (recycle1Fuel && singleFuel != null) singleFuel.update();
+            else for (Fuel fuel : fuels) fuel.update();
 
-            handleFuelCollisions(fuels);
+            if (!recycle1Fuel) handleFuelCollisions(fuels);
 
             if (robotSupplier != null) {
-                handleRobotCollisions(fuels);
+                if (recycle1Fuel && singleFuel != null) handleRobotCollision(singleFuel, robotSupplier.get(),
+                        new Translation2d(robotSpeedsSupplier.get().vxMetersPerSecond,
+                                robotSpeedsSupplier.get().vyMetersPerSecond));
+                else handleRobotCollisions(fuels);
                 handleIntakes(fuels);
             }
         }
-
         logFuels();
     }
 
@@ -327,7 +339,16 @@ public class FuelSim {
      * @param vel Initial velocity vector
      */
     public void spawnFuel(Translation3d pos, Translation3d vel) {
-        fuels.add(new Fuel(pos, vel));
+        if (!recycle1Fuel) {
+            fuels.add(new Fuel(pos, vel));
+            return;
+        }
+        if (singleFuel == null) singleFuel = new Fuel(pos, vel);
+        else {
+            singleFuel.pos = pos;
+            singleFuel.vel = vel;
+        }
+        
     }
 
     private void handleRobotCollision(Fuel fuel, Pose2d robot, Translation2d robotVel) {

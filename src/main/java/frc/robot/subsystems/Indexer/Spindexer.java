@@ -93,7 +93,7 @@ public class Spindexer extends SubsystemBase {
     }
 
     public void removeBall(){
-        simBalls -= 1;
+       //  simBalls -= 1;
         if (simBalls < 0){
             simBalls = 0;
         }

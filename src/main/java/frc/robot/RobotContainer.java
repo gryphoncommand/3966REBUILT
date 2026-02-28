@@ -266,12 +266,12 @@ public class RobotContainer {
       .withName("Reset Fuel")
       .ignoringDisable(true));
     
-      CommandScheduler.getInstance().schedule(Commands.runOnce(() -> {
-          FuelSim.getInstance().clearFuel();
-          FuelSim.getInstance().spawnStartingFuel();
-      })
-      .withName("Reset Fuel")
-      .ignoringDisable(true));
+      // CommandScheduler.getInstance().schedule(Commands.runOnce(() -> {
+      //     FuelSim.getInstance().clearFuel();
+      //     FuelSim.getInstance().spawnStartingFuel();
+      // })
+      // .withName("Reset Fuel")
+      // .ignoringDisable(true));
   }
 
   private void configureNamedCommands(){

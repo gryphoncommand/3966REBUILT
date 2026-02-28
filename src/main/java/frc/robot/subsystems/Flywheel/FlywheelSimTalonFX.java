@@ -25,7 +25,7 @@ import frc.robot.Constants.ShooterConstants;
 
 public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     private final FlywheelSim shooterSim =
-        new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(2), 0.00043, 1), DCMotor.getNeoVortex(2), 0.0);
+        new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(2), 0.0043, 1), DCMotor.getNeoVortex(2), 1.0);
 
     private double targetVelocityRpm = 0;
     private double wheelAngle = 0.0;
@@ -122,6 +122,6 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     }
 
     public void simulateShot(){
-        m_flywheelSim.setRotorVelocity(m_flywheelMotor.getVelocity().getValue().in(RotationsPerSecond) - (400 / 60));
+        m_flywheelSim.setRotorVelocity(m_flywheelMotor.getVelocity().getValue().in(RotationsPerSecond) - (40));
     }
 }

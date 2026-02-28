@@ -197,7 +197,7 @@ public final class Configs {
                 slot0ConfigsDrive.kS = 0.0;
                 slot0ConfigsDrive.kV = 0.00175*60;
                 slot0ConfigsDrive.kA = 0.0;
-                slot0ConfigsDrive.kP = 0.0001*60;
+                slot0ConfigsDrive.kP = 0.005*60;
                 slot0ConfigsDrive.kI = 0.0;
                 slot0ConfigsDrive.kD = 0.0;
 
@@ -308,13 +308,13 @@ public final class Configs {
         static {
                 var slot0Configs = HoodConfig.Slot0;
                 // PID + FF tuning
-                slot0Configs.kS = 0.3;
+                slot0Configs.kS = 0.0;
                 slot0Configs.kV = 0;
                 slot0Configs.kA = 0;
-                slot0Configs.kP = 2.5;
-                slot0Configs.kI = 0.1; 
+                slot0Configs.kP = 2.0;
+                slot0Configs.kI = 0.2; 
                 slot0Configs.kD = 0.0;
-                slot0Configs.kG = 0.3;
+                slot0Configs.kG = 0.05;
                 slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
 
 
