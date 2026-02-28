@@ -19,6 +19,7 @@ import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
+import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Hood.HoodIO;
 import frc.robot.subsystems.Indexer.Kicker;
 import frc.robot.subsystems.Indexer.PreIndexer;
@@ -123,6 +124,7 @@ public class Shoot extends Command {
 
                 lastShotTime = now;
                 spindexer.removeBall();
+                ((FlywheelSimTalonFX)flywheel).simulateShot();
             }
         }
 

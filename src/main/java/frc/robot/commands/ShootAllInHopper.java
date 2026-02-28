@@ -21,6 +21,7 @@ import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
+import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Hood.HoodIO;
 import frc.robot.subsystems.Indexer.Kicker;
 import frc.robot.subsystems.Indexer.PreIndexer;
@@ -113,7 +114,7 @@ public class ShootAllInHopper extends Command {
             double now = Timer.getFPGATimestamp();
 
             if (hoodReady && flyReady && aligned && now - lastShotTime > 0.12 && spindexer.hasBalls()) {
-                double kShooterEfficiency = 0.7;
+                double kShooterEfficiency = 0.5;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
                 double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;
@@ -126,6 +127,7 @@ public class ShootAllInHopper extends Command {
 
                 lastShotTime = now;
                 spindexer.removeBall();
+                ((FlywheelSimTalonFX)flywheel).simulateShot();
             }
         }
 

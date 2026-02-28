@@ -286,6 +286,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Stow Intake", new IntakeStow(m_intakeDeploy));
     NamedCommands.registerCommand("Run Intake", runIntakeRollers);
     NamedCommands.registerCommand("Home Hood", new HomeHood(m_hood));
+    NamedCommands.registerCommand("Climb", new DeployClimber(m_climber));
     NamedCommands.registerCommand("Stop", new RunCommand(()->m_drive.stop(), m_drive).withTimeout(1));
   }
 

@@ -235,17 +235,16 @@ public final class Constants {
     
 
     // TODO: figure out what this number should be (Already logged in advantagescope)
-    public static final double kActiveCurrentSpindexer = 20;
+    public static double kActiveCurrentSpindexer = 20;
     
   }
 
   public static class ClimberConstants{
     public static double kGearRatio = 25;
-    public static double kMotorRotationsPer15Inch = 75;
-    // Base spool/travel step (0.124) divided by gearbox ratio gives inches per motor rotation
-    public static double kInchesPerMotorRotation = 15/kMotorRotationsPer15Inch;
+    public static double kMotorRotationsPer10Inch = 70;
+    public static double kInchesPerMotorRotation = 10/kMotorRotationsPer10Inch;
     public static double kMotorRotationsPerInch = 1/kInchesPerMotorRotation;
-    public static double kFullUpPosition = 80;
+    public static double kFullUpPosition = 70;
     public static double kClimbPosition = 40;
     public static int kClimberCanID = 17;
   }

@@ -177,7 +177,7 @@ public final class Configs {
                         .smartCurrentLimit(90)
                         .inverted(false)
                         .openLoopRampRate(0)
-                        .closedLoopRampRate(0);
+                        .closedLoopRampRate(0.02);
                 flywheelConfig.encoder
                     .positionConversionFactor(1)
                     .velocityConversionFactor(1);
@@ -195,10 +195,10 @@ public final class Configs {
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
                 // PID + FF tuning
                 slot0ConfigsDrive.kS = 0.0;
-                slot0ConfigsDrive.kV = 0.0;
+                slot0ConfigsDrive.kV = 0.00175*60;
                 slot0ConfigsDrive.kA = 0.0;
-                slot0ConfigsDrive.kP = 0.0;
-                slot0ConfigsDrive.kI = 1.0;
+                slot0ConfigsDrive.kP = 0.0001*60;
+                slot0ConfigsDrive.kI = 0.0;
                 slot0ConfigsDrive.kD = 0.0;
 
                 flywheelFXConfig.CurrentLimits.withSupplyCurrentLimitEnable(false);
@@ -219,7 +219,7 @@ public final class Configs {
                 slot0Configs.kA = 0;
                 slot0Configs.kP = 1.0;
                 slot0Configs.kI = 0;
-                slot0Configs.kD = 0;
+                slot0Configs.kD = 0.4;
 
                 ClimberConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
@@ -328,8 +328,8 @@ public final class Configs {
                 HoodConfig.MotorOutput.PeakForwardDutyCycle = 0.13;
                 HoodConfig.MotorOutput.PeakReverseDutyCycle = 0.13;
 
-                HoodConfig.Voltage.PeakForwardVoltage = 1;
-                HoodConfig.Voltage.PeakReverseVoltage = -1;
+                HoodConfig.Voltage.PeakForwardVoltage = 3;
+                HoodConfig.Voltage.PeakReverseVoltage = -3;
                 
                 // Motor behavior
                 HoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;

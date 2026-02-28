@@ -120,4 +120,8 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     public double getVoltage() {
         return m_flywheelMotor.getMotorVoltage().getValue().in(Volts);
     }
+
+    public void simulateShot(){
+        m_flywheelSim.setRotorVelocity(m_flywheelMotor.getVelocity().getValue().in(RotationsPerSecond) - (400 / 60));
+    }
 }

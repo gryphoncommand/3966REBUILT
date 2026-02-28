@@ -75,19 +75,26 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Stow Intake"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Depot shot to climb"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "Home Hood"
+                }
+              },
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Climb"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Depot shot to climb"
+                      }
+                    }
+                  ]
                 }
               }
             ]
