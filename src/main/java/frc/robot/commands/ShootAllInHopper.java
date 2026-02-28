@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -14,73 +15,59 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.FuelSim;
+import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Hood.HoodIO;
+import frc.robot.subsystems.Indexer.Kicker;
+import frc.robot.subsystems.Indexer.PreIndexer;
 import frc.robot.subsystems.Indexer.Spindexer;
+import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
 
-/**
- * Shoots all balls currently recorded in the hopper (simBalls).
- * This command will keep firing until the intake/feeder reports no more balls.
- * In simulation it spawns fuel via FuelSim (and decrements the simulated ball count).
- */
 public class ShootAllInHopper extends Command {
 
-	private final DriveSubsystem driveData;
-	private final HoodIO hood;
-	private final FlywheelIO flywheel;
-	private final Spindexer spindexer;
+    private final DriveSubsystem driveData;
+    private final HoodIO hood;
+    private final FlywheelIO flywheel;
+    private final Spindexer spindexer;
+    private final boolean stopFlywheelOnEnd;
+    private double lastShotTime = 0;
+    private boolean spindexerDirection = true;
+    private FeedShooterFactory passthroughFactory;
+    private boolean indexingStopped = true;
+    private boolean neeedAlign = true;
+	private final Debouncer endTrigger = new Debouncer(1);
 
-	private double lastShotTime = 0.0;
-	private static final double kShotIntervalSim = 0.15; // seconds between shots
+    /**
+     * Shoot command: runs the flywheel (assumed already set) and only feeds balls
+     * into the shooter once hood and flywheel are at their targets.
+     *
+     * @param hood hood subsystem (used to check atTarget)
+     * @param flywheel flywheel subsystem (used to check atTarget)
+     * @param rollers intake/feeder rollers used to feed fuel into the flywheel
+     * @param feedRPM roller velocity to use when feeding
+     * @param stopFlywheelOnEnd if true, zeroes the flywheel when the command ends
+     */
+    public ShootAllInHopper(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, boolean stopFlywheelOnEnd, boolean neeedAlign) {
+        this.driveData = driveData;
+        this.hood = hood;
+        this.flywheel = flywheel;
+        this.stopFlywheelOnEnd = stopFlywheelOnEnd;
+        this.spindexer = spindexer;
+        this.neeedAlign = neeedAlign;
 
-	public ShootAllInHopper(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, Spindexer spindexer) {
-		this.driveData = driveData;
-		this.hood = hood;
-		this.flywheel = flywheel;
-		this.spindexer = spindexer;
+        if (stopFlywheelOnEnd){
+            addRequirements(flywheel);
+        }
 
-	}
+        passthroughFactory = new FeedShooterFactory(kicker, preIndexer, spindexer);
+        addRequirements(kicker, preIndexer, spindexer);
+    }
 
-	@Override
-	public void initialize() {
-		setName("Shoot All In Hopper");
-	}
-
-	@Override
-	public void execute() {
-		boolean hoodReady = hood.atTarget(3.0);
-		boolean flyReady = flywheel.atTarget(50);
-
-		if (Robot.isSimulation()) {
-			double now = Timer.getFPGATimestamp();
-
-			if (hoodReady && flyReady && now - lastShotTime > kShotIntervalSim && spindexer.hasBalls()) {
-				double kShooterEfficiency = 0.7;
-
-                double wheelRPM = flywheel.getVelocity(); // RPM
-                double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;
-                double wheelRadius = Units.inchesToMeters(2);
-                double ballSpeed = wheelRadPerSec * wheelRadius * kShooterEfficiency;
-
-                Pose2d ballPose2d = driveData.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter);
-                Translation3d initialPosition = new Translation3d(ballPose2d.getX(), ballPose2d.getY(), Units.inchesToMeters(17.701451));
-                FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle())));
-
-                lastShotTime = now;
-                spindexer.removeBall();
-			} else {
-                if (hoodReady && flyReady){
-                    // I dunno what i was thinking here lol
-                    //passthrough.run();
-                }
-            }
-		}
-	}
-
-	private Translation3d launchVel(LinearVelocity vel, Angle angle) {
+    private Translation3d launchVel(LinearVelocity vel, Angle angle) {
         Pose3d robot = new Pose3d(driveData.getCurrentPose());
         ChassisSpeeds fieldSpeeds = driveData.getCurrentSpeedsFieldRelative();
 
@@ -97,14 +84,77 @@ public class ShootAllInHopper extends Command {
         return new Translation3d(xVel, yVel, verticalVel);
     }
 
-	@Override
-	public boolean isFinished() {
-		// Finish when there are no more balls recorded in the intake/feeder.
-		return !spindexer.hasBalls();
-	}
+    /**
+     * Convenience constructor that leaves the flywheel running when command ends.
+     */
+    public ShootAllInHopper(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer) {
+        this(driveData, hood, flywheel, rollers, kicker, preIndexer, spindexer, false, true);
+    }
 
-	@Override
-	public void end(boolean interrupted) {
+    @Override
+    public void initialize() {
+        setName("Shoot");
+        // Rollers start stopped until shooter is ready.
+        passthroughFactory.stop();
+        indexingStopped = true;
+    }
 
+    @Override
+    public void execute() {
+        // Only feed when both hood and flywheel report on-target
+        boolean hoodReady = hood.atTarget(3.0);
+        boolean flyReady = flywheel.atTarget(500);
+        boolean aligned = driveData.getAligned();
+        if (!neeedAlign){
+            aligned = true;
+        } 
+        
+        if (Robot.isSimulation()){ 
+            double now = Timer.getFPGATimestamp();
+
+            if (hoodReady && flyReady && aligned && now - lastShotTime > 0.12 && spindexer.hasBalls()) {
+                double kShooterEfficiency = 0.7;
+
+                double wheelRPM = flywheel.getVelocity(); // RPM
+                double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;
+                double wheelRadius = Units.inchesToMeters(2);
+                double ballSpeed = wheelRadPerSec * wheelRadius * kShooterEfficiency;
+
+                Pose2d ballPose2d = driveData.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter);
+                Translation3d initialPosition = new Translation3d(ballPose2d.getX(), ballPose2d.getY(), Units.inchesToMeters(17.701451));
+                FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle())));
+
+                lastShotTime = now;
+                spindexer.removeBall();
+            }
+        }
+
+        if (hoodReady && flyReady && indexingStopped && aligned) {
+            passthroughFactory.start(spindexerDirection);
+            indexingStopped = false;
+        } else if (!(aligned && flyReady && hoodReady)) {
+            passthroughFactory.stop();
+            indexingStopped = true;
+        }
+
+        passthroughFactory.periodic();
+    }
+
+    @Override
+    public boolean isFinished() {
+        if (Robot.isReal()) {
+			return endTrigger.calculate(spindexer.getStatorCurrent() < IndexerConstants.kActiveCurrentSpindexer);
+		} else {
+			return !spindexer.hasBalls();
+		}
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        // Always stop feeding rollers. Optionally stop flywheel.
+        passthroughFactory.stop();
+        if (stopFlywheelOnEnd) {
+            flywheel.setVelocity(0);
+        }
     }
 }
