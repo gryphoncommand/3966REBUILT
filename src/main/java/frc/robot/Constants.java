@@ -232,6 +232,9 @@ public final class Constants {
     public static double kPreIndexerSpeed = 1000;
     public static double kSpindexerSpeed = 2000;
     public static double kKickerSpeed = 6500;
+    
+
+    // TODO: figure out what this number should be (Already logged in advantagescope)
     public static final double kActiveCurrentSpindexer = 20;
     
   }
