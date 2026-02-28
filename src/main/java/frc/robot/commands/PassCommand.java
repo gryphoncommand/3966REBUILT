@@ -22,7 +22,7 @@ public class PassCommand extends Command {
         // declare requirements so scheduling conflicts are avoided
         addRequirements(drive, hood, flywheel);
         depot = Math.abs(drive.getCurrentPose().getY() - AlignmentConstants.PassingPoseDepot.getY()) < Math.abs(drive.getCurrentPose().getY() - AlignmentConstants.PassingPoseOutpost.getY());
-
+        
         // choose depot vs outpost align command by comparing current Y
         ConditionalCommand choosePassingAlign = new ConditionalCommand(
             new AlignToGoal(drive, driverController, AlignmentConstants.PassingPoseDepot, true),
@@ -54,7 +54,11 @@ public class PassCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        Pose2d futurePose = drive.getCurrentPose().exp(drive.getCurrentSpeeds().toTwist2d(0.5));
+        Pose2d currentPose = drive.getCurrentPose();
+        if (isInMidfieldBlockZone(currentPose)) {
+            return true;
+        }
+        Pose2d futurePose = currentPose.exp(drive.getCurrentSpeeds().toTwist2d(0.5));
         boolean changed = (Math.abs(futurePose.getY() - AlignmentConstants.PassingPoseDepot.getY()) < Math.abs(futurePose.getY() - AlignmentConstants.PassingPoseOutpost.getY()) != depot);
         return passGroup.isFinished() || changed;
     }
@@ -62,5 +66,10 @@ public class PassCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         passGroup.end(interrupted);
+    }
+
+    private boolean isInMidfieldBlockZone(Pose2d pose) {
+        return Math.abs(pose.getY() - AlignmentConstants.kMidFieldY)
+                < AlignmentConstants.kMidFieldHubBlockWidth / 2.0;
     }
 }

@@ -41,7 +41,10 @@ public class ShootAllInHopper extends Command {
     private boolean indexingStopped = true;
     private boolean neeedAlign = true;
     private boolean reachedSetpoint;
-	private final Debouncer endTrigger = new Debouncer(1);
+    private boolean startedShooting;
+	private final Debouncer endTrigger = new Debouncer(0.5);
+    private final Timer timer = new Timer();
+    private double reachedSetpointTime = 0.0;
 
     /**
      * Shoot command: runs the flywheel (assumed already set) and only feeds balls
@@ -100,22 +103,29 @@ public class ShootAllInHopper extends Command {
         passthroughFactory.stop();
         indexingStopped = true;
         reachedSetpoint = false;
+        startedShooting = false;
+        timer.restart();
+        reachedSetpointTime = 1000;
     }
 
     @Override
     public void execute() {
+        if (spindexer.getStatorCurrent() >= IndexerConstants.kActiveCurrentSpindexer && timer.get() > reachedSetpointTime + 1.5){
+            startedShooting = true;
+        }
         // Only feed when both hood and flywheel report on-target
-        boolean hoodReady = hood.atTarget(3.0);
+        boolean hoodReady = hood.atTarget(5.0);
         boolean flyReady = flywheel.atTarget(500);
         boolean aligned = driveData.getAligned();
         if (!neeedAlign){
             aligned = true;
         } 
 
-        if (flywheel.atTarget(100)){
+        if (flywheel.atTarget(100) && !reachedSetpoint){
             reachedSetpoint = true;
+            reachedSetpointTime = timer.get();
         }
-        
+
         if (!reachedSetpoint){
             return;
         }
@@ -155,7 +165,10 @@ public class ShootAllInHopper extends Command {
     @Override
     public boolean isFinished() {
         if (Robot.isReal()) {
-			return endTrigger.calculate(spindexer.getStatorCurrent() < IndexerConstants.kActiveCurrentSpindexer);
+            if (startedShooting){
+                return endTrigger.calculate(spindexer.getStatorCurrent() < IndexerConstants.kActiveCurrentSpindexer);
+            }
+            return false;
 		} else {
 			return !spindexer.hasBalls();
 		}

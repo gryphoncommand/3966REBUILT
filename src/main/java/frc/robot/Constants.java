@@ -178,7 +178,7 @@ public final class Constants {
     public static int kFollowerWheelCanID = 10;
     public static int kHoodCANID = 11;
 
-    public static double kFlywheelRPMOffset = 150;
+    public static double kFlywheelRPMOffset = 200;
     public static double kPhaseDelay = 0.2;
 
     public static double kHoodGearRatio = 198/10;
@@ -203,12 +203,11 @@ public final class Constants {
     );
 
     public static List<ShooterState> RealShootingValues = List.of(
-      new ShooterState(1.545, 23.0, 2375, 0.75),
-      new ShooterState(1.820, 24.5, 2415, 0.92), // Interpolated
-      new ShooterState(2.095, 26.0, 2450, 1.10),
-      new ShooterState(2.300, 29.0, 2480, 1.12), // Interpolated
-      new ShooterState(2.493, 31.0, 2500, 1.15),
-      new ShooterState(2.850, 33.5, 2575, 1.13), // Interpolated
+      new ShooterState(1.5, 23.0, 2250, 0.9),
+      new ShooterState(2.095, 25.0, 2420, 1.10),
+      new ShooterState(2.300, 28.0, 2450, 1.12), // Interpolated
+      new ShooterState(2.493, 30.0, 2500, 1.15),
+      new ShooterState(2.850, 32.5, 2550, 1.13), // Interpolated
       new ShooterState(3.168, 35.0, 2650, 1.10),
       new ShooterState(3.500, 36.5, 2665, 1.07), // Interpolated
       new ShooterState(3.820, 38.0, 2680, 1.04),
@@ -219,12 +218,12 @@ public final class Constants {
   );
 
     public static List<ShooterState> FakePassingValues = List.of(
-      new ShooterState(1.5, kHoodMaxAngleDeg, 1300, 0.55),
-      new ShooterState(2.5, 53, 1450, 0.68),
-      new ShooterState(3.5, 51, 1600, 0.78),
-      new ShooterState(4.5, 49, 1750, 0.85),
-      new ShooterState(6.0, 47, 1900, 0.95),
-      new ShooterState(8.0, 45, 2700, 0.95)
+      new ShooterState(1.5, kHoodMaxAngleDeg, 2500, 0.9),
+      new ShooterState(2.5, 53, 2750, 0.9),
+      new ShooterState(3.5, 51, 2800, 0.95),
+      new ShooterState(4.5, 49, 2950, 1),
+      new ShooterState(6.0, 47, 3150, 1.05),
+      new ShooterState(8.0, 45, 3550, 1.1)
     );
   }
 
@@ -237,11 +236,10 @@ public final class Constants {
     public static double kKickerGearRatio = 28/24;
 
     public static double kPreIndexerSpeed = 1000;
-    public static double kSpindexerSpeed = 2000;
+    public static double kSpindexerSpeed = 5000;
     public static double kKickerSpeed = 6500;
     
 
-    // TODO: figure out what this number should be (Already logged in advantagescope)
     public static double kActiveCurrentSpindexer = 20;
     
   }
@@ -277,13 +275,16 @@ public final class Constants {
     public static final Pose2d RedHubPose = new Pose2d(11.916, 4.055, new Rotation2d());
     public static final Pose2d BlueHubPose = new Pose2d(4.624, 4.055, new Rotation2d());
 
-    public static final Pose2d HubPose = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? RedHubPose : BlueHubPose;
+    public static Pose2d HubPose = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? RedHubPose : BlueHubPose;
 
     public static final Pose2d BlueAllianceZoneEnd = new Pose2d(4.3, 0, new Rotation2d());
     public static final Pose2d RedAllianceZoneEnd = new Pose2d(12.2, 0, new Rotation2d());
 
-    public static final Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(2.412, 2.2688, new Rotation2d()));
-    public static final Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(2.412, 5.707, new Rotation2d()));
+    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(2.412, 2.2688, new Rotation2d()));
+    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(2.412, 5.707, new Rotation2d()));
+
+    public static final double kMidFieldY = Units.feetToMeters(13.15);
+    public static final double kMidFieldHubBlockWidth = 1.0;
     
     
 

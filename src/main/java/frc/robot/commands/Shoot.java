@@ -102,7 +102,7 @@ public class Shoot extends Command {
     @Override
     public void execute() {
         // Only feed when both hood and flywheel report on-target
-        boolean hoodReady = hood.atTarget(3.0);
+        boolean hoodReady = hood.atTarget(5.0);
         boolean flyReady = flywheel.atTarget(500);
         boolean aligned = driveData.getAligned();
         if (!neeedAlign){

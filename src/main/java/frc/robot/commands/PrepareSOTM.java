@@ -5,6 +5,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Hood.HoodIO;
+import frc.robot.Robot;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.DriveSubsystem;
@@ -68,7 +69,11 @@ public class PrepareSOTM extends Command {
 
         for (int i = 0; i < 5; i++) {
             var timeOfFlight = Seconds.of(state.flightTimeSec());
-            effectiveGoalPose = hubPose.exp(shotMovement.toTwist2d(timeOfFlight.in(Seconds) + kPhaseDelay.getAsDouble()));
+            double tof = timeOfFlight.in(Seconds);
+            if (Robot.isReal()){
+                tof += kPhaseDelay.getAsDouble();
+            }
+            effectiveGoalPose = hubPose.exp(shotMovement.toTwist2d(tof));
             distanceToGoal = PhotonUtils.getDistanceToPose(shooterPose, effectiveGoalPose);
             state = ShooterInterpolator.interpolate(
                 table, distanceToGoal);
@@ -76,7 +81,7 @@ public class PrepareSOTM extends Command {
 
         driveData.getField().getObject("SOTM Goal").setPose(effectiveGoalPose);
         
-        double rpm = state.flywheelRPM();
+        double rpm = state.flywheelRPM() + 150;
 
         if(flywheel.getVoltage() > 7.5 && state.flywheelRPM()-flywheel.getVelocity() > 50){
             rpm += ShooterConstants.kFlywheelRPMOffset;

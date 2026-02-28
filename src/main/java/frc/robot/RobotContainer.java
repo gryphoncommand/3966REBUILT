@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.FuelSim;
+import frc.littletonUtils.AllianceFlipUtil;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
@@ -14,6 +15,7 @@ import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.DeployClimber;
 import frc.robot.commands.FlywheelSysID;
 import frc.robot.commands.HomeHood;
+import frc.robot.commands.PassCommand;
 import frc.robot.commands.PrepareSOTM;
 import frc.robot.commands.SetShooterToDefinedState;
 import frc.robot.commands.SetToDashboardSpeeds;
@@ -44,6 +46,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -135,7 +138,13 @@ public class RobotContainer {
   private void configureButtonBindings() {
     FeedShooterFactory testFactory = new FeedShooterFactory(m_kicker, m_preIndexer, m_spindexer);
     // Driver bindings
-    m_driverController.start().onTrue(new InstantCommand(()->m_drive.zeroHeading(), m_drive));
+    m_driverController.start().onTrue(
+      new InstantCommand(()->{
+        m_drive.zeroHeading();
+        AlignmentConstants.HubPose = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose;
+        AlignmentConstants.PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(2.412, 2.2688, new Rotation2d()));
+        AlignmentConstants.PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(2.412, 5.707, new Rotation2d()));
+      }, m_drive));
     m_driverController.povRight().onTrue(
       new InstantCommand(()->{
         Pose2d shooterPose = m_drive.getCurrentPose().plus(ShooterConstants.kRobotToShooter);
@@ -146,10 +155,10 @@ public class RobotContainer {
     m_driverController.rightBumper()
       .whileTrue(new RepeatCommand(new DeferredCommand(()->
         new ParallelCommandGroup(
-            new AlignToGoal(m_drive, m_driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose, true),
+            new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
             new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.RealShootingValues)
         ), Set.of(m_drive, m_hood, m_flywheel))))
-      .onFalse(new RunCommand(()->m_flywheel.setVelocity(1000), m_flywheel))
+      .onFalse(new RunCommand(()->m_flywheel.set(0), m_flywheel))
       .onFalse(new HomeHood(m_hood));
 
     m_driverController.rightTrigger().whileTrue(runIntakeRollers);
@@ -158,20 +167,20 @@ public class RobotContainer {
         // .whileTrue(new AgitateIntake(m_intakeDeploy))
         .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     m_driverController.leftTrigger()
-      .onTrue(new IntakeDeploy(m_intakeDeploy))
+      .whileTrue(new IntakeDeploy(m_intakeDeploy))
       .whileTrue(runIntakeRollers)
       .whileTrue(new RunPreIndexer(m_preIndexer));
       
     m_driverController.leftBumper().whileTrue(new IntakeStow(m_intakeDeploy));
     m_driverController.x()
-    .toggleOnTrue(new SetToDashboardSpeeds(m_hood, m_flywheel));
-    // .whileTrue(
-    //   new RepeatCommand(new DeferredCommand(()->
-    //     new PassCommand(m_drive, m_driverController, m_hood, m_flywheel)
-    //     , Set.of(m_drive, m_hood, m_flywheel)
-    //   ))
-    // )
-    // .onFalse(new HomeHood(m_hood));
+    .whileTrue(
+      new RepeatCommand(new DeferredCommand(()->
+        new PassCommand(m_drive, m_driverController, m_hood, m_flywheel)
+        , Set.of(m_drive, m_hood, m_flywheel)
+      ))
+    )
+    .onFalse(new RunCommand(()->m_flywheel.set(0), m_flywheel))
+    .onFalse(new HomeHood(m_hood));
 
     m_driverController.a().whileTrue(new HomeHood(m_hood));
     m_driverController.b()
@@ -266,12 +275,12 @@ public class RobotContainer {
       .withName("Reset Fuel")
       .ignoringDisable(true));
     
-      // CommandScheduler.getInstance().schedule(Commands.runOnce(() -> {
-      //     FuelSim.getInstance().clearFuel();
-      //     FuelSim.getInstance().spawnStartingFuel();
-      // })
-      // .withName("Reset Fuel")
-      // .ignoringDisable(true));
+      CommandScheduler.getInstance().schedule(Commands.runOnce(() -> {
+          FuelSim.getInstance().clearFuel();
+          FuelSim.getInstance().spawnStartingFuel();
+      })
+      .withName("Reset Fuel")
+      .ignoringDisable(true));
   }
 
   private void configureNamedCommands(){
@@ -284,10 +293,11 @@ public class RobotContainer {
     );
     NamedCommands.registerCommand("Deploy Intake", new IntakeDeploy(m_intakeDeploy));
     NamedCommands.registerCommand("Stow Intake", new IntakeStow(m_intakeDeploy));
-    NamedCommands.registerCommand("Run Intake", runIntakeRollers);
+    NamedCommands.registerCommand("Run Intake", new RunCommand(()->m_intakeRollers.setVelocity(IntakeConstants.kIntakeSpeedRPM), m_intakeRollers).finallyDo(()->m_intakeRollers.set(0)));
     NamedCommands.registerCommand("Home Hood", new HomeHood(m_hood));
     NamedCommands.registerCommand("Climb", new DeployClimber(m_climber));
     NamedCommands.registerCommand("Stop", new RunCommand(()->m_drive.stop(), m_drive).withTimeout(1));
+    
   }
 
   private void configureLogger(){

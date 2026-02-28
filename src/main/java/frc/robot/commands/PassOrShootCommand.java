@@ -51,7 +51,7 @@ public class PassOrShootCommand extends Command {
         );
 
         shootGroup = new ParallelCommandGroup(
-            new AlignToGoal(drive, driverController, DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose, true),
+            new AlignToGoal(drive, driverController, AlignmentConstants.HubPose, true),
             new PrepareSOTM(hood, flywheel, drive, ShooterConstants.RealShootingValues)
         );
 

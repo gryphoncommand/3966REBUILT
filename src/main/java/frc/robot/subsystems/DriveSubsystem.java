@@ -355,7 +355,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public ChassisSpeeds getCurrentSpeedsFieldRelative(){
-    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), getRotation());
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()).plus(new Rotation2d(DriverStation.getAlliance().get() == Alliance.Blue ? 0 : Math.PI)));
   }
 
   public Command goToPose(Pose2d goalPose){
@@ -418,7 +418,7 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     field2d.getObject("Shooter Pose").setPose(getCurrentPose().transformBy(ShooterConstants.kRobotToShooter));
-    SmartDashboard.putNumber("Distance To Hub (m)", PhotonUtils.getDistanceToPose(getCurrentPose(), AlignmentConstants.RedHubPose));
+    SmartDashboard.putNumber("Distance To Hub (m)", PhotonUtils.getDistanceToPose(getCurrentPose(), AlignmentConstants.HubPose));
     SmartDashboard.putBoolean("Aligned to Goal", aligned);
     if (Vision.getResult1() != null){
       Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1());

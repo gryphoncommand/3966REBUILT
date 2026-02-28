@@ -22,7 +22,7 @@ public class IntakeDeploy extends Command {
 
     @Override
     public boolean isFinished() {
-        return intake.atTarget(Units.rotationsToDegrees(10));
+        return intake.atTarget(Units.degreesToRotations(8));
     }
 
     @Override

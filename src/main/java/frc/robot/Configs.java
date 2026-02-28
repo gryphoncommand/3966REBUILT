@@ -3,6 +3,9 @@ package frc.robot;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import static edu.wpi.first.units.Units.Amps;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -36,8 +39,8 @@ public final class Configs {
                 slot0ConfigsDrive.kD = 0;
 
 
-                driveConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 1/5;
-                driveConfig.CurrentLimits.withSupplyCurrentLimit(60).withSupplyCurrentLimitEnable(true);
+                driveConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 1/3;
+                driveConfig.CurrentLimits.withSupplyCurrentLimit(80).withSupplyCurrentLimitEnable(true);
                 
                 // Motor behavior
                 driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -82,6 +85,7 @@ public final class Configs {
         }
     }
 
+
     public static final class SubsystemBaseConfig {
         public static final SparkMaxConfig subsystemConfig = new SparkMaxConfig();
 
@@ -116,7 +120,7 @@ public final class Configs {
             slot0Configs.kI = 0.0;
             slot0Configs.kD = 0.0;
 
-            intakeRollerConfig.CurrentLimits.withSupplyCurrentLimitEnable(false);
+            intakeRollerConfig.CurrentLimits.withSupplyCurrentLimit(Amps.of(30));
             
             // Motor behavior
             intakeRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -174,10 +178,10 @@ public final class Configs {
         static {
                 flywheelConfig
                         .idleMode(IdleMode.kCoast)
-                        .smartCurrentLimit(90)
+                        .smartCurrentLimit(70)
                         .inverted(false)
                         .openLoopRampRate(0)
-                        .closedLoopRampRate(0.02);
+                        .closedLoopRampRate(0.001);
                 flywheelConfig.encoder
                     .positionConversionFactor(1)
                     .velocityConversionFactor(1);
@@ -244,7 +248,7 @@ public final class Configs {
             slot0Configs.kI = 0.0;
             slot0Configs.kD = 0.0;
 
-            PreIndexerConfig.CurrentLimits.withSupplyCurrentLimitEnable(false);
+            PreIndexerConfig.CurrentLimits.withSupplyCurrentLimit(Amps.of(30));
             
             // Motor behavior
             PreIndexerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -273,6 +277,8 @@ public final class Configs {
                 kickerConfig.closedLoop.feedForward
                     .kV(0.016)
                     .kA(0);
+
+                    
         }
     }
 

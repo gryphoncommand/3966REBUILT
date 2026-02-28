@@ -27,6 +27,7 @@ public class Spindexer extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Spindexer Current", getStatorCurrent());
         SmartDashboard.putNumber("Spindexer Velocity (RPM)", getVelocity());
         SmartDashboard.putNumber("Desired Spindexer Speed", targetReference);
     }
@@ -93,7 +94,7 @@ public class Spindexer extends SubsystemBase {
     }
 
     public void removeBall(){
-       //  simBalls -= 1;
+        simBalls -= 1;
         if (simBalls < 0){
             simBalls = 0;
         }
