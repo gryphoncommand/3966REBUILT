@@ -218,6 +218,10 @@ public class DriveSubsystem extends SubsystemBase {
     drive(speeds.vxMetersPerSecond/DriveConstants.kMaxSpeedMetersPerSecond, speeds.vyMetersPerSecond/DriveConstants.kMaxSpeedMetersPerSecond, speeds.omegaRadiansPerSecond/DriveConstants.kMaxAngularSpeed, false);
   }
 
+  public void driveFieldRelativeChassis(ChassisSpeeds fieldRelativeSpeeds){
+    drive(fieldRelativeSpeeds.vxMetersPerSecond/DriveConstants.kMaxSpeedMetersPerSecond, fieldRelativeSpeeds.vyMetersPerSecond/DriveConstants.kMaxSpeedMetersPerSecond, fieldRelativeSpeeds.omegaRadiansPerSecond/DriveConstants.kMaxAngularSpeed, true);
+  }
+
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
     // Convert the commanded speeds into the correct units for the drivetrain
     double xSpeedDelivered = xSpeed * DriveConstants.kMaxSpeedMetersPerSecond;

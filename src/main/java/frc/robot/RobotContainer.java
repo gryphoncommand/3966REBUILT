@@ -12,6 +12,7 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AlignToGoal;
+import frc.robot.commands.AlignToTrench;
 import frc.robot.commands.DeployClimber;
 import frc.robot.commands.FlywheelSysID;
 import frc.robot.commands.HomeHood;
@@ -165,7 +166,7 @@ public class RobotContainer {
     m_driverController.rightTrigger()
         .whileTrue(runIntakeRollers)
         // .whileTrue(new AgitateIntake(m_intakeDeploy))
-        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, true).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     m_driverController.leftTrigger()
       .whileTrue(new IntakeDeploy(m_intakeDeploy))
       .whileTrue(runIntakeRollers)
@@ -182,8 +183,8 @@ public class RobotContainer {
     .onFalse(new RunCommand(()->m_flywheel.set(0), m_flywheel))
     .onFalse(new HomeHood(m_hood));
 
-    m_driverController.a().whileTrue(new HomeHood(m_hood));
-    m_driverController.b()
+    m_driverController.b().whileTrue(new AlignToTrench(m_drive, m_driverController));
+    m_driverController.a()
       .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState))
       .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));;
     m_driverController.povLeft().whileTrue(new HomeHood(m_hood).alongWith(new RunCommand(()->m_flywheel.set(0), m_flywheel)));
