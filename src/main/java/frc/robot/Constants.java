@@ -194,14 +194,6 @@ public final class Constants {
     public static ShooterState kShooterStowState = new ShooterState(3, kHoodMinAngleDeg, 0, 1.2);
     public static ShooterState kDefaultShooterState = new ShooterState(3, 35, 2000, 1.2);
 
-    public static List<ShooterState> FakeShootingValues = List.of(
-      new ShooterState(1.5, 25.0, 1625, 0.55),
-      new ShooterState(2.5, 28.0, 1850, 0.77),
-      new ShooterState(3.5, 32.0, 1925, 0.82),
-      new ShooterState(4.5, 35.0, 2075, 0.85),
-      new ShooterState(6.0, 38.0, 2425, 0.95)
-    );
-
     public static List<ShooterState> RealShootingValues = List.of(
       new ShooterState(1.5, 23.0, 2400, 0.9),
       new ShooterState(2.095, 25.0, 2570, 1.10),
