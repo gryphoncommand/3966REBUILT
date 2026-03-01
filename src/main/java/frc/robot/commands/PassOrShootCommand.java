@@ -40,8 +40,8 @@ public class PassOrShootCommand extends Command {
         );
 
         ConditionalCommand choosePassingShot = new ConditionalCommand(
-            new PreparePassSOTM(hood, flywheel, drive, ShooterConstants.FakePassingValues, AlignmentConstants.PassingPoseDepot),
-            new PreparePassSOTM(hood, flywheel, drive, ShooterConstants.FakePassingValues, AlignmentConstants.PassingPoseOutpost),
+            new PreparePassSOTM(hood, flywheel, drive, ShooterConstants.RealPassingValues, AlignmentConstants.PassingPoseDepot),
+            new PreparePassSOTM(hood, flywheel, drive, ShooterConstants.RealPassingValues, AlignmentConstants.PassingPoseOutpost),
             () -> Math.abs(drive.getCurrentPose().getY() - AlignmentConstants.PassingPoseDepot.getY()) < Math.abs(drive.getCurrentPose().getY() - AlignmentConstants.PassingPoseOutpost.getY())
         );
 

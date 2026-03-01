@@ -31,12 +31,12 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
     private final TalonFXSimState intakeSimState =
         intakeMotor.getSimState();
 
-    double jKgMS = 0.069; // From CAD
+    double jKgMS = 0.3; // 0.069; // From CAD
 
     private final SingleJointedArmSim intakeSim =
         new SingleJointedArmSim(
             DCMotor.getNeoVortex(1),
-            IntakeConstants.kShaftToIntakeDeployRatio,
+            IntakeConstants.kIntakeDeployGearRatio,
             jKgMS,
             IntakeConstants.kIntakeLengthMeters,
             Units.degreesToRadians(20),
@@ -90,8 +90,6 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
         Logger.recordOutput("FinalComponentPoses/Intake Position", new Pose3d(-0.29, 0, 0.33, new Rotation3d(0.0, Units.degreesToRadians(getPosition()), 0.0)));
     }
 
-    /* ---------------- IntakeDeployIO ---------------- */
-
     @Override
     public void set(double speed) {
         intakeMotor.set(speed);
@@ -143,7 +141,7 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
 
     @Override
     public boolean atTarget(double threshold) {
-        return Math.abs(getPosition() - targetAngleDeg) < threshold;
+        return Math.abs(Units.degreesToRotations(getPosition() - targetAngleDeg)) < threshold;
     }
 
     @Override

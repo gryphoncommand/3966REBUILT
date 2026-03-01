@@ -49,7 +49,6 @@ public class PrepareSOTM extends Command {
     @Override
     public void execute() {
         SmartDashboard.putBoolean("SOTM Goal Calculating", true);
-        //TODO: Test & Remove
         Logger.recordOutput("Current Phase Delay", kPhaseDelay.get());
 
         Pose2d hubPose = AlignmentConstants.HubPose;
@@ -81,9 +80,9 @@ public class PrepareSOTM extends Command {
 
         driveData.getField().getObject("SOTM Goal").setPose(effectiveGoalPose);
         
-        double rpm = state.flywheelRPM() + 150;
+        double rpm = state.flywheelRPM();
 
-        if(flywheel.getVoltage() > 7.5 && state.flywheelRPM()-flywheel.getVelocity() > 50){
+        if(rpm-flywheel.getVelocity() > 50){
             rpm += ShooterConstants.kFlywheelRPMOffset;
         }
 

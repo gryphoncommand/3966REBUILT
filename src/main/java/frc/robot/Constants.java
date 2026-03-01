@@ -203,27 +203,27 @@ public final class Constants {
     );
 
     public static List<ShooterState> RealShootingValues = List.of(
-      new ShooterState(1.5, 23.0, 2250, 0.9),
-      new ShooterState(2.095, 25.0, 2420, 1.10),
-      new ShooterState(2.300, 28.0, 2450, 1.12), // Interpolated
-      new ShooterState(2.493, 30.0, 2500, 1.15),
-      new ShooterState(2.850, 32.5, 2550, 1.13), // Interpolated
-      new ShooterState(3.168, 35.0, 2650, 1.10),
-      new ShooterState(3.500, 36.5, 2665, 1.07), // Interpolated
-      new ShooterState(3.820, 38.0, 2680, 1.04),
-      new ShooterState(4.150, 38.5, 2800, 1.07), // Interpolated
-      new ShooterState(4.414, 39.0, 2900, 1.10),
-      new ShooterState(4.800, 40.5, 3000, 1.18), // Extended Range
-      new ShooterState(5.250, 42.0, 3100, 1.25)  // Extended Range
+      new ShooterState(1.5, 23.0, 2400, 0.9),
+      new ShooterState(2.095, 25.0, 2570, 1.10),
+      new ShooterState(2.300, 28.0, 2600, 1.12), // Interpolated
+      new ShooterState(2.493, 30.0, 2650, 1.15),
+      new ShooterState(2.850, 32.5, 2700, 1.13), // Interpolated
+      new ShooterState(3.168, 35.0, 2800, 1.10),
+      new ShooterState(3.500, 36.5, 2815, 1.07), // Interpolated
+      new ShooterState(3.820, 38.0, 2830, 1.04),
+      new ShooterState(4.150, 38.5, 2950, 1.07), // Interpolated
+      new ShooterState(4.414, 39.0, 3050, 1.10),
+      new ShooterState(4.800, 40.5, 3150, 1.18), // Extended Range
+      new ShooterState(5.250, 42.0, 3250, 1.25)  // Extended Range
   );
 
-    public static List<ShooterState> FakePassingValues = List.of(
-      new ShooterState(1.5, kHoodMaxAngleDeg, 2500, 0.9),
-      new ShooterState(2.5, 53, 2750, 0.9),
-      new ShooterState(3.5, 51, 2800, 0.95),
-      new ShooterState(4.5, 49, 2950, 1),
-      new ShooterState(6.0, 47, 3150, 1.05),
-      new ShooterState(8.0, 45, 3550, 1.1)
+    public static List<ShooterState> RealPassingValues = List.of(
+      new ShooterState(1.5, kHoodMaxAngleDeg, 2650, 0.9),
+      new ShooterState(2.5, 53, 2900, 0.9),
+      new ShooterState(3.5, 51, 2950, 0.95),
+      new ShooterState(4.5, 49, 3100, 1),
+      new ShooterState(6.0, 47, 3300, 1.05),
+      new ShooterState(8.0, 45, 3700, 1.1)
     );
   }
 

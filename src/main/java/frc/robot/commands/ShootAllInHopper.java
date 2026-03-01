@@ -35,7 +35,6 @@ public class ShootAllInHopper extends Command {
     private final FlywheelIO flywheel;
     private final Spindexer spindexer;
     private final boolean stopFlywheelOnEnd;
-    private double lastShotTime = 0;
     private boolean spindexerDirection = true;
     private FeedShooterFactory passthroughFactory;
     private boolean indexingStopped = true;
@@ -131,10 +130,9 @@ public class ShootAllInHopper extends Command {
         }
         
         if (Robot.isSimulation()){ 
-            double now = Timer.getFPGATimestamp();
-
-            if (hoodReady && flyReady && aligned && now - lastShotTime > 0.12 && spindexer.hasBalls()) {
-                double kShooterEfficiency = 0.5;
+            flyReady = flywheel.atTarget(50);
+            if (hoodReady && flyReady && aligned &&  spindexer.hasBalls()) {
+                double kShooterEfficiency = 0.48;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
                 double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;
@@ -145,9 +143,8 @@ public class ShootAllInHopper extends Command {
                 Translation3d initialPosition = new Translation3d(ballPose2d.getX(), ballPose2d.getY(), Units.inchesToMeters(17.701451));
                 FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle())));
 
-                lastShotTime = now;
                 spindexer.removeBall();
-                ((FlywheelSimTalonFX)flywheel).simulateShot();
+                ((FlywheelSimTalonFX)flywheel).simulateShot(ballSpeed);
             }
         }
 

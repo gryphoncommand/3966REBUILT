@@ -120,8 +120,8 @@ public class Shoot extends Command {
         if (Robot.isSimulation()){ 
             double now = Timer.getFPGATimestamp();
 
-            if (hoodReady && flyReady && aligned && now - lastShotTime > 0.12 && spindexer.hasBalls()) {
-                double kShooterEfficiency = 0.5;
+            if (hoodReady && flyReady && aligned && now - lastShotTime > 0.263 && spindexer.hasBalls()) {
+                double kShooterEfficiency = 0.48;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
                 double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;
@@ -134,7 +134,7 @@ public class Shoot extends Command {
 
                 lastShotTime = now;
                 spindexer.removeBall();
-                ((FlywheelSimTalonFX)flywheel).simulateShot();
+                ((FlywheelSimTalonFX)flywheel).simulateShot(wheelRadPerSec * wheelRadius);
             }
         }
 
