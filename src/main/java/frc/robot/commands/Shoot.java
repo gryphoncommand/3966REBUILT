@@ -119,6 +119,7 @@ public class Shoot extends Command {
         
         if (Robot.isSimulation()){ 
             double now = Timer.getFPGATimestamp();
+            flyReady = flywheel.atTarget(50);
 
             if (hoodReady && flyReady && aligned && now - lastShotTime > 0.263 && spindexer.hasBalls()) {
                 double kShooterEfficiency = 0.48;
