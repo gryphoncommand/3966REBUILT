@@ -114,7 +114,7 @@ public class ShootAllInHopper extends Command {
         }
         // Only feed when both hood and flywheel report on-target
         boolean hoodReady = hood.atTarget(5.0);
-        boolean flyReady = flywheel.atTarget(500);
+        boolean flyReady = flywheel.atTarget(750);
         boolean aligned = driveData.getAligned();
         if (!neeedAlign){
             aligned = true;
@@ -172,11 +172,13 @@ public class ShootAllInHopper extends Command {
     }
 
     @Override
+
     public void end(boolean interrupted) {
         // Always stop feeding rollers. Optionally stop flywheel.
         passthroughFactory.stop();
         if (stopFlywheelOnEnd) {
             flywheel.setVelocity(0);
+            flywheel.set(0);
         }
     }
 }

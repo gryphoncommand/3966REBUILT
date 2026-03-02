@@ -103,7 +103,7 @@ public class Shoot extends Command {
     public void execute() {
         // Only feed when both hood and flywheel report on-target
         boolean hoodReady = hood.atTarget(5.0);
-        boolean flyReady = flywheel.atTarget(500);
+        boolean flyReady = flywheel.atTarget(750);
         boolean aligned = driveData.getAligned();
         if (!neeedAlign){
             aligned = true;
@@ -119,6 +119,7 @@ public class Shoot extends Command {
         
         if (Robot.isSimulation()){ 
             double now = Timer.getFPGATimestamp();
+            flyReady = flywheel.atTarget(50);
 
             if (hoodReady && flyReady && aligned && now - lastShotTime > 0.263 && spindexer.hasBalls()) {
                 double kShooterEfficiency = 0.48;
@@ -161,6 +162,7 @@ public class Shoot extends Command {
         passthroughFactory.stop();
         if (stopFlywheelOnEnd) {
             flywheel.setVelocity(0);
+            flywheel.set(0);
         }
     }
 }

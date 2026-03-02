@@ -144,7 +144,7 @@ public final class Configs {
                 IntakeDeployConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(1.3, 0, 0.2)
+                    .pid(1.8, 0, 0.2)
                     .outputRange(-0.8, 0.8);
         }
 
@@ -188,20 +188,20 @@ public final class Configs {
                 flywheelConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(0.0001, 1e-6, 0.0)
+                    .pid(2.88e-5, 1e-6, 0.0)
                     .iZone(100)
                     .outputRange(-1, 1);
                 flywheelConfig.closedLoop.feedForward
                     .kS(0.22004)
-                    .kV(0.00184)
-                    .kA(0.0);
+                    .kV(0.0018275)
+                    .kA(0.000152095);
 
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
                 // PID + FF tuning
                 slot0ConfigsDrive.kS = 0.0;
-                slot0ConfigsDrive.kV = 0.10533131849;
-                slot0ConfigsDrive.kA = 0.150017332394;
-                slot0ConfigsDrive.kP = 0.248964934612;
+                slot0ConfigsDrive.kV = 0.105;
+                slot0ConfigsDrive.kA = 0.0091257;
+                slot0ConfigsDrive.kP = 0.0017271;
                 slot0ConfigsDrive.kI = 0.0;
                 slot0ConfigsDrive.kD = 0.0;
 
@@ -314,13 +314,13 @@ public final class Configs {
         static {
                 var slot0Configs = HoodConfig.Slot0;
                 // PID + FF tuning
-                slot0Configs.kS = 0.0;
+                slot0Configs.kS = 0.5;
                 slot0Configs.kV = 0;
                 slot0Configs.kA = 0;
-                slot0Configs.kP = 2.0;
-                slot0Configs.kI = 0.2; 
-                slot0Configs.kD = 0.0;
-                slot0Configs.kG = 0.05;
+                slot0Configs.kP = 5.0;
+                slot0Configs.kI = 1.0; 
+                slot0Configs.kD = 0.1;
+                slot0Configs.kG = 0.3;
                 slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
 
 
