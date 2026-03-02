@@ -145,7 +145,7 @@ public final class Configs {
                     .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
                     // These are example gains you may need to them for your own robot!
                     .pid(1.8, 0, 0.2)
-                    .outputRange(-0.8, 0.8);
+                    .outputRange(-0.9, 0.9);
         }
 
         public static final TalonFXConfiguration deploySimConfig = new TalonFXConfiguration();
@@ -221,7 +221,7 @@ public final class Configs {
                 slot0Configs.kS = 0;
                 slot0Configs.kV = 0;
                 slot0Configs.kA = 0;
-                slot0Configs.kP = 1.0;
+                slot0Configs.kP = 3.0;
                 slot0Configs.kI = 0;
                 slot0Configs.kD = 0.4;
 
