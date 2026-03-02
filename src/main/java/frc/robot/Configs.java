@@ -144,7 +144,7 @@ public final class Configs {
                 IntakeDeployConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(1.3, 0, 0.2)
+                    .pid(1.8, 0, 0.2)
                     .outputRange(-0.8, 0.8);
         }
 
@@ -314,13 +314,13 @@ public final class Configs {
         static {
                 var slot0Configs = HoodConfig.Slot0;
                 // PID + FF tuning
-                slot0Configs.kS = 0.0;
+                slot0Configs.kS = 0.5;
                 slot0Configs.kV = 0;
                 slot0Configs.kA = 0;
-                slot0Configs.kP = 2.0;
-                slot0Configs.kI = 0.2; 
-                slot0Configs.kD = 0.0;
-                slot0Configs.kG = 0.05;
+                slot0Configs.kP = 5.0;
+                slot0Configs.kI = 1.0; 
+                slot0Configs.kD = 0.1;
+                slot0Configs.kG = 0.3;
                 slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
 
 
