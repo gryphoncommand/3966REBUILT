@@ -19,6 +19,6 @@ public class DeployClimber extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        climber.setPosition(ClimberConstants.kClimbPosition);
+        climber.setPosition(0);
     }
 }

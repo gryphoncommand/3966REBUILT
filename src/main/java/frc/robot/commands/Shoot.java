@@ -109,7 +109,7 @@ public class Shoot extends Command {
             aligned = true;
         } 
 
-        if (flywheel.atTarget(100)){
+        if (!reachedSetpoint && flywheel.atTarget(100)){
             reachedSetpoint = true;
         }
         

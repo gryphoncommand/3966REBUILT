@@ -25,6 +25,7 @@ public class FeedShooterFactory {
         this.spindexerDirection = spindexerDirection;
         running = true;
         kicker.setVelocity(IndexerConstants.kKickerSpeed);
+        kicker.set(1);
         preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed);
         double spindexerSpeed = spindexerDirection ? IndexerConstants.kSpindexerSpeed : -IndexerConstants.kSpindexerSpeed;
         spindexer.setVelocity(spindexerSpeed);

@@ -1,6 +1,5 @@
 package frc.robot.subsystems.Climber;
 
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -18,8 +17,8 @@ public interface ClimberIO extends Subsystem {
   /** Reset encoder position (rotations) */
   void setEncoderPosition(double rotations);
 
-  /** Current hood angle */
-  Distance getPosition();
+  /** Current climber position */
+  double getPosition();
 
   /** True if within threshold of target */
   boolean atTarget(double threshold);

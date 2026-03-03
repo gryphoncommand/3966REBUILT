@@ -45,7 +45,7 @@ public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   @Override
   public void setVelocity(double rpm) {
     targetReference = rpm;
-    pid.setSetpoint(rpm, ControlType.kVelocity);
+    pid.setSetpoint(rpm, ControlType.kMAXMotionVelocityControl);
     currentControlType = ControlType.kVelocity;
   }
 

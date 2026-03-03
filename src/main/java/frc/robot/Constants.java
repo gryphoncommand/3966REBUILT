@@ -187,6 +187,7 @@ public final class Constants {
     public static double kHoodMaxAngleDeg = 52.5;
     public static double kHoodMinAngleDeg = 22.6;
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
+    public static double kDefaultFlywheelSpeed = 0.0;
 
     public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(Math.PI/2));
 
@@ -210,12 +211,12 @@ public final class Constants {
   );
 
     public static List<ShooterState> RealPassingValues = List.of(
-      new ShooterState(1.5, kHoodMaxAngleDeg, 2650, 0.9),
-      new ShooterState(2.5, 53, 2900, 0.9),
-      new ShooterState(3.5, 51, 2950, 0.95),
-      new ShooterState(4.5, 49, 3100, 1),
-      new ShooterState(6.0, 47, 3300, 1.05),
-      new ShooterState(8.0, 45, 3700, 1.1)
+      new ShooterState(1.5, kHoodMaxAngleDeg, 2750, 0.9),
+      new ShooterState(2.5, 53, 3000, 0.9),
+      new ShooterState(3.5, 51, 3150, 0.95),
+      new ShooterState(4.5, 49, 3200, 1),
+      new ShooterState(6.0, 47, 3400, 1.05),
+      new ShooterState(8.0, 45, 3800, 1.1)
     );
   }
 

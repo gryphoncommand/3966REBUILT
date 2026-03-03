@@ -22,7 +22,6 @@ import frc.robot.commands.SetShooterToDefinedState;
 import frc.robot.commands.SetToDashboardSpeeds;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootAllInHopper;
-import frc.robot.commands.StowClimber;
 import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.commands.Indexing.RunPreIndexer;
 import frc.robot.commands.Intake.IntakeDeploy;
@@ -134,6 +133,15 @@ public class RobotContainer {
         }
       }, m_preIndexer)
     );
+
+    m_flywheel.setDefaultCommand(
+      new RunCommand(()->{
+        m_flywheel.setVelocity(ShooterConstants.kDefaultFlywheelSpeed);
+        if (ShooterConstants.kDefaultFlywheelSpeed == 0){
+          m_flywheel.set(0);
+        }
+      }, m_flywheel)
+    );
   }
 
   private void configureButtonBindings() {
@@ -187,16 +195,15 @@ public class RobotContainer {
     m_driverController.a()
       .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState))
       .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
-      .onFalse(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kShooterStowState));
+      .onFalse(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kShooterStowState).withTimeout(0.1));
     m_driverController.povLeft().whileTrue(new HomeHood(m_hood).alongWith(new RunCommand(()->m_flywheel.set(0), m_flywheel)));
     m_driverController.y()
       .whileTrue(new RunCommand(()->m_intakeRollers.set(-0.3), m_intakeRollers))
       .onFalse(new RunCommand(()->m_intakeRollers.set(0.0), m_intakeRollers));
-    m_driverController.povRight()
-    .toggleOnTrue(new StowClimber(m_climber));
     m_driverController.povDown()
     .toggleOnTrue(new DeployClimber(m_climber))
     .onTrue(new RunCommand(()->m_flywheel.set(0), m_flywheel));
+    m_driverController.povUp().whileTrue(new RunCommand(()->m_climber.set(-0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0), m_climber));
     
     m_operatorController.rightTrigger()
         .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState))
