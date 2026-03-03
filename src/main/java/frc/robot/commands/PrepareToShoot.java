@@ -33,6 +33,7 @@ public class PrepareToShoot extends Command {
 
   @Override
   public void execute() {
+    
     ShooterState state =
         ShooterInterpolator.interpolate(
             table, distanceSupplier.getAsDouble());

@@ -7,6 +7,7 @@ package frc.robot;
 import frc.FuelSim;
 import frc.littletonUtils.AllianceFlipUtil;
 import frc.robot.Constants.AlignmentConstants;
+import frc.robot.Constants.EmergencyChooserStateConstants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
@@ -63,6 +64,7 @@ import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Hood.*;
 import frc.robot.subsystems.Indexer.Kicker;
 import frc.robot.subsystems.Indexer.PreIndexer;
@@ -71,6 +73,7 @@ import frc.robot.subsystems.Intake.IntakeDeployIO;
 import frc.robot.subsystems.Intake.IntakeDeploySimTalonFX;
 import frc.robot.subsystems.Intake.IntakeDeploySparkFlex;
 import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
+import frc.robot.commands.DeployClimber;
 
 public class RobotContainer {
 
@@ -94,6 +97,8 @@ public class RobotContainer {
       new CommandXboxController(OIConstants.kOperatorControllerPort);
 
   private final SendableChooser<Command> autoChooser;
+  public final SendableChooser<String> emergencyChooser = new SendableChooser<>();
+
 
   public RobotContainer() {
     new Vision();
@@ -105,9 +110,15 @@ public class RobotContainer {
     if (Robot.isSimulation()){
       configureFuelSim();
     }
+
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    emergencyChooser.setDefaultOption("Default", "Default");
+    emergencyChooser.addOption("Camera Explode", "Camera Explode");
+    emergencyChooser.addOption("Trench", "Trench");
+    SmartDashboard.putData("Emergency Options", emergencyChooser);
   }
 
   private void configureDefaultCommands() {
@@ -162,11 +173,20 @@ public class RobotContainer {
       .onFalse(new RunCommand(()->m_flywheel.set(0), m_flywheel))
       .onFalse(new HomeHood(m_hood));
 
-    m_driverController.rightTrigger().whileTrue(runIntakeRollers);
-    m_driverController.rightTrigger()
-        .whileTrue(runIntakeRollers)
-        // .whileTrue(new AgitateIntake(m_intakeDeploy))
-        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, true).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    final Trigger defaultEmergencyChooserState = new Trigger(()-> emergencyChooser.getSelected().equals("Default"));
+    final Trigger cameraEmergencyChooserState = new Trigger(()-> emergencyChooser.getSelected().equals("Camera Explode"));
+    final Trigger trenchEmergencyChooserState = new Trigger(()-> emergencyChooser.getSelected().equals("Trench"));
+// TODO FIND ISSUE
+    m_driverController.rightTrigger().and(defaultEmergencyChooserState)
+      .whileTrue(runIntakeRollers)
+      // .whileTrue(new AgitateIntake(m_intakeDeploy))
+      .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, true).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+     m_driverController.rightTrigger().and(cameraEmergencyChooserState)
+      .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, EmergencyChooserStateConstants.kCameraExplodeShooterState).withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
+      .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+     m_driverController.rightTrigger().and(trenchEmergencyChooserState)
+      .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, EmergencyChooserStateConstants.kTrenchShooterState).withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
+      .whileTrue(new DeployClimber(m_climber)).whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     m_driverController.leftTrigger()
       .whileTrue(new IntakeDeploy(m_intakeDeploy))
       .whileTrue(runIntakeRollers)

@@ -114,6 +114,11 @@ public final class Constants {
     public static final double kTurnDeadband = 0.07;
   }
 
+  public static final class EmergencyChooserStateConstants {
+    public static final ShooterState kCameraExplodeShooterState= new ShooterState(.5, 30.0, 2570, 1.1);
+    public static final ShooterState kTrenchShooterState= new ShooterState(5.1, 30.0, 2570, 1.1);
+  }
+
   public static final class AutoConstants {
     public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;
