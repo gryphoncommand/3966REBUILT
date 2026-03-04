@@ -34,7 +34,7 @@ public class Shoot extends Command {
     private final Spindexer spindexer;
     private final boolean stopFlywheelOnEnd;
     private double lastShotTime = 0;
-    private boolean spindexerDirection = true;
+    private boolean spindexerDirection = false;
     private FeedShooterFactory passthroughFactory;
     private boolean indexingStopped = true;
     private boolean neeedAlign = true;

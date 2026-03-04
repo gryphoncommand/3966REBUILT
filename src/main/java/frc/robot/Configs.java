@@ -343,7 +343,7 @@ public final class Configs {
                 // Motor behavior
                 HoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-                HoodConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+                HoodConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
                 HoodConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Constants.ShooterConstants.kHoodMaxAngleDeg * ShooterConstants.kHoodGearRatio / 360.0;
                 HoodConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
