@@ -13,6 +13,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.AlignToTrench;
+import frc.robot.commands.AutoClimbCommand;
 import frc.robot.commands.DeployClimber;
 import frc.robot.commands.FlywheelSysID;
 import frc.robot.commands.HomeHood;
@@ -154,12 +155,12 @@ public class RobotContainer {
         AlignmentConstants.PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(2.412, 2.2688, new Rotation2d()));
         AlignmentConstants.PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(2.412, 5.707, new Rotation2d()));
       }, m_drive));
-    m_driverController.povRight().onTrue(
-      new InstantCommand(()->{
-        Pose2d shooterPose = m_drive.getCurrentPose().plus(ShooterConstants.kRobotToShooter);
-        SmartDashboard.putString("Current Shooter State", "new ShooterState(" +  String.valueOf(PhotonUtils.getDistanceToPose(shooterPose, AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
-      })
-    );
+    // m_driverController.povRight().onTrue(
+    //   new InstantCommand(()->{
+    //     Pose2d shooterPose = m_drive.getCurrentPose().plus(ShooterConstants.kRobotToShooter);
+    //     SmartDashboard.putString("Current Shooter State", "new ShooterState(" +  String.valueOf(PhotonUtils.getDistanceToPose(shooterPose, AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
+    //   })
+    // );
 
     m_driverController.rightBumper()
       .whileTrue(new RepeatCommand(new DeferredCommand(()->
@@ -204,6 +205,7 @@ public class RobotContainer {
     .toggleOnTrue(new DeployClimber(m_climber))
     .onTrue(new RunCommand(()->m_flywheel.set(0), m_flywheel));
     m_driverController.povUp().whileTrue(new RunCommand(()->m_climber.set(-0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0), m_climber));
+    m_driverController.povRight().toggleOnTrue(new AutoClimbCommand(m_drive, m_climber));
     
     m_operatorController.rightTrigger()
         .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState))
