@@ -188,13 +188,13 @@ public final class Configs {
                 flywheelConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(4e-5, 1e-6, 0.0)
+                    .pid(0.00007730666, 1e-6, 0.0)
                     .iZone(100)
                     .outputRange(-1, 1);
                 flywheelConfig.closedLoop.feedForward
-                    .kS(0.22004)
-                    .kV(0.0018275)
-                    .kA(0.000152095);
+                    .kS(0.25289)
+                    .kV(0.001847)
+                    .kA(0.00026136666);
                 flywheelConfig.closedLoop.maxMotion
                     .maxAcceleration(4000)
                     .allowedProfileError(40);

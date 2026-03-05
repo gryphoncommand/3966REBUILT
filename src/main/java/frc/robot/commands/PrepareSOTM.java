@@ -82,7 +82,7 @@ public class PrepareSOTM extends Command {
         
         double rpm = state.flywheelRPM();
 
-        if(rpm-flywheel.getVelocity() > 50){
+        if(rpm > flywheel.getVelocity() + 100){
             rpm += ShooterConstants.kFlywheelRPMOffset;
         }
 
