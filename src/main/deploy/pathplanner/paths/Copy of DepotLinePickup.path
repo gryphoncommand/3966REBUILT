@@ -52,12 +52,28 @@
         "y": 7.419148181011535
       },
       "prevControl": {
-        "x": 4.954259094942325,
-        "y": 7.789352262644188
+        "x": 4.174617346938776,
+        "y": 7.381423580301686
+      },
+      "nextControl": {
+        "x": 3.319526397515528,
+        "y": 7.456872781721385
+      },
+      "isLocked": false,
+      "linkedName": "Corner 3"
+    },
+    {
+      "anchor": {
+        "x": 2.4,
+        "y": 3.75
+      },
+      "prevControl": {
+        "x": 3.6071872227151727,
+        "y": 4.120204081632653
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Corner 3"
+      "linkedName": "SOTM End"
     }
   ],
   "rotationTargets": [
@@ -66,7 +82,7 @@
       "rotationDegrees": 112.30620505490772
     },
     {
-      "waypointRelativePos": 2.4,
+      "waypointRelativePos": 2.8,
       "rotationDegrees": 180.0
     }
   ],
@@ -74,7 +90,7 @@
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 0.6580188679245277,
-      "maxWaypointRelativePos": 2.2499999999999982,
+      "maxWaypointRelativePos": 2.5,
       "constraints": {
         "maxVelocity": 1.5,
         "maxAcceleration": 3.0,
@@ -92,12 +108,19 @@
         "y": 4.0
       },
       "rotationOffset": 90.0,
-      "minWaypointRelativePos": 3.0,
-      "maxWaypointRelativePos": 3.5,
+      "minWaypointRelativePos": 4.0,
+      "maxWaypointRelativePos": 4.5,
       "name": "Point Towards Zone"
     }
   ],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Prepare to Shoot",
+      "waypointRelativePos": 3.25,
+      "endWaypointRelativePos": 4.0,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 4.8,
     "maxAcceleration": 3.0,
@@ -108,7 +131,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": -174.03551289874682
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,

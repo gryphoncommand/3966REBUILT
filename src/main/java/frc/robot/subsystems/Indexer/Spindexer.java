@@ -30,6 +30,7 @@ public class Spindexer extends SubsystemBase {
         SmartDashboard.putNumber("Spindexer Current", getStatorCurrent());
         SmartDashboard.putNumber("Spindexer Velocity (RPM)", getVelocity());
         SmartDashboard.putNumber("Desired Spindexer Speed", targetReference);
+        SmartDashboard.putNumber("Simulated Ball Count", simBalls);
     }
 
     public void set(double speed) {

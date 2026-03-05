@@ -12,6 +12,7 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AlignToGoal;
+import frc.robot.commands.AlignToGoalAuto;
 import frc.robot.commands.AlignToTrench;
 import frc.robot.commands.DeployClimber;
 import frc.robot.commands.FlywheelSysID;
@@ -108,6 +109,7 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
     SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putData("Shoot All", new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer));
   }
 
   private void configureDefaultCommands() {
@@ -289,7 +291,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer));
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
-        new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
+        new AlignToGoalAuto(m_drive, AlignmentConstants.HubPose, true),
         new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.RealShootingValues)
       )
     );

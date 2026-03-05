@@ -30,19 +30,32 @@
           }
         },
         {
-          "type": "race",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Prepare to Shoot"
+                  "pathName": "Depot shot to climb"
                 }
               },
               {
-                "type": "named",
+                "type": "race",
                 "data": {
-                  "name": "Shoot All Balls"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Prepare to Shoot"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot All Balls"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -59,25 +72,18 @@
                 }
               },
               {
-                "type": "race",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Climb"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Depot shot to climb"
-                      }
-                    }
-                  ]
+                  "pathName": "Hub to climb"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Climb"
           }
         },
         {

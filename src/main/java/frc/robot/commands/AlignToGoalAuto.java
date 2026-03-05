@@ -1,0 +1,98 @@
+package frc.robot.commands;
+
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.GryphonLib.MovementCalculations;
+import frc.GryphonLib.PositionCalculations;
+import frc.robot.Constants.AlignmentConstants;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.DriveSubsystem;
+
+public class AlignToGoalAuto extends Command {
+    private final DriveSubsystem drive;
+    private final PIDController turnPID = AlignmentConstants.turnPID;
+    private Pose2d goalPose;
+    private double yawError;
+    private Debouncer alignDebouncer = new Debouncer(0.2);
+    private boolean SOTM;
+
+    public AlignToGoalAuto(DriveSubsystem drive, Pose2d goalPose, boolean SOTM) {
+        this.drive = drive;
+        this.goalPose = goalPose;
+        this.SOTM = SOTM;
+
+        if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)) {
+            try {
+                goalPose = drive.getField().getObject("SOTM Goal").getPose();
+            } catch (Exception e) {}
+        }
+
+        yawError = PositionCalculations.getYawChangeToPose(
+            drive.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter),
+            goalPose
+        );
+    }
+
+    @Override
+    public void initialize() {
+        turnPID.reset();
+        turnPID.setSetpoint(0.0);
+
+        PPHolonomicDriveController.overrideRotationFeedback(() -> {
+            if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)) {
+                try {
+                    goalPose = drive.getField().getObject("SOTM Goal").getPose();
+                } catch (Exception e) {}
+            }
+
+            // Compute yaw error from shooter pose instead of robot center
+            yawError = PositionCalculations.getYawChangeToPose(
+                    drive.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter),
+                    goalPose);
+            SmartDashboard.putNumber("Yaw Align Error", Units.radiansToDegrees(yawError));
+
+            // PID output
+            double turn = turnPID.calculate(yawError);
+            turn = MathUtil.clamp(turn, -1.0, 1.0);
+
+            return -turn;
+        });
+    }
+
+    @Override
+    public void execute() {
+        boolean withinAngleTol = Math.abs(yawError) < AlignmentConstants.ANGLE_TOLERANCE_RAD;
+        boolean slowEnoughRot = Math.abs(drive.getCurrentSpeeds().omegaRadiansPerSecond) < AlignmentConstants.ANG_VEL_TOLERANCE_RAD_PER_SEC;
+        boolean slowEnoughTrans = Math.abs(MovementCalculations.getVelocityMagnitude(drive.getCurrentSpeeds()).in(MetersPerSecond)) < AlignmentConstants.SPEED_VEL_TOLERANCE;
+
+        if (SOTM) {
+            withinAngleTol = Math.abs(yawError) < AlignmentConstants.ANGLE_TOLERANCE_RAD;
+            slowEnoughRot = true;
+            slowEnoughTrans = true;
+        }
+
+        // Debouncer ensures it's stable for required time
+        boolean alignedNow = alignDebouncer.calculate(withinAngleTol && slowEnoughRot && slowEnoughTrans);
+        drive.setAlign(alignedNow);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        PPHolonomicDriveController.clearRotationFeedbackOverride();
+        drive.setAlign(false);
+    }
+}
