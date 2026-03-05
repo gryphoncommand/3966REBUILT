@@ -245,6 +245,13 @@ public final class Constants {
     public static double kFullUpPosition = 70;
     public static double kClimbPosition = 40;
     public static int kClimberCanID = 17;
+
+    public static Pose2d kRightClimbPose = new Pose2d(1.2, 2.911, new Rotation2d());
+    public static Pose2d kLeftClimbPose = new Pose2d(0.7, 4.633, new Rotation2d(Math.PI));
+    public static Pose2d kMidClimbPose = new Pose2d(0.768, 3.781, new Rotation2d(Math.PI));
+
+    public static Pose2d kRightPreClimb = new Pose2d(1.2, 2.191, new Rotation2d());
+    public static Pose2d kLeftPreClimb = new Pose2d(0.73, 5.0, new Rotation2d(Math.PI));
   }
 
   public static class IntakeConstants {

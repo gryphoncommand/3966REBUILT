@@ -66,8 +66,8 @@ public class PositionPIDCommand extends Command{
         goalState.heading = goalPose.getRotation();
 
         PPHolonomicDriveController usedController = new PPHolonomicDriveController(
-            new PIDConstants(0.6, 0.1, 0.0),
-            new PIDConstants(0.3, 0, 0.01)
+            new PIDConstants(2.0, 0, 0.0),
+            new PIDConstants(3.0, 0, 0.01)
         );
         
         drivetrain.driveRobotRelativeChassis(
