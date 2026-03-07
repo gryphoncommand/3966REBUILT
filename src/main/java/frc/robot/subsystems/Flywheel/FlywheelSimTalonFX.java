@@ -38,6 +38,8 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     private final TalonFX m_flywheelMotor;
     private final TalonFXSimState m_flywheelSim;
 
+    private double realTarget = 0;
+
     final VelocityVoltage m_flywheelVelocityVoltage = new VelocityVoltage(0);
     
 
@@ -83,6 +85,16 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     public void setVelocity(double rpm) {
         targetVelocityRpm = rpm;
         m_flywheelMotor.setControl(new VelocityVoltage(RPM.of(rpm).in(RotationsPerSecond)));
+    }
+
+    @Override
+    public void setRealTarget(double rpm) {
+        realTarget = rpm;
+    }
+
+    @Override
+    public boolean atRealTarget(double threshold) {
+        return Math.abs(getVelocity() - realTarget) < threshold;
     }
 
     @Override

@@ -66,7 +66,7 @@ public class PrepareSOTM extends Command {
         ShooterState state = ShooterInterpolator.interpolate(
                 table, distanceToGoal);
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 15; i++) {
             var timeOfFlight = Seconds.of(state.flightTimeSec());
             double tof = timeOfFlight.in(Seconds);
             if (Robot.isReal()){
@@ -81,6 +81,7 @@ public class PrepareSOTM extends Command {
         driveData.getField().getObject("SOTM Goal").setPose(effectiveGoalPose);
         
         double rpm = state.flywheelRPM();
+        flywheel.setRealTarget(rpm);
 
         if(rpm > flywheel.getVelocity() + 100){
             rpm += ShooterConstants.kFlywheelRPMOffset;

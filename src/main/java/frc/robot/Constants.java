@@ -178,7 +178,7 @@ public final class Constants {
     public static int kFollowerWheelCanID = 10;
     public static int kHoodCANID = 11;
 
-    public static double kFlywheelRPMOffset = 200;
+    public static double kFlywheelRPMOffset = 150;
     public static double kPhaseDelay = 0.2;
 
     public static double kHoodGearRatio = 198/10;
