@@ -179,7 +179,9 @@ public final class Constants {
     public static int kHoodCANID = 11;
 
     public static double kFlywheelRPMOffset = 150;
-    public static double kPhaseDelay = 0.2;
+    public static double kShootDelay = 0.2;
+    public static double kPhaseDelay = 0.02;
+
 
     public static double kHoodGearRatio = 198/10;
     public static double kHoodLengthMeters = Units.inchesToMeters(5);

@@ -18,7 +18,6 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.List;
 
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
 
 public class PrepareSOTM extends Command {
@@ -28,7 +27,9 @@ public class PrepareSOTM extends Command {
     private final DriveSubsystem driveData;
     private final List<ShooterState> table;
     private Pose2d effectiveGoalPose;
+    private LoggedTunableNumber kShootDelay = new LoggedTunableNumber("Shooter Shoot Delay", ShooterConstants.kShootDelay);
     private LoggedTunableNumber kPhaseDelay = new LoggedTunableNumber("Shooter Phase Delay", ShooterConstants.kPhaseDelay);
+
 
     public PrepareSOTM(
             HoodIO hood,
@@ -49,13 +50,12 @@ public class PrepareSOTM extends Command {
     @Override
     public void execute() {
         SmartDashboard.putBoolean("SOTM Goal Calculating", true);
-        Logger.recordOutput("Current Phase Delay", kPhaseDelay.get());
 
         Pose2d hubPose = AlignmentConstants.HubPose;
 
         ChassisSpeeds shotMovement = driveData.getCurrentSpeedsFieldRelative();
 
-        Pose2d shooterPose = driveData.getCurrentPose().plus(ShooterConstants.kRobotToShooter);
+        Pose2d shooterPose = driveData.getCurrentPose().exp(shotMovement.toTwist2d(kPhaseDelay.get())).plus(ShooterConstants.kRobotToShooter);
 
         shotMovement.vxMetersPerSecond = -shotMovement.vxMetersPerSecond;
         shotMovement.vyMetersPerSecond = -shotMovement.vyMetersPerSecond;
@@ -70,7 +70,7 @@ public class PrepareSOTM extends Command {
             var timeOfFlight = Seconds.of(state.flightTimeSec());
             double tof = timeOfFlight.in(Seconds);
             if (Robot.isReal()){
-                tof += kPhaseDelay.getAsDouble();
+                tof += kShootDelay.getAsDouble();
             }
             effectiveGoalPose = hubPose.exp(shotMovement.toTwist2d(tof));
             distanceToGoal = PhotonUtils.getDistanceToPose(shooterPose, effectiveGoalPose);
@@ -83,7 +83,7 @@ public class PrepareSOTM extends Command {
         double rpm = state.flywheelRPM();
         flywheel.setRealTarget(rpm);
 
-        if(rpm > flywheel.getVelocity() + 100){
+        if(flywheel.atRealTarget(100)){
             rpm += ShooterConstants.kFlywheelRPMOffset;
         }
 
