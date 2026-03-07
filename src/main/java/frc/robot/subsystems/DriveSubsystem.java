@@ -22,7 +22,6 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -31,7 +30,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -73,10 +71,6 @@ public class DriveSubsystem extends SubsystemBase {
   private double gyroOffset = 0.0;
 
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
-  private static Vector<N3> SingleTagStdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10));
-  private static Matrix<N3, N1> SingleTagStdDevsMat = new Matrix<>(SingleTagStdDevs.getStorage());
-  private static Vector<N3> MultiTagStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(5));
-  private static Matrix<N3, N1> MultiTagStdDevsMat = new Matrix<>(MultiTagStdDevs.getStorage());
   private final PoseEstimator poseEstimator;
   private final Field2d field2d = new Field2d();
   private final StructArrayPublisher<SwerveModuleState> publisher;
@@ -427,34 +421,19 @@ public class DriveSubsystem extends SubsystemBase {
     if (Vision.getResult1() != null){
       Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1());
       if (visionBotPose1.isPresent()){
-        SmartDashboard.putBoolean("Camera 1 Finding Pose", true);
-        if (visionBotPose1.get().targetsUsed.size() > 1){
-          poseEstimator.addVisionData(List.of(visionBotPose1.get()), MultiTagStdDevsMat);
-        } else{
-          poseEstimator.addVisionData(List.of(visionBotPose1.get()), SingleTagStdDevsMat);
-        }
+        poseEstimator.addVisionData(List.of(visionBotPose1.get()), Vision.updateEstimationStdDevs(visionBotPose1, visionBotPose1.get().targetsUsed));
         field2d.getObject("Camera1 Pose Guess").setPose(visionBotPose1.get().estimatedPose.toPose2d());
-      } else{
-        SmartDashboard.putBoolean("Camera 1 Finding Pose", false);
       }
     } if (Vision.getResult2() != null){
       Optional<EstimatedRobotPose> visionBotPose2 = Vision.getEstimatedGlobalPoseCam2(getCurrentPose(), Vision.getResult2());
       if (visionBotPose2.isPresent()){
-        if (visionBotPose2.get().targetsUsed.size() > 1){
-          poseEstimator.addVisionData(List.of(visionBotPose2.get()), MultiTagStdDevsMat);
-        } else{
-          poseEstimator.addVisionData(List.of(visionBotPose2.get()), SingleTagStdDevsMat);
-        }
+        poseEstimator.addVisionData(List.of(visionBotPose2.get()), Vision.updateEstimationStdDevs(visionBotPose2, visionBotPose2.get().targetsUsed));
         field2d.getObject("Camera2 Pose Guess").setPose(visionBotPose2.get().estimatedPose.toPose2d());
       }
     } if (Vision.getResult3() != null){
       Optional<EstimatedRobotPose> visionBotPose3 = Vision.getEstimatedGlobalPoseCam3(getCurrentPose(), Vision.getResult3());
       if (visionBotPose3.isPresent()){
-        if (visionBotPose3.get().targetsUsed.size() > 1){
-          poseEstimator.addVisionData(List.of(visionBotPose3.get()), MultiTagStdDevsMat);
-        } else{
-          poseEstimator.addVisionData(List.of(visionBotPose3.get()), SingleTagStdDevsMat);
-        }
+        poseEstimator.addVisionData(List.of(visionBotPose3.get()), Vision.updateEstimationStdDevs(visionBotPose3, visionBotPose3.get().targetsUsed));
         field2d.getObject("Camera1 Pose Guess").setPose(visionBotPose3.get().estimatedPose.toPose2d());
       }
     } 

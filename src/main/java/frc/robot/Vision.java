@@ -3,12 +3,15 @@ package frc.robot;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 
@@ -28,11 +31,11 @@ public class Vision extends SubsystemBase {
     private static PhotonPipelineResult result3 = null;
 
     private static final PhotonPoseEstimator poseEstimator1 = new PhotonPoseEstimator(
-        VisionConstants.kTagLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, VisionConstants.kRobotToCam1);
+        VisionConstants.kTagLayout, VisionConstants.kRobotToCam1);
     private static final PhotonPoseEstimator poseEstimator2 = new PhotonPoseEstimator(
-        VisionConstants.kTagLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, VisionConstants.kRobotToCam2);
+        VisionConstants.kTagLayout, VisionConstants.kRobotToCam2);
     private static final PhotonPoseEstimator poseEstimator3 = new PhotonPoseEstimator(
-        VisionConstants.kTagLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, VisionConstants.kRobotToCam3);
+        VisionConstants.kTagLayout, VisionConstants.kRobotToCam3);
 
     @Override
     public void periodic() {
@@ -40,14 +43,14 @@ public class Vision extends SubsystemBase {
         if (!results1.isEmpty()){
             result1 = results1.get(results1.size() - 1);
         }
-        // var results2 = camera2.getAllUnreadResults();
-        // if (!results2.isEmpty()){
-        //     result2 = results2.get(results2.size() - 1);
-        // }
-        // var results3 = camera3.getAllUnreadResults();
-        // if (!results3.isEmpty()){
-        //     result3 = results3.get(results3.size() - 1);
-        // }
+        var results2 = camera2.getAllUnreadResults();
+        if (!results2.isEmpty()){
+            result2 = results2.get(results2.size() - 1);
+        }
+        var results3 = camera3.getAllUnreadResults();
+        if (!results3.isEmpty()){
+            result3 = results3.get(results3.size() - 1);
+        }
     }
 
     public static PhotonPipelineResult getResult1() {
@@ -127,6 +130,52 @@ public class Vision extends SubsystemBase {
         
         return update;
     }
+
+    public static Matrix<N3, N1> updateEstimationStdDevs(Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
+
+        Matrix<N3, N1> curStdDevs = VisionConstants.kSingleTagStdDevs;
+        if (estimatedPose.isEmpty()) {
+            // No pose input. Default to single-tag std devs
+            curStdDevs = VisionConstants.kSingleTagStdDevs;
+        } else {
+            // Pose present. Start running Heuristic
+            var estStdDevs = VisionConstants.kSingleTagStdDevs;
+            int numTags = 0;
+            double avgDist = 0;
+
+            // Precalculation - see how many tags we found, and calculate an average-distance metric
+            for (var tgt : targets) {
+                var tagPose = VisionConstants.kTagLayout.getTagPose(tgt.getFiducialId());
+                if (tagPose.isEmpty()) continue;
+                numTags++;
+                avgDist +=
+                        tagPose
+                                .get()
+                                .toPose2d()
+                                .getTranslation()
+                                .getDistance(estimatedPose.get().estimatedPose.toPose2d().getTranslation());
+            }
+
+            if (numTags == 0) {
+                // No tags visible. Default to single-tag std devs
+                curStdDevs = VisionConstants.kSingleTagStdDevs;
+            } else {
+                // One or more tags visible, run the full heuristic.
+                avgDist /= numTags;
+                // Decrease std devs if multiple targets are visible
+                if (numTags > 1) estStdDevs = VisionConstants.kMultiTagStdDevs;
+                // Increase std devs based on (average) distance
+                if (numTags == 1 && avgDist > 4)
+                    estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+                // Tweak the 30 here to change how much we trust multi tag as distances increase
+                else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+                curStdDevs = estStdDevs;
+            }
+        }
+        return curStdDevs;
+    }
+
+
 
     public static Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam2(Pose2d prevEstimatedRobotPose, PhotonPipelineResult result) {
         if (result == null || !result.hasTargets()){

@@ -47,11 +47,11 @@ public class SetShooterToDefinedState extends Command {
     hood.setAngle(state.hoodAngleDeg());
     flywheel.setVelocity(rpm);
 
-    if (Math.abs(state.flywheelRPM() - flywheel.getVelocity()) < 100 && reachedTarget == false){
+    if (flywheel.atRealTarget(100) && reachedTarget == false){
         reachedTarget = true;
         Logger.recordOutput("Recharge Time", String.valueOf(rechargeTimer.get()));
     } else {
-        if (!(Math.abs(state.flywheelRPM() - flywheel.getVelocity()) < 100) && reachedTarget == true){
+        if (!(flywheel.atRealTarget(100)) && reachedTarget == true){
             reachedTarget = false;
             rechargeTimer.reset();
         }
