@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Hood.HoodIO;
 import frc.robot.Robot;
-import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
@@ -26,21 +25,27 @@ public class PrepareSOTM extends Command {
     private final FlywheelIO flywheel;
     private final DriveSubsystem driveData;
     private final List<ShooterState> table;
+    private final Pose2d goalPose;
     private Pose2d effectiveGoalPose;
     private LoggedTunableNumber kShootDelay = new LoggedTunableNumber("Shooter Shoot Delay", ShooterConstants.kShootDelay);
     private LoggedTunableNumber kPhaseDelay = new LoggedTunableNumber("Shooter Phase Delay", ShooterConstants.kPhaseDelay);
+    private LoggedTunableNumber kRPMChange = new LoggedTunableNumber("Flywheel RPM Change", 0);
+    private LoggedTunableNumber kFlywheelSetpointOffset = new LoggedTunableNumber("Flywheel Setpoint Compensation", ShooterConstants.kFlywheelRPMOffset);
+
 
 
     public PrepareSOTM(
             HoodIO hood,
             FlywheelIO flywheel,
             DriveSubsystem driveData,
+            Pose2d goalPose,
             List<ShooterState> table) {
 
         this.hood = hood;
         this.flywheel = flywheel;
         this.driveData = driveData;
         this.table = table;
+        this.goalPose = goalPose;
 
         addRequirements(hood, flywheel);
         SmartDashboard.putBoolean("SOTM Goal Calculating", false);
@@ -51,8 +56,6 @@ public class PrepareSOTM extends Command {
     public void execute() {
         SmartDashboard.putBoolean("SOTM Goal Calculating", true);
 
-        Pose2d hubPose = AlignmentConstants.HubPose;
-
         ChassisSpeeds shotMovement = driveData.getCurrentSpeedsFieldRelative();
 
         Pose2d shooterPose = driveData.getCurrentPose().exp(shotMovement.toTwist2d(kPhaseDelay.get())).plus(ShooterConstants.kRobotToShooter);
@@ -61,7 +64,7 @@ public class PrepareSOTM extends Command {
         shotMovement.vyMetersPerSecond = -shotMovement.vyMetersPerSecond;
         shotMovement.omegaRadiansPerSecond = 0;
 
-        double distanceToGoal = PhotonUtils.getDistanceToPose(shooterPose, hubPose);
+        double distanceToGoal = PhotonUtils.getDistanceToPose(shooterPose, goalPose);
         
         ShooterState state = ShooterInterpolator.interpolate(
                 table, distanceToGoal);
@@ -72,7 +75,7 @@ public class PrepareSOTM extends Command {
             if (Robot.isReal()){
                 tof += kShootDelay.getAsDouble();
             }
-            effectiveGoalPose = hubPose.exp(shotMovement.toTwist2d(tof));
+            effectiveGoalPose = goalPose.exp(shotMovement.toTwist2d(tof));
             distanceToGoal = PhotonUtils.getDistanceToPose(shooterPose, effectiveGoalPose);
             state = ShooterInterpolator.interpolate(
                 table, distanceToGoal);
@@ -80,11 +83,11 @@ public class PrepareSOTM extends Command {
 
         driveData.getField().getObject("SOTM Goal").setPose(effectiveGoalPose);
         
-        double rpm = state.flywheelRPM();
+        double rpm = state.flywheelRPM() + kRPMChange.get();
         flywheel.setRealTarget(rpm);
 
-        if(!(flywheel.atRealTarget(100)) && rpm > flywheel.getVelocity()){
-            rpm += ShooterConstants.kFlywheelRPMOffset;
+        if(!(flywheel.atRealTarget(50)) && rpm >= flywheel.getVelocity()){
+            rpm += kFlywheelSetpointOffset.get();
         }
 
 

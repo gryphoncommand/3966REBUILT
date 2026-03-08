@@ -3,6 +3,8 @@ package frc.robot.subsystems.Indexer;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -12,7 +14,6 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs.KickerConfig;
 import frc.robot.Constants.IndexerConstants;
@@ -29,8 +30,9 @@ public class Kicker extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Kicker Velocity (RPM)", getVelocity());
-        SmartDashboard.putNumber("Desired Kicker Speed", targetReference);
+        Logger.recordOutput("Indexing/Kicker Velocity (RPM)", getVelocity());
+        Logger.recordOutput("Indexing/Desired Kicker Speed", targetReference);
+        Logger.recordOutput("Indexing/Kicker Applied Output", getVoltage());
     }
 
     public void set(double speed) {

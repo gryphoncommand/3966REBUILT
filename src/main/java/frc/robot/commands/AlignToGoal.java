@@ -24,6 +24,7 @@ public class AlignToGoal extends Command {
     private Pose2d goalPose;
     private double yawError;
     private Debouncer alignDebouncer = new Debouncer(0.2);
+    private Debouncer unAlignDebouncer = new Debouncer(0.2);
     private boolean SOTM;
 
     public AlignToGoal(DriveSubsystem drive, CommandXboxController controller, Pose2d goalPose, boolean SOTM) {
@@ -89,7 +90,12 @@ public class AlignToGoal extends Command {
 
         // Debouncer ensures it's stable for required time
         boolean alignedNow = alignDebouncer.calculate(withinAngleTol && slowEnoughRot && slowEnoughTrans);
-        drive.setAlign(alignedNow);
+        boolean notAlignedNow = unAlignDebouncer.calculate(!(withinAngleTol && slowEnoughRot && slowEnoughTrans));
+        if (alignedNow){
+            drive.setAlign(true);
+        } else if (notAlignedNow){
+            drive.setAlign(false);
+        }
     }
 
     @Override

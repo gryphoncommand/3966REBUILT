@@ -120,7 +120,7 @@ public class ShootAllInHopper extends Command {
             aligned = true;
         } 
 
-        if (flywheel.atTarget(100) && !reachedSetpoint){
+        if (flywheel.atRealTarget(100) && !reachedSetpoint){
             reachedSetpoint = true;
             reachedSetpointTime = timer.get();
         }
@@ -130,7 +130,7 @@ public class ShootAllInHopper extends Command {
         }
         
         if (Robot.isSimulation()){ 
-            flyReady = flywheel.atTarget(50);
+            flyReady = flywheel.atRealTarget(50);
             if (hoodReady && flyReady && aligned &&  spindexer.hasBalls()) {
                 double kShooterEfficiency = 0.48;
 

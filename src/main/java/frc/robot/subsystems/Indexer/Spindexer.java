@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Indexer;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -9,7 +11,6 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs.SpindexerConfig;
 import frc.robot.Constants.IndexerConstants;
@@ -27,9 +28,9 @@ public class Spindexer extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Spindexer Current", getStatorCurrent());
-        SmartDashboard.putNumber("Spindexer Velocity (RPM)", getVelocity());
-        SmartDashboard.putNumber("Desired Spindexer Speed", targetReference);
+        Logger.recordOutput("Indexing/Spindexer Current", getStatorCurrent());
+        Logger.recordOutput("Indexing/Spindexer Velocity (RPM)", getVelocity());
+        Logger.recordOutput("Indexing/Desired Spindexer Speed", targetReference);
     }
 
     public void set(double speed) {

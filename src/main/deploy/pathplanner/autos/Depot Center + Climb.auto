@@ -49,22 +49,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Home Hood"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Depot shot to climb"
-                }
-              }
-            ]
+            "pathName": "Depot shot to climb"
           }
         },
         {

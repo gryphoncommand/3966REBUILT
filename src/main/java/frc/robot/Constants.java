@@ -147,7 +147,7 @@ public final class Constants {
     private static final double camYaw1 = Units.degreesToRadians(90);
     
     public static final Transform3d kRobotToCam1 =
-            new Transform3d(new Translation3d(0.301, 0.254, 0.401), new Rotation3d(0, camPitch1, camYaw1));
+            new Transform3d(new Translation3d(0.301, 0.26, 0.41), new Rotation3d(0, camPitch1, camYaw1));
     public static final Transform3d kCamToRobot1 = kRobotToCam1.inverse();
 
     // some of these probably need to be flipped
@@ -178,7 +178,7 @@ public final class Constants {
     public static int kFollowerWheelCanID = 10;
     public static int kHoodCANID = 11;
 
-    public static double kFlywheelRPMOffset = 350;
+    public static double kFlywheelRPMOffset = 120;
     public static double kShootDelay = 0.2;
     public static double kPhaseDelay = 0.02;
 
@@ -190,15 +190,16 @@ public final class Constants {
     public static double kHoodMinAngleDeg = 22.6;
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
     public static double kDefaultFlywheelSpeed = 0.0;
+    
 
-    public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(Math.PI/2));
+    public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(13*Math.PI/24));
 
 
     public static ShooterState kShooterStowState = new ShooterState(3, kHoodMinAngleDeg, 0, 1.2);
     public static ShooterState kDefaultShooterState = new ShooterState(3, 35, 2000, 1.2);
     public static ShooterState kCornerShotState = new ShooterState(5.1, 41, 3225, 1.2);
     public static ShooterState kTowerShotState = new ShooterState(3.415, 36, 2750, 1.2);
-    public static ShooterState kTrenchShotState = new ShooterState(3.254, 35.38, 2750, 1.5);
+    public static ShooterState kTrenchShotState = new ShooterState(3.168, 35.0, 2850, 1.10);
 
 
     public static List<ShooterState> RealShootingValues = List.of(
@@ -207,8 +208,8 @@ public final class Constants {
       new ShooterState(2.300, 28.0, 2600, 1.12), // Interpolated
       new ShooterState(2.493, 30.0, 2650, 1.15),
       new ShooterState(2.850, 32.5, 2700, 1.13), // Interpolated
-      new ShooterState(3.168, 35.0, 2800, 1.10),
-      new ShooterState(3.500, 36.5, 2815, 1.07), // Interpolated
+      new ShooterState(3.168, 35.0, 2450, 1.10),
+      new ShooterState(3.500, 36.5, 2515, 1.07), // Interpolated
       new ShooterState(3.820, 38.0, 2830, 1.04),
       new ShooterState(4.150, 38.5, 2950, 1.07), // Interpolated
       new ShooterState(4.414, 39.0, 3050, 1.10),
@@ -252,7 +253,7 @@ public final class Constants {
     public static int kClimberCanID = 17;
 
     public static Pose2d kRightClimbPose = new Pose2d(1.2, 2.911, new Rotation2d());
-    public static Pose2d kLeftClimbPose = new Pose2d(0.7, 4.633, new Rotation2d(Math.PI));
+    public static Pose2d kLeftClimbPose = new Pose2d(0.7, 4.530, new Rotation2d(Math.PI));
     public static Pose2d kMidClimbPose = new Pose2d(0.768, 3.781, new Rotation2d(Math.PI));
 
     public static Pose2d kRightPreClimb = new Pose2d(1.2, 2.191, new Rotation2d());

@@ -175,12 +175,11 @@ public class RobotContainer {
       .whileTrue(new RepeatCommand(new DeferredCommand(()->
         new ParallelCommandGroup(
             new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
-            new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.RealShootingValues)
+            new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValues)
         ), Set.of(m_drive, m_hood, m_flywheel))))
       .onFalse(new RunCommand(()->m_flywheel.set(0), m_flywheel))
       .onFalse(new HomeHood(m_hood));
 
-    m_driverController.rightTrigger().whileTrue(runIntakeRollers);
     m_driverController.rightTrigger()
         .whileTrue(runIntakeRollers)
         // .whileTrue(new AgitateIntake(m_intakeDeploy))
@@ -251,7 +250,7 @@ public class RobotContainer {
     SmartDashboard.putData("Align To Hub",
       new ParallelCommandGroup(
         new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
-        new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.RealShootingValues)
+        new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValues)
       )
     );
   }
@@ -313,7 +312,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
         new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
-        new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.RealShootingValues)
+        new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValues)
       )
     );
     NamedCommands.registerCommand("Deploy Intake", new IntakeDeploy(m_intakeDeploy));

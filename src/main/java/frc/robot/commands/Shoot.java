@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -103,13 +105,14 @@ public class Shoot extends Command {
     public void execute() {
         // Only feed when both hood and flywheel report on-target
         boolean hoodReady = hood.atTarget(5.0);
-        boolean flyReady = flywheel.atRealTarget(500);
+        boolean flyReady = flywheel.atRealTarget(750);
         boolean aligned = driveData.getAligned();
         if (!neeedAlign){
             aligned = true;
-        } 
+        }
 
-        if (!reachedSetpoint && flywheel.atTarget(100)){
+        if (!reachedSetpoint && flywheel.atRealTarget(100)){
+            Logger.recordOutput("Shoot Report", "Flywheel not at setpoint");
             reachedSetpoint = true;
         }
         
@@ -122,7 +125,7 @@ public class Shoot extends Command {
             flyReady = flywheel.atTarget(50);
 
             if (hoodReady && flyReady && aligned && now - lastShotTime > 0.263 && spindexer.hasBalls()) {
-                double kShooterEfficiency = 0.48;
+                double kShooterEfficiency = 0.55;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
                 double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;
@@ -140,9 +143,11 @@ public class Shoot extends Command {
         }
 
         if (hoodReady && flyReady && indexingStopped && aligned) {
+            Logger.recordOutput("Shoot Report", "Shooting");
             passthroughFactory.start(spindexerDirection);
             indexingStopped = false;
         } else if (!(aligned && flyReady && hoodReady)) {
+            Logger.recordOutput("Shoot Report", "Shooter Not Ready, Align " + aligned + ", Flywheel " + flyReady + ", Hood "+ hoodReady);
             passthroughFactory.stop();
             indexingStopped = true;
         }
