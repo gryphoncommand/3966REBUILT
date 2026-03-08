@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -71,9 +73,11 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         wheelVisual.setAngle(wheelAngle);
 
         SmartDashboard.putData("Shooter Mech", mech2d);
-        SmartDashboard.putNumber("Shooter Velocity (RPM)", mechVel.in(RPM));
-        SmartDashboard.putNumber("Shooter Applied Volts", motorVoltageTurn.in(Volts));
-        SmartDashboard.putNumber("Desired Flywheel Speed", targetVelocityRpm);
+        Logger.recordOutput("Flywheel/Flywheel Velocity (RPM)", getVelocity());
+        Logger.recordOutput("Flywheel/Effective Desired Flywheel Speed", targetVelocityRpm);
+        Logger.recordOutput("Flywheel/Desired Flywheel Speed", realTarget);
+        Logger.recordOutput("Flywheel/Flywheel Applied Output (Duty Cycle)", m_flywheelMotor.get());
+        Logger.recordOutput("Flywheel/Flywheel Applied Output (Volts)", getVoltage());
     }
 
     @Override

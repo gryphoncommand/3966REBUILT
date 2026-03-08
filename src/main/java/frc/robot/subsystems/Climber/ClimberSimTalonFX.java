@@ -89,9 +89,9 @@ public class ClimberSimTalonFX extends SubsystemBase implements ClimberIO {
         climberVisual.setLength(heightMeters * 2.0);
 
         SmartDashboard.putData("Climber Mech", mech2d);
-        SmartDashboard.putNumber("Climber Height (in)", inches);
-        SmartDashboard.putNumber("Climber Motor Rots", motorRotations);
-        SmartDashboard.putNumber("Applied Volts", motorVoltage.in(Volts)/2);
+        Logger.recordOutput("Climber/Climber Height (in)", inches);
+        Logger.recordOutput("Climber/Climber Motor Rots", motorRotations);
+        Logger.recordOutput("Climber/Applied Volts", motorVoltage.in(Volts)/2);
 
         Logger.recordOutput(
             "FinalComponentPoses/Climber Position",

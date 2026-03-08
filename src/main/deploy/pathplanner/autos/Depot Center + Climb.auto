@@ -59,22 +59,9 @@
                 }
               },
               {
-                "type": "race",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Climb"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Depot shot to climb"
-                      }
-                    }
-                  ]
+                  "pathName": "Depot shot to climb"
                 }
               }
             ]
@@ -83,7 +70,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Stop"
+            "name": "Auto Climb"
           }
         }
       ]

@@ -178,7 +178,7 @@ public final class Constants {
     public static int kFollowerWheelCanID = 10;
     public static int kHoodCANID = 11;
 
-    public static double kFlywheelRPMOffset = 150;
+    public static double kFlywheelRPMOffset = 350;
     public static double kShootDelay = 0.2;
     public static double kPhaseDelay = 0.02;
 
@@ -196,6 +196,10 @@ public final class Constants {
 
     public static ShooterState kShooterStowState = new ShooterState(3, kHoodMinAngleDeg, 0, 1.2);
     public static ShooterState kDefaultShooterState = new ShooterState(3, 35, 2000, 1.2);
+    public static ShooterState kCornerShotState = new ShooterState(5.1, 41, 3225, 1.2);
+    public static ShooterState kTowerShotState = new ShooterState(3.415, 36, 2750, 1.2);
+    public static ShooterState kTrenchShotState = new ShooterState(3.254, 35.38, 2750, 1.5);
+
 
     public static List<ShooterState> RealShootingValues = List.of(
       new ShooterState(1.5, 23.0, 2400, 0.9),
@@ -245,7 +249,6 @@ public final class Constants {
     public static double kInchesPerMotorRotation = 10/kMotorRotationsPer10Inch;
     public static double kMotorRotationsPerInch = 1/kInchesPerMotorRotation;
     public static double kFullUpPosition = 70;
-    public static double kClimbPosition = 40;
     public static int kClimberCanID = 17;
 
     public static Pose2d kRightClimbPose = new Pose2d(1.2, 2.911, new Rotation2d());

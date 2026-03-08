@@ -5,7 +5,6 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ClimberConstants;
@@ -13,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Volts;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -28,8 +28,9 @@ public class ClimberTalonFX extends SubsystemBase implements ClimberIO {
 
 	@Override
 	public void periodic() {
-		SmartDashboard.putNumber("Climber Position (Rots)", climberMotor.getPosition().getValue().in(Rotations));
-		SmartDashboard.putNumber("Climber Extension (in)", climberMotor.getPosition().getValueAsDouble() * ClimberConstants.kInchesPerMotorRotation);
+		Logger.recordOutput("Climber/Climber Height (in)", climberMotor.getPosition().getValue().in(Rotations) * ClimberConstants.kInchesPerMotorRotation);
+        Logger.recordOutput("Climber/Climber Motor Rots", climberMotor.getPosition().getValue().in(Rotations));
+        Logger.recordOutput("Climber/Applied Volts", climberMotor.getMotorVoltage().getValue().in(Volts));
 		Logger.recordOutput("FinalComponentPoses/Climber Position", new Pose3d(0,0,Units.inchesToMeters(climberMotor.getPosition().getValueAsDouble() * ClimberConstants.kInchesPerMotorRotation), new Rotation3d()));
 	}
 
@@ -40,7 +41,6 @@ public class ClimberTalonFX extends SubsystemBase implements ClimberIO {
 
 	@Override
 	public void setPosition(double rots) {
-		SmartDashboard.putNumber("Requested Climber Position (rots)", rots);
 		climberMotor.setControl(new PositionVoltage(rots).withSlot(0));
 		targetRots = rots;
 	}

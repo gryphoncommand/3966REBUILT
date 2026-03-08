@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.geometry.Pose3d;
@@ -32,7 +33,7 @@ public class HoodSimTalonFX extends SubsystemBase implements HoodIO {
     private final TalonFXSimState hoodSimState =
         hoodMotor.getSimState();
 
-    double jKgMS = SingleJointedArmSim.estimateMOI(ShooterConstants.kHoodLengthMeters, Units.lbsToKilograms(1.5));
+    double jKgMS = SingleJointedArmSim.estimateMOI(ShooterConstants.kHoodLengthMeters, Units.lbsToKilograms(4));
     
 
     private final SingleJointedArmSim hoodSim = new SingleJointedArmSim(DCMotor.getKrakenX44(1), ShooterConstants.kHoodGearRatio, jKgMS, ShooterConstants.kHoodLengthMeters, Units.degreesToRadians(ShooterConstants.kHoodMinAngleDeg), Units.degreesToRadians(ShooterConstants.kHoodMaxAngleDeg), true, Units.degreesToRadians(ShooterConstants.kHoodMinAngleDeg));
@@ -46,7 +47,7 @@ public class HoodSimTalonFX extends SubsystemBase implements HoodIO {
         root.append(new MechanismLigament2d("Hood", 0.25, 0, 10, new Color8Bit(Color.kBlack)));
 
     public HoodSimTalonFX(){
-        hoodMotor.getConfigurator().apply(Configs.Hood.HoodConfig);
+        hoodMotor.getConfigurator().apply(Configs.Hood.HoodConfig.MotorOutput.withInverted(InvertedValue.CounterClockwise_Positive));
         double rotorPos = hoodSim.getAngleRads() / (2 * Math.PI)* ShooterConstants.kHoodGearRatio;
 
         hoodSimState.setRawRotorPosition(rotorPos);
@@ -57,7 +58,7 @@ public class HoodSimTalonFX extends SubsystemBase implements HoodIO {
         hoodSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
         // Feed TalonFX output into physics sim
-        hoodSim.setInputVoltage(hoodSimState.getMotorVoltage());
+        hoodSim.setInputVoltage(hoodSimState.getMotorVoltage()/2.5);
         hoodSim.update(0.02);
 
         // Sync sim position back to TalonFX sensor
@@ -78,9 +79,10 @@ public class HoodSimTalonFX extends SubsystemBase implements HoodIO {
         );
 
         SmartDashboard.putData("Hood Mech", mech2d);
-        SmartDashboard.putNumber("Hood Angle (deg)", getAngle());
+        Logger.recordOutput("Hood/Desired Hood Angle", targetAngleDeg);
+        Logger.recordOutput("Hood/Hood Angle (deg)", getAngle());
         Logger.recordOutput("FinalComponentPoses/Hood Position", new Pose3d(0, 0.09, 0.41, new Rotation3d(Units.degreesToRadians(-getAngle() + ShooterConstants.kHoodMinAngleDeg), 0.0, 0.0)));
-        SmartDashboard.putNumber("Applied Hood Volts", hoodSimState.getMotorVoltage());
+        Logger.recordOutput("Hood/Applied Hood Volts", hoodSimState.getMotorVoltage());
     }
 
 
@@ -92,7 +94,6 @@ public class HoodSimTalonFX extends SubsystemBase implements HoodIO {
     @Override
     public void setAngle(double degrees) {
         targetAngleDeg = degrees;
-        SmartDashboard.putNumber("Desired Hood Angle", degrees);
         hoodMotor.setControl(
             new PositionVoltage(
                 Units.degreesToRotations(degrees)

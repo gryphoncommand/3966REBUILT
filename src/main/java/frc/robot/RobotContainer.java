@@ -5,8 +5,10 @@
 package frc.robot;
 
 import frc.FuelSim;
+import frc.GryphonLib.ShooterState;
 import frc.littletonUtils.AllianceFlipUtil;
 import frc.robot.Constants.AlignmentConstants;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
@@ -94,6 +96,7 @@ public class RobotContainer {
       new CommandXboxController(OIConstants.kOperatorControllerPort);
 
   private final SendableChooser<Command> autoChooser;
+  private final SendableChooser<ShooterState> emergencyShotChooser = new SendableChooser<>();
 
   public RobotContainer() {
     new Vision();
@@ -107,7 +110,13 @@ public class RobotContainer {
     }
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
+
+    emergencyShotChooser.setDefaultOption("Default", ShooterConstants.kDefaultShooterState);
+    emergencyShotChooser.addOption("Tower", ShooterConstants.kTowerShotState);
+    emergencyShotChooser.addOption("Trench", ShooterConstants.kTrenchShotState);
+    emergencyShotChooser.addOption("Corner", ShooterConstants.kCornerShotState);
     SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putData("Shot Chooser", emergencyShotChooser);
   }
 
   private void configureDefaultCommands() {
@@ -194,7 +203,11 @@ public class RobotContainer {
 
     m_driverController.b().whileTrue(new AlignToTrench(m_drive, m_driverController));
     m_driverController.a()
-      .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState))
+      .whileTrue(
+        new DeferredCommand(()->new SetShooterToDefinedState(m_hood, m_flywheel,
+          emergencyShotChooser.getSelected()
+        ), Set.of(m_hood, m_flywheel))
+      )
       .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
       .onFalse(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kShooterStowState).withTimeout(0.1));
     m_driverController.povLeft().whileTrue(new HomeHood(m_hood).alongWith(new RunCommand(()->m_flywheel.set(0), m_flywheel)));
@@ -274,7 +287,7 @@ public class RobotContainer {
     );
 
     instance.registerIntake(
-        -(0.635 + 2*IntakeConstants.kIntakeLengthMeters)/2, -(0.635)/2, -(0.737)/2, (0.737)/2, // robot-centric coordinates for bounding box
+        -(0.635 + 2*(IntakeConstants.kIntakeLengthMeters*0.9))/2, -(0.635)/2, -(0.7)/2, (0.7)/2, // robot-centric coordinates for bounding box
         () -> (SmartDashboard.getBoolean("Intake Deployed", true) && !m_spindexer.isFull()), // (optional) BooleanSupplier for whether the intake should be active at a given moment
         new Runnable() {public void run() {m_spindexer.addBall();};}); // (optional) Runnable called whenever a fuel is intaked
 
@@ -308,8 +321,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("Run Intake", new RunCommand(()->m_intakeRollers.setVelocity(IntakeConstants.kIntakeSpeedRPM), m_intakeRollers).finallyDo(()->m_intakeRollers.set(0)));
     NamedCommands.registerCommand("Home Hood", new HomeHood(m_hood));
     NamedCommands.registerCommand("Climb", new DeployClimber(m_climber));
+    NamedCommands.registerCommand("Deploy Climber", new RunCommand(()->m_climber.setPosition(ClimberConstants.kFullUpPosition), m_climber));
     NamedCommands.registerCommand("Stop", new RunCommand(()->m_drive.stop(), m_drive).withTimeout(1));
-    
+    NamedCommands.registerCommand("Auto Climb", new AutoClimbCommand(m_drive, m_climber));
   }
 
   private void configureLogger(){

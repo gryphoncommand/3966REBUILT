@@ -41,7 +41,7 @@ public class SetShooterToDefinedState extends Command {
   public void execute() {
     double rpm = state.flywheelRPM();
     flywheel.setRealTarget(rpm);
-    if(flywheel.atRealTarget(100)){
+    if(!(flywheel.atRealTarget(100)) && rpm > flywheel.getVelocity()){
       rpm += ShooterConstants.kFlywheelRPMOffset;
     }
     hood.setAngle(state.hoodAngleDeg());
