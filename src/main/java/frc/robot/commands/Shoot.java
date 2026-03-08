@@ -98,7 +98,7 @@ public class Shoot extends Command {
         // Rollers start stopped until shooter is ready.
         passthroughFactory.stop();
         indexingStopped = true;
-        reachedSetpoint = true;
+        reachedSetpoint = false;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class Shoot extends Command {
         }
 
         if (!reachedSetpoint && flywheel.atRealTarget(100)){
-            Logger.recordOutput("Shoot Report", "Flywheel not at setpoint");
+            Logger.recordOutput("Shoot Report", "Started Shooting");
             reachedSetpoint = true;
         }
         
