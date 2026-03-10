@@ -139,25 +139,32 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     }
 
     public void simulateShot(double ballExitVelocityMps) {
-    double ballMassKg = 0.226796;
-    // Flywheel parameters
-    double flywheelRadiusM = 0.0508; // example: 5 cm radius
-    double J = 0.00087791953448;  // your flywheel moment of inertia from simulation
-    
-    // Angular momentum removed by the ball
-    double deltaL = ballMassKg * flywheelRadiusM * ballExitVelocityMps;
-    
-    // Convert to angular velocity drop (rad/s)
-    double deltaOmegaRadPerSec = deltaL / J;
-    
-    // Current flywheel velocity (rad/s)
-    double currentOmega = shooterSim.getAngularVelocity().in(RadiansPerSecond);
-    
-    // Apply realistic velocity drop
-    double newOmega = currentOmega - deltaOmegaRadPerSec;
-    shooterSim.setAngularVelocity(newOmega);
-    
-    // Update TalonFX sim rotor velocity to match new flywheel state
-    m_flywheelSim.setRotorVelocity(RotationsPerSecond.of(newOmega / (2*Math.PI)));
-}
+        double ballMassKg = 0.226796;
+        // Flywheel parameters
+        double flywheelRadiusM = 0.0508; // example: 5 cm radius
+        double J = 0.00087791953448;  // your flywheel moment of inertia from simulation
+        
+        // Angular momentum removed by the ball
+        double deltaL = ballMassKg * flywheelRadiusM * ballExitVelocityMps;
+        
+        // Convert to angular velocity drop (rad/s)
+        double deltaOmegaRadPerSec = deltaL / J;
+        
+        // Current flywheel velocity (rad/s)
+        double currentOmega = shooterSim.getAngularVelocity().in(RadiansPerSecond);
+        
+        // Apply realistic velocity drop
+        double newOmega = currentOmega - deltaOmegaRadPerSec;
+        shooterSim.setAngularVelocity(newOmega);
+        
+        // Update TalonFX sim rotor velocity to match new flywheel state
+        m_flywheelSim.setRotorVelocity(RotationsPerSecond.of(newOmega / (2*Math.PI)));
+    }
+
+    @Override
+    public void stop() {
+        setVelocity(0);
+        setRealTarget(0);
+        set(0);
+    }
 }

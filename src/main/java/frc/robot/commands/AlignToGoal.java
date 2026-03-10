@@ -6,12 +6,15 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.GryphonLib.MovementCalculations;
 import frc.GryphonLib.PositionCalculations;
+import frc.robot.Robot;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -24,14 +27,16 @@ public class AlignToGoal extends Command {
     private Pose2d goalPose;
     private double yawError;
     private Debouncer alignDebouncer = new Debouncer(0.2);
-    private Debouncer unAlignDebouncer = new Debouncer(0.2);
     private boolean SOTM;
+    private Transform2d kRobotToShooter;
 
     public AlignToGoal(DriveSubsystem drive, CommandXboxController controller, Pose2d goalPose, boolean SOTM) {
         this.drive = drive;
         this.controller = controller;
         this.goalPose = goalPose;
         this.SOTM = SOTM;
+
+        kRobotToShooter = Robot.isReal() ? ShooterConstants.kRobotToShooter : new Transform2d(ShooterConstants.kRobotToShooter.getX(), ShooterConstants.kRobotToShooter.getY(), new Rotation2d(Math.PI/2));
 
         addRequirements(drive);
         if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)) {
@@ -41,7 +46,7 @@ public class AlignToGoal extends Command {
         }
 
         yawError = PositionCalculations.getYawChangeToPose(
-            drive.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter),
+            drive.getCurrentPose().transformBy(kRobotToShooter),
             goalPose
         );
     }
@@ -66,7 +71,7 @@ public class AlignToGoal extends Command {
 
         // Compute yaw error from shooter pose instead of robot center
         yawError = PositionCalculations.getYawChangeToPose(
-            drive.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter),
+            drive.getCurrentPose().transformBy(kRobotToShooter),
             goalPose
         );
         SmartDashboard.putNumber("Yaw Align Error", Units.radiansToDegrees(yawError));
@@ -90,12 +95,7 @@ public class AlignToGoal extends Command {
 
         // Debouncer ensures it's stable for required time
         boolean alignedNow = alignDebouncer.calculate(withinAngleTol && slowEnoughRot && slowEnoughTrans);
-        boolean notAlignedNow = unAlignDebouncer.calculate(!(withinAngleTol && slowEnoughRot && slowEnoughTrans));
-        if (alignedNow){
-            drive.setAlign(true);
-        } else if (notAlignedNow){
-            drive.setAlign(false);
-        }
+        drive.setAlign(alignedNow);
     }
 
     @Override

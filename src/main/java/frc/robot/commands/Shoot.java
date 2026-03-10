@@ -8,6 +8,8 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -132,7 +134,7 @@ public class Shoot extends Command {
                 double wheelRadius = Units.inchesToMeters(2);
                 double ballSpeed = wheelRadPerSec * wheelRadius * kShooterEfficiency;
 
-                Pose2d ballPose2d = driveData.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter);
+                Pose2d ballPose2d = driveData.getCurrentPose().transformBy(new Transform2d(ShooterConstants.kRobotToShooter.getX(), ShooterConstants.kRobotToShooter.getY(), new Rotation2d(Math.PI/2)));
                 Translation3d initialPosition = new Translation3d(ballPose2d.getX(), ballPose2d.getY(), Units.inchesToMeters(17.701451));
                 FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle())));
 

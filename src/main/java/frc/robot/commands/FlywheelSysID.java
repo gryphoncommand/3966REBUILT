@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -12,6 +14,7 @@ import frc.robot.subsystems.Flywheel.FlywheelIO;
 
 public class FlywheelSysID {    
     SysIdRoutine routine;
+    FlywheelIO flywheel;
 
     public FlywheelSysID(FlywheelIO flywheel){
         routine = new SysIdRoutine(
@@ -26,6 +29,8 @@ public class FlywheelSysID {
               },
               flywheel)
         );
+
+        this.flywheel = flywheel;
     }
 
     public Command SysIDQuasistatic(Direction direction){
@@ -39,9 +44,13 @@ public class FlywheelSysID {
     public SequentialCommandGroup doAllSysID(){
         SequentialCommandGroup sysId = new SequentialCommandGroup(
             this.SysIDQuasistatic(Direction.kForward),
+            new RunCommand(()->flywheel.set(0), flywheel).until(()->Math.abs(flywheel.getVelocity()) < 50),
             this.SysIDQuasistatic(Direction.kReverse),
+            new RunCommand(()->flywheel.set(0), flywheel).until(()->Math.abs(flywheel.getVelocity()) < 50),
             this.SysIDDynamic(Direction.kForward),
-            this.SysIDDynamic(Direction.kReverse)
+            new RunCommand(()->flywheel.set(0), flywheel).until(()->Math.abs(flywheel.getVelocity()) < 50),
+            this.SysIDDynamic(Direction.kReverse),
+            new RunCommand(()->flywheel.set(0), flywheel).until(()->Math.abs(flywheel.getVelocity()) < 50)
         );
         return sysId;
     }

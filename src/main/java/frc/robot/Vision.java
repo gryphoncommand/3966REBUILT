@@ -181,11 +181,16 @@ public class Vision extends SubsystemBase {
         if (result == null || !result.hasTargets()){
             return Optional.empty();
         }
-        if (result.getBestTarget().bestCameraToTarget.getTranslation().getNorm() > 2){
-            return Optional.empty();
-        }
-        var update = poseEstimator2.estimateAverageBestTargetsPose(result);
 
+        Optional<EstimatedRobotPose> update = Optional.empty();
+        if (result.getTargets().size() > 1){
+            update = poseEstimator2.estimateCoprocMultiTagPose(result);
+        }
+        else {
+            update = poseEstimator2.estimateLowestAmbiguityPose(result);
+        }
+        
+        
         return update;
     }
 
@@ -193,11 +198,16 @@ public class Vision extends SubsystemBase {
         if (result == null || !result.hasTargets()){
             return Optional.empty();
         }
-        if (result.getBestTarget().bestCameraToTarget.getTranslation().getNorm() > 2){
-            return Optional.empty();
-        }
-        var update = poseEstimator3.estimateAverageBestTargetsPose(result);
 
+        Optional<EstimatedRobotPose> update = Optional.empty();
+        if (result.getTargets().size() > 1){
+            update = poseEstimator3.estimateCoprocMultiTagPose(result);
+        }
+        else {
+            update = poseEstimator3.estimateLowestAmbiguityPose(result);
+        }
+        
+        
         return update;
     }
 

@@ -148,7 +148,7 @@ public class RobotContainer {
       new RunCommand(()->{
         m_flywheel.setVelocity(ShooterConstants.kDefaultFlywheelSpeed);
         if (ShooterConstants.kDefaultFlywheelSpeed == 0){
-          m_flywheel.set(0);
+          m_flywheel.stop();
         }
       }, m_flywheel)
     );
@@ -177,7 +177,7 @@ public class RobotContainer {
             new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
             new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValues)
         ), Set.of(m_drive, m_hood, m_flywheel))))
-      .onFalse(new RunCommand(()->m_flywheel.set(0), m_flywheel))
+      .onFalse(new RunCommand(()->m_flywheel.stop(), m_flywheel))
       .onFalse(new HomeHood(m_hood));
 
     m_driverController.rightTrigger()
@@ -197,7 +197,7 @@ public class RobotContainer {
         , Set.of(m_drive, m_hood, m_flywheel)
       ))
     )
-    .onFalse(new RunCommand(()->m_flywheel.set(0), m_flywheel))
+    .onFalse(new RunCommand(()->m_flywheel.stop(), m_flywheel))
     .onFalse(new HomeHood(m_hood));
 
     m_driverController.b().whileTrue(new AlignToTrench(m_drive, m_driverController));
@@ -305,6 +305,8 @@ public class RobotContainer {
       })
       .withName("Reset Fuel")
       .ignoringDisable(true));
+
+    instance.enableAirResistance();
   }
 
   private void configureNamedCommands(){

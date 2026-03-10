@@ -45,6 +45,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.Vision;
+import frc.GryphonLib.ChassisAccelerations;
 import frc.GryphonLib.MovementCalculations;
 import frc.GryphonLib.PositionCalculations;
 import frc.littletonUtils.PoseEstimator;
@@ -77,6 +78,8 @@ public class DriveSubsystem extends SubsystemBase {
   private final StructArrayPublisher<SwerveModuleState> desiredPublisher;
   private double currentTimestamp = Timer.getTimestamp();
   private boolean aligned = false;
+  private ChassisAccelerations currentAccelerationFieldRelative = new ChassisAccelerations();
+  private ChassisSpeeds prevSpeeds = new ChassisSpeeds();
 
 
 
@@ -444,12 +447,17 @@ public class DriveSubsystem extends SubsystemBase {
       getCurrentSpeeds().toTwist2d(Timer.getTimestamp() - currentTimestamp)
     );
 
-      field2d.setRobotPose(poseEstimator.getLatestPose());
-      publisher.set(getStates());
-      desiredPublisher.set(getDesiredStates());
+    field2d.setRobotPose(poseEstimator.getLatestPose());
+    publisher.set(getStates());
+    desiredPublisher.set(getDesiredStates());
     SmartDashboard.putData("Field", field2d);
     SmartDashboard.putNumber("Current Speed", MovementCalculations.getVelocityMagnitude(getCurrentSpeeds()).magnitude());
+
+    currentAccelerationFieldRelative = new ChassisAccelerations(prevSpeeds, getCurrentSpeedsFieldRelative(), Timer.getTimestamp() - currentTimestamp);
+
+    prevSpeeds = getCurrentSpeedsFieldRelative();
     currentTimestamp = Timer.getTimestamp();
+
   }
 
   @Override
@@ -488,5 +496,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double getDistanceToPose(Pose2d pose){
     return getCurrentPose().getTranslation().getDistance(pose.getTranslation());
+  }
+
+  public ChassisAccelerations getAcceleration(){
+    return currentAccelerationFieldRelative;
   }
 }

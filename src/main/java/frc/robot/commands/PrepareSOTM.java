@@ -10,6 +10,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.GryphonLib.ShooterState;
+import frc.GryphonLib.ChassisAccelerations;
 import frc.GryphonLib.ShooterInterpolator;
 import frc.littletonUtils.LoggedTunableNumber;
 
@@ -27,10 +28,11 @@ public class PrepareSOTM extends Command {
     private final List<ShooterState> table;
     private final Pose2d goalPose;
     private Pose2d effectiveGoalPose;
-    private LoggedTunableNumber kShootDelay = new LoggedTunableNumber("Shooter Shoot Delay", ShooterConstants.kShootDelay);
-    private LoggedTunableNumber kPhaseDelay = new LoggedTunableNumber("Shooter Phase Delay", ShooterConstants.kPhaseDelay);
-    private LoggedTunableNumber kRPMChange = new LoggedTunableNumber("Flywheel RPM Change", 0);
-    private LoggedTunableNumber kFlywheelSetpointOffset = new LoggedTunableNumber("Flywheel Setpoint Compensation", ShooterConstants.kFlywheelRPMOffset);
+    private LoggedTunableNumber kShootDelay = new LoggedTunableNumber("SOTM/Shooter Shoot Delay", ShooterConstants.kShootDelay);
+    private LoggedTunableNumber kPhaseDelay = new LoggedTunableNumber("SOTM/Shooter Phase Delay", ShooterConstants.kPhaseDelay);
+    private LoggedTunableNumber kRPMChange = new LoggedTunableNumber("SOTM/Static Flywheel RPM Change", -550);
+    private LoggedTunableNumber kTOFChange = new LoggedTunableNumber("SOTM/Static TOF Change", 0);
+    private LoggedTunableNumber kFlywheelSetpointOffset = new LoggedTunableNumber("SOTM/Flywheel Recharge Compensation", ShooterConstants.kFlywheelRPMOffset);
 
 
 
@@ -60,9 +62,23 @@ public class PrepareSOTM extends Command {
 
         Pose2d shooterPose = driveData.getCurrentPose().exp(shotMovement.toTwist2d(kPhaseDelay.get())).plus(ShooterConstants.kRobotToShooter);
 
-        shotMovement.vxMetersPerSecond = -shotMovement.vxMetersPerSecond;
-        shotMovement.vyMetersPerSecond = -shotMovement.vyMetersPerSecond;
-        shotMovement.omegaRadiansPerSecond = 0;
+        ChassisAccelerations accel = driveData.getAcceleration();
+        double shotTime;
+        if (Robot.isReal()){
+            shotTime = kShootDelay.get() + kPhaseDelay.get();
+        } else {
+            shotTime = kPhaseDelay.get();
+        }
+        if (ShooterConstants.accountForAccel){
+            shotMovement.vxMetersPerSecond = -shotMovement.vxMetersPerSecond - accel.getX() * shotTime;
+            shotMovement.vyMetersPerSecond = -shotMovement.vyMetersPerSecond - accel.getY() * shotTime;
+            shotMovement.omegaRadiansPerSecond = 0;
+        } else {
+            shotMovement.vxMetersPerSecond = -shotMovement.vxMetersPerSecond;
+            shotMovement.vyMetersPerSecond = -shotMovement.vyMetersPerSecond;
+            shotMovement.omegaRadiansPerSecond = 0;
+        }
+        
 
         double distanceToGoal = PhotonUtils.getDistanceToPose(shooterPose, goalPose);
         
@@ -70,9 +86,9 @@ public class PrepareSOTM extends Command {
                 table, distanceToGoal);
 
         for (int i = 0; i < 15; i++) {
-            var timeOfFlight = Seconds.of(state.flightTimeSec());
+            var timeOfFlight = Seconds.of(state.flightTimeSec() + kTOFChange.get());
             double tof = timeOfFlight.in(Seconds);
-            if (Robot.isReal()){
+            if (Robot.isReal()) {
                 tof += kShootDelay.getAsDouble();
             }
             effectiveGoalPose = goalPose.exp(shotMovement.toTwist2d(tof));
@@ -104,5 +120,17 @@ public class PrepareSOTM extends Command {
     @Override
     public void end(boolean interrupted) {
         SmartDashboard.putBoolean("SOTM Goal Calculating", false);
+    }
+
+    public static ChassisSpeeds predictSpeeds(
+        ChassisSpeeds velocity,
+        ChassisAccelerations accel,
+        double t
+    ){
+        return new ChassisSpeeds(
+            velocity.vxMetersPerSecond + accel.getX()*t,
+            velocity.vyMetersPerSecond + accel.getY()*t,
+            velocity.omegaRadiansPerSecond + accel.getTheta()*t
+        );
     }
 }

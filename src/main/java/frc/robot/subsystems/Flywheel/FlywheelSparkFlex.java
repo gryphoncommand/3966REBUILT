@@ -108,4 +108,11 @@ public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   public double getVoltage() {
       return shooterMotor.getAppliedOutput() * shooterMotor.getBusVoltage();
   }
+
+  @Override
+    public void stop() {
+      setVelocity(0);
+      setRealTarget(0);
+      set(0);
+    }
 }
