@@ -18,6 +18,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.FuelSim;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.Robot;
@@ -28,6 +29,7 @@ import frc.robot.subsystems.Hood.HoodIO;
 import frc.robot.subsystems.Indexer.Kicker;
 import frc.robot.subsystems.Indexer.PreIndexer;
 import frc.robot.subsystems.Indexer.Spindexer;
+import frc.robot.subsystems.Intake.IntakeDeployIO;
 import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
 
 public class Shoot extends Command {
@@ -37,12 +39,14 @@ public class Shoot extends Command {
     private final FlywheelIO flywheel;
     private final Spindexer spindexer;
     private final boolean stopFlywheelOnEnd;
+    private final IntakeDeployIO intake;
     private double lastShotTime = 0;
     private boolean spindexerDirection = false;
     private FeedShooterFactory passthroughFactory;
     private boolean indexingStopped = true;
     private boolean neeedAlign = true;
     private boolean reachedSetpoint;
+    private boolean agitateAngle;
 
     /**
      * Shoot command: runs the flywheel (assumed already set) and only feeds balls
@@ -54,20 +58,21 @@ public class Shoot extends Command {
      * @param feedRPM roller velocity to use when feeding
      * @param stopFlywheelOnEnd if true, zeroes the flywheel when the command ends
      */
-    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, boolean stopFlywheelOnEnd, boolean neeedAlign) {
+    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign) {
         this.driveData = driveData;
         this.hood = hood;
         this.flywheel = flywheel;
         this.stopFlywheelOnEnd = stopFlywheelOnEnd;
         this.spindexer = spindexer;
         this.neeedAlign = neeedAlign;
+        this.intake = intake;
 
         if (stopFlywheelOnEnd){
             addRequirements(flywheel);
         }
 
         passthroughFactory = new FeedShooterFactory(kicker, preIndexer, spindexer);
-        addRequirements(kicker, preIndexer, spindexer);
+        addRequirements(kicker, preIndexer, spindexer, intake);
     }
 
     private Translation3d launchVel(LinearVelocity vel, Angle angle) {
@@ -90,12 +95,13 @@ public class Shoot extends Command {
     /**
      * Convenience constructor that leaves the flywheel running when command ends.
      */
-    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer) {
-        this(driveData, hood, flywheel, rollers, kicker, preIndexer, spindexer, false, true);
+    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
+        this(driveData, hood, flywheel, rollers, kicker, preIndexer, spindexer, intake, false, true);
     }
 
     @Override
     public void initialize() {
+        agitateAngle = false;
         setName("Shoot");
         // Rollers start stopped until shooter is ready.
         passthroughFactory.stop();
@@ -148,6 +154,15 @@ public class Shoot extends Command {
             Logger.recordOutput("Shoot Report", "Shooting");
             passthroughFactory.start(spindexerDirection);
             indexingStopped = false;
+            if (intake.atTarget(0.05)){
+                if (agitateAngle){
+                    intake.setPosition(IntakeConstants.kIntakeAgitateAngle);
+                } else {
+                    intake.setPosition(IntakeConstants.kIntakeDeployAngle);
+                }
+
+                agitateAngle = !agitateAngle;
+            }
         } else if (!(aligned && flyReady && hoodReady)) {
             Logger.recordOutput("Shoot Report", "Shooter Not Ready, Align " + aligned + ", Flywheel " + flyReady + ", Hood "+ hoodReady);
             passthroughFactory.stop();
@@ -167,6 +182,7 @@ public class Shoot extends Command {
     public void end(boolean interrupted) {
         // Always stop feeding rollers. Optionally stop flywheel.
         passthroughFactory.stop();
+        intake.setPosition(IntakeConstants.kIntakeDeployAngle);
         if (stopFlywheelOnEnd) {
             flywheel.setVelocity(0);
             flywheel.set(0);
