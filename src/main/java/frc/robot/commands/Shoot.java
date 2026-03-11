@@ -127,7 +127,7 @@ public class Shoot extends Command {
             flyReady = flywheel.atTarget(50);
 
             if (hoodReady && flyReady && aligned && now - lastShotTime > 0.263 && spindexer.hasBalls()) {
-                double kShooterEfficiency = 0.55;
+                double kShooterEfficiency = 0.68;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
                 double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;
