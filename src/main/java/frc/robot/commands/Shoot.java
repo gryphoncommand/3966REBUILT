@@ -164,6 +164,7 @@ public class Shoot extends Command {
                 agitateAngle = !agitateAngle;
             }
         } else if (!(aligned && flyReady && hoodReady)) {
+            intake.setPosition(IntakeConstants.kIntakeDeployAngle);
             Logger.recordOutput("Shoot Report", "Shooter Not Ready, Align " + aligned + ", Flywheel " + flyReady + ", Hood "+ hoodReady);
             passthroughFactory.stop();
             indexingStopped = true;
