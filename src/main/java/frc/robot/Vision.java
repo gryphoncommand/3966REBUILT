@@ -184,10 +184,7 @@ public class Vision extends SubsystemBase {
 
         Optional<EstimatedRobotPose> update = Optional.empty();
         if (result.getTargets().size() > 1){
-            update = poseEstimator2.estimateCoprocMultiTagPose(result);
-        }
-        else {
-            update = poseEstimator2.estimateLowestAmbiguityPose(result);
+            update = poseEstimator2.estimateClosestToCameraHeightPose(result);
         }
         
         

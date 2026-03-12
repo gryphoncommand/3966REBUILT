@@ -143,16 +143,16 @@ public final class Constants {
     public static final String kCameraName3 = "ArduL";
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center,
     // pitched upward.
-    private static final double camPitch1 = Units.degreesToRadians(-20);
+    private static final double camPitch1 = -Units.degreesToRadians(20);
     private static final double camYaw1 = Units.degreesToRadians(90);
     
     // TODO: ts has GOTTA be wrong idk
     public static final Transform3d kRobotToCam1 =
-            new Transform3d(new Translation3d(0.2667, 0.2413, 0.425), new Rotation3d(0, camPitch1, camYaw1));
+            new Transform3d(new Translation3d(Units.inchesToMeters(9.75), Units.inchesToMeters(9.75), Units.inchesToMeters(16.732283)), new Rotation3d(0, camPitch1, camYaw1));
     public static final Transform3d kCamToRobot1 = kRobotToCam1.inverse();
 
     // some of these probably need to be flipped
-    private static final double camPitch2 = Units.degreesToRadians(-10);
+    private static final double camPitch2 = -Units.degreesToRadians(8);
     private static final double camYaw2 = Units.degreesToRadians(0);
     public static final Transform3d kRobotToCam2 =
             new Transform3d(new Translation3d(Units.inchesToMeters(8.25), Units.inchesToMeters(10.25), Units.inchesToMeters(19.5)), new Rotation3d(0, camPitch2, camYaw2));
@@ -263,7 +263,7 @@ public final class Constants {
 
   public static class IntakeConstants {
     public static int kRollerCanID = 12;
-    public static double kIntakeSpeedRPM = 500;
+    public static double kIntakeSpeedRPM = 350;
 
 
     public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (14/36)

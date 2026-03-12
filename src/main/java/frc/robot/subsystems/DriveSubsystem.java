@@ -425,13 +425,13 @@ public class DriveSubsystem extends SubsystemBase {
       Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1());
       if (visionBotPose1.isPresent()){
         poseEstimator.addVisionData(List.of(visionBotPose1.get()), Vision.updateEstimationStdDevs(visionBotPose1, visionBotPose1.get().targetsUsed));
-        field2d.getObject("Camera1 Pose Guess").setPose(visionBotPose1.get().estimatedPose.toPose2d());
+        Logger.recordOutput("PoseEst/Camera1 Pose Guess", visionBotPose1.get().estimatedPose);
       }
     } if (Vision.getResult2() != null){
       Optional<EstimatedRobotPose> visionBotPose2 = Vision.getEstimatedGlobalPoseCam2(getCurrentPose(), Vision.getResult2());
       if (visionBotPose2.isPresent()){
         poseEstimator.addVisionData(List.of(visionBotPose2.get()), Vision.updateEstimationStdDevs(visionBotPose2, visionBotPose2.get().targetsUsed));
-        field2d.getObject("Camera2 Pose Guess").setPose(visionBotPose2.get().estimatedPose.toPose2d());
+        Logger.recordOutput("PoseEst/Camera2 Pose Guess", visionBotPose2.get().estimatedPose);
       }
     } if (Vision.getResult3() != null){
       Optional<EstimatedRobotPose> visionBotPose3 = Vision.getEstimatedGlobalPoseCam3(getCurrentPose(), Vision.getResult3());
