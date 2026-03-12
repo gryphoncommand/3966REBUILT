@@ -186,9 +186,15 @@ public class RobotContainer {
     m_driverController.rightTrigger()
         .whileTrue(runIntakeRollers)
         // .whileTrue(new AgitateIntake(m_intakeDeploy))
-        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, true).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, true).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     m_driverController.leftTrigger()
-      .whileTrue(new IntakeDeploy(m_intakeDeploy))
+      .whileTrue(
+        Commands.either(
+            new IntakeDeploy(m_intakeDeploy),
+            new InstantCommand(),
+            () -> m_intakeDeploy.getPosition() > 20
+        )
+      )
       .whileTrue(runIntakeRollers)
       .whileTrue(new RunPreIndexer(m_preIndexer));
       
@@ -210,7 +216,7 @@ public class RobotContainer {
           emergencyShotChooser.getSelected()
         ), Set.of(m_hood, m_flywheel))
       )
-      .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
+      .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
       .onFalse(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kShooterStowState).withTimeout(0.1));
     m_driverController.povLeft().whileTrue(new HomeHood(m_hood).alongWith(new RunCommand(()->m_flywheel.set(0), m_flywheel)));
     m_driverController.y()
@@ -225,7 +231,7 @@ public class RobotContainer {
     
     m_operatorController.rightTrigger()
         .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState))
-        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     m_operatorController.x().toggleOnTrue(new SetToDashboardSpeeds(m_hood, m_flywheel));
     m_operatorController.povUp().whileTrue(new RunCommand(()->m_climber.set(0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0.0), m_climber));
     m_operatorController.povDown().whileTrue(new RunCommand(()->m_climber.set(-0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0.0), m_climber));
