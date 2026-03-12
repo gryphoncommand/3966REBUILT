@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -63,6 +64,9 @@ public class Robot extends LoggedRobot  {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     SmartDashboard.putData(CommandScheduler.getInstance());
+    if (RobotController.getBatteryVoltage() < 7.5){
+      Logger.recordOutput("Battery/Browned Out", true);
+    }
   }
 
   @Override
@@ -108,6 +112,7 @@ public class Robot extends LoggedRobot  {
 
   @Override
   public void teleopInit() {
+    Logger.recordOutput("Battery/Browned Out", false);
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -130,4 +135,5 @@ public class Robot extends LoggedRobot  {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
+  
 }

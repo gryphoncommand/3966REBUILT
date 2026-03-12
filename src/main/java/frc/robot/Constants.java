@@ -182,7 +182,7 @@ public final class Constants {
     //TODO: test
     public static boolean accountForAccel = false;
 
-    public static double kFlywheelRPMOffset = 120;
+    public static double kFlywheelRPMOffset = 250;
     public static double kShootDelay = 0.2;
     public static double kPhaseDelay = 0.02;
 
@@ -194,7 +194,7 @@ public final class Constants {
     public static double kHoodMinAngleDeg = 22.6;
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
     public static double kDefaultFlywheelSpeed = 0.0;
-    public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(13*Math.PI/24));
+    public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(Math.PI/2));
 
     public static ShooterState kShooterStowState = new ShooterState(3, kHoodMinAngleDeg, 0, 1.2);
     public static ShooterState kDefaultShooterState = new ShooterState(3, 35, 2000, 1.2);
@@ -204,33 +204,33 @@ public final class Constants {
 
 
     public static List<ShooterState> RealShootingValuesLow = List.of(
-      new ShooterState(1.500, 21.0, 1550, 0.95),
-      new ShooterState(2.095, 24.0, 1675, 0.95),
-      new ShooterState(2.300, 26.5, 1725, 1.00),
-      new ShooterState(2.493, 29.0, 1770, 1.05),
-      new ShooterState(2.850, 32.5, 1840, 1.08),
-      new ShooterState(3.168, 35.0, 1900, 1.10), // Tuned
-      new ShooterState(3.500, 36.5, 1965, 1.07), // Tuned
-      new ShooterState(3.820, 38.0, 2210, 1.14),
-      new ShooterState(4.150, 39.5, 2300, 1.22),
+      new ShooterState(1.500, 21.0, 1750, 0.95),
+      new ShooterState(2.095, 24.0, 1775, 0.95),
+      new ShooterState(2.300, 26.5, 1775, 1.00),
+      new ShooterState(2.493, 29.0, 1850, 1.05),
+      new ShooterState(2.850, 32.5, 1950, 1.08),
+      new ShooterState(3.168, 35.0, 1950, 1.10), // Tuned
+      new ShooterState(3.500, 36.5, 2056, 1.07), // Tuned
+      new ShooterState(3.820, 38.0, 2110, 1.14),
+      new ShooterState(4.150, 39.5, 2150, 1.22),
       new ShooterState(4.414, 41.0, 2430, 1.30),
       new ShooterState(4.800, 42.5, 2500, 1.40),
       new ShooterState(5.250, 44.0, 2700, 1.52)
     );
 
     public static List<ShooterState> RealShootingValuesHigh = List.of(
-      new ShooterState(1.500, 23.0, 1436+84, 0.66),
-      new ShooterState(2.095, 23.5, 1672+60, 0.84),
-      new ShooterState(2.300, 24.0, 1750+60, 0.88),
-      new ShooterState(2.493, 24.5, 1822+48, 0.91),
-      new ShooterState(2.850, 25.0, 1960, 0.98),
-      new ShooterState(3.168, 26.0, 2062, 1.02),
-      new ShooterState(3.500, 27.0, 2165, 1.06),
-      new ShooterState(3.820, 28.0, 2170, 1.09),
-      new ShooterState(4.150, 29.0, 2260, 1.12),
-      new ShooterState(4.414, 30.0, 2330, 1.13),
-      new ShooterState(4.800, 31.0, 2400, 1.16),
-      new ShooterState(5.250, 32.0, 2500, 1.20)
+      new ShooterState(1.500, 23.0, 1520, 1.05),
+      new ShooterState(2.095, 23.5, 1740, 1.15),
+      new ShooterState(2.300, 24.0, 1810, 1.18),
+      new ShooterState(2.493, 24.5, 1870, 1.22),
+      new ShooterState(2.850, 25.0, 1900, 1.30),
+      new ShooterState(3.168, 26.0, 1960, 1.35),
+      new ShooterState(3.500, 27.0, 2075, 1.42),
+      new ShooterState(3.820, 28.0, 2170, 1.50),
+      new ShooterState(4.150, 29.0, 2260, 1.58),
+      new ShooterState(4.414, 30.0, 2330, 1.63),
+      new ShooterState(4.800, 31.0, 2400, 1.72),
+      new ShooterState(5.250, 32.0, 2500, 1.85)
     );
 
     public static List<ShooterState> RealPassingValues = List.of(
@@ -238,8 +238,8 @@ public final class Constants {
       new ShooterState(2.5, 53, 2450, 0.9),
       new ShooterState(3.5, 51, 2600, 0.95),
       new ShooterState(4.5, 49, 2650, 1),
-      new ShooterState(6.0, 47, 2850, 1.05),
-      new ShooterState(8.0, 45, 3250, 1.1)
+      new ShooterState(6.0, 47, 2900, 1.05),
+      new ShooterState(8.0, 45, 3050, 1.1)
     );
   }
 
@@ -278,14 +278,14 @@ public final class Constants {
 
   public static class IntakeConstants {
     public static int kRollerCanID = 12;
-    public static double kIntakeSpeedRPM = 350;
+    public static double kIntakeSpeedRPM = 300;
 
 
     public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (14/36)
     public static double kShaftToIntakeDeployRatio = 36/16;
-    public static double kIntakeDeployAngle = 0.02;
+    public static double kIntakeDeployAngle = 0.03;
     public static double kIntakeStowAngle = 0.85;
-    public static double kIntakeAgitateAngle = 0.15;
+    public static double kIntakeAgitateAngle = 0.20;
     public static int kDeployCanID = 14;
     public static double kIntakeLengthMeters = Units.inchesToMeters(14.678);
   }
@@ -302,8 +302,8 @@ public final class Constants {
     public static final Pose2d BlueAllianceZoneEnd = new Pose2d(4.3, 0, new Rotation2d());
     public static final Pose2d RedAllianceZoneEnd = new Pose2d(12.2, 0, new Rotation2d());
 
-    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(2.412, 2.2688, new Rotation2d()));
-    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(2.412, 5.707, new Rotation2d()));
+    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(2.412, 3.0688, new Rotation2d()));
+    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(2.412, 5.007, new Rotation2d()));
 
     public static final double kMidFieldY = Units.feetToMeters(13.15);
     public static final double kMidFieldHubBlockWidth = 1.0;

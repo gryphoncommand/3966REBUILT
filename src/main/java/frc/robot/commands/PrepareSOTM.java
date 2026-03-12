@@ -97,8 +97,8 @@ public class PrepareSOTM extends Command {
         double rpm = state.flywheelRPM() + kRPMChange.get();
         flywheel.setRealTarget(rpm);
 
-        if(!(flywheel.atRealTarget(50)) && rpm >= flywheel.getVelocity()){
-            rpm += kFlywheelSetpointOffset.get();
+        if(!(flywheel.atRealTarget(100)) && rpm >= flywheel.getVelocity()){
+            rpm += Math.min(kFlywheelSetpointOffset.get(), 2*(rpm - flywheel.getVelocity()));
         }
 
 

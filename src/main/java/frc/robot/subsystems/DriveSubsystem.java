@@ -356,7 +356,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public ChassisSpeeds getCurrentSpeedsFieldRelative(){
-    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()).plus(new Rotation2d(DriverStation.getAlliance().get() == Alliance.Blue ? 0 : Math.PI)));
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()));
   }
 
   public Command goToPose(Pose2d goalPose){

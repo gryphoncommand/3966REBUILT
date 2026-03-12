@@ -182,20 +182,20 @@ public final class Configs {
                         .smartCurrentLimit(70)
                         .inverted(false)
                         .openLoopRampRate(0)
-                        .closedLoopRampRate(0.001);
+                        .closedLoopRampRate(0);
                 flywheelConfig.encoder
                     .positionConversionFactor(1)
                     .velocityConversionFactor(1);
                 flywheelConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(0.0005334, 1e-6, 0.0)
+                    .pid(0.00510241666/2, 0, 0.0)
                     .iZone(100)
                     .outputRange(-1, 1);
                 flywheelConfig.closedLoop.feedForward
-                    .kS(0.24014)
-                    .kV(0.00183416666)
-                    .kA(0.00039338333);
+                    .kS(0.28043)
+                    .kV(0.001933)
+                    .kA(0.0005902);
                 flywheelConfig.closedLoop.maxMotion
                     .maxAcceleration(8000)
                     .allowedProfileError(40);
@@ -203,9 +203,9 @@ public final class Configs {
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
                 // PID + FF tuning
                 slot0ConfigsDrive.kS = 0.0;
-                slot0ConfigsDrive.kV = 0.105;
-                slot0ConfigsDrive.kA = 0.0091257;
-                slot0ConfigsDrive.kP = 0.0017271;
+                slot0ConfigsDrive.kV = 0.001933*60;
+                slot0ConfigsDrive.kA = 0.0005902*60;
+                slot0ConfigsDrive.kP = 0.00510241666*60;
                 slot0ConfigsDrive.kI = 0.0;
                 slot0ConfigsDrive.kD = 0.0;
 

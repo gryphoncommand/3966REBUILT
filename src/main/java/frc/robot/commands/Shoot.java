@@ -154,6 +154,14 @@ public class Shoot extends Command {
             Logger.recordOutput("Shoot Report", "Shooting");
             passthroughFactory.start(spindexerDirection);
             indexingStopped = false;
+        } else if (!(aligned && flyReady && hoodReady)) {
+            intake.setPosition(IntakeConstants.kIntakeDeployAngle);
+            Logger.recordOutput("Shoot Report", "Shooter Not Ready, Align " + aligned + ", Flywheel " + flyReady + ", Hood "+ hoodReady);
+            passthroughFactory.stop();
+            indexingStopped = true;
+        }
+
+        if (hoodReady && flyReady && aligned){
             if (intake.atTarget(0.05)){
                 if (agitateAngle){
                     intake.setPosition(IntakeConstants.kIntakeAgitateAngle);
@@ -163,11 +171,6 @@ public class Shoot extends Command {
 
                 agitateAngle = !agitateAngle;
             }
-        } else if (!(aligned && flyReady && hoodReady)) {
-            intake.setPosition(IntakeConstants.kIntakeDeployAngle);
-            Logger.recordOutput("Shoot Report", "Shooter Not Ready, Align " + aligned + ", Flywheel " + flyReady + ", Hood "+ hoodReady);
-            passthroughFactory.stop();
-            indexingStopped = true;
         }
 
         passthroughFactory.periodic();
