@@ -203,28 +203,43 @@ public final class Constants {
     public static ShooterState kTrenchShotState = new ShooterState(3.168, 35.0, 1900, 1.10);
 
 
-    public static List<ShooterState> RealShootingValues = List.of(
-      new ShooterState(1.500, 21.0, 2100, 0.95),
-      new ShooterState(2.095, 24.0, 2225, 0.95),
-      new ShooterState(2.300, 26.5, 2275, 1.00),
-      new ShooterState(2.493, 29.0, 2320, 1.05),
-      new ShooterState(2.850, 32.5, 2390, 1.08),
-      new ShooterState(3.168, 35.0, 2450, 1.10), // Tuned
-      new ShooterState(3.500, 36.5, 2515, 1.07), // Tuned
-      new ShooterState(3.820, 38.0, 2760, 1.14),
-      new ShooterState(4.150, 39.5, 2850, 1.22),
-      new ShooterState(4.414, 41.0, 2980, 1.30),
-      new ShooterState(4.800, 42.5, 3050, 1.40),
-      new ShooterState(5.250, 44.0, 3250, 1.52)
+    public static List<ShooterState> RealShootingValuesLow = List.of(
+      new ShooterState(1.500, 21.0, 1550, 0.95),
+      new ShooterState(2.095, 24.0, 1675, 0.95),
+      new ShooterState(2.300, 26.5, 1725, 1.00),
+      new ShooterState(2.493, 29.0, 1770, 1.05),
+      new ShooterState(2.850, 32.5, 1840, 1.08),
+      new ShooterState(3.168, 35.0, 1900, 1.10), // Tuned
+      new ShooterState(3.500, 36.5, 1965, 1.07), // Tuned
+      new ShooterState(3.820, 38.0, 2210, 1.14),
+      new ShooterState(4.150, 39.5, 2300, 1.22),
+      new ShooterState(4.414, 41.0, 2430, 1.30),
+      new ShooterState(4.800, 42.5, 2500, 1.40),
+      new ShooterState(5.250, 44.0, 2700, 1.52)
+    );
+
+    public static List<ShooterState> RealShootingValuesHigh = List.of(
+      new ShooterState(1.500, 23.0, 1436+84, 0.66),
+      new ShooterState(2.095, 23.5, 1672+60, 0.84),
+      new ShooterState(2.300, 24.0, 1750+60, 0.88),
+      new ShooterState(2.493, 24.5, 1822+48, 0.91),
+      new ShooterState(2.850, 25.0, 1960, 0.98),
+      new ShooterState(3.168, 26.0, 2062, 1.02),
+      new ShooterState(3.500, 27.0, 2165, 1.06),
+      new ShooterState(3.820, 28.0, 2170, 1.09),
+      new ShooterState(4.150, 29.0, 2260, 1.12),
+      new ShooterState(4.414, 30.0, 2330, 1.13),
+      new ShooterState(4.800, 31.0, 2400, 1.16),
+      new ShooterState(5.250, 32.0, 2500, 1.20)
     );
 
     public static List<ShooterState> RealPassingValues = List.of(
-      new ShooterState(1.5, kHoodMaxAngleDeg, 2750, 0.9),
-      new ShooterState(2.5, 53, 3000, 0.9),
-      new ShooterState(3.5, 51, 3150, 0.95),
-      new ShooterState(4.5, 49, 3200, 1),
-      new ShooterState(6.0, 47, 3400, 1.05),
-      new ShooterState(8.0, 45, 3800, 1.1)
+      new ShooterState(1.5, kHoodMaxAngleDeg, 2200, 0.9),
+      new ShooterState(2.5, 53, 2450, 0.9),
+      new ShooterState(3.5, 51, 2600, 0.95),
+      new ShooterState(4.5, 49, 2650, 1),
+      new ShooterState(6.0, 47, 2850, 1.05),
+      new ShooterState(8.0, 45, 3250, 1.1)
     );
   }
 

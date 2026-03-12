@@ -178,7 +178,7 @@ public class RobotContainer {
       .whileTrue(new RepeatCommand(new DeferredCommand(()->
         new ParallelCommandGroup(
             new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
-            new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValues)
+            new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesHigh)
         ), Set.of(m_drive, m_hood, m_flywheel))))
       .onFalse(new RunCommand(()->m_flywheel.stop(), m_flywheel))
       .onFalse(new HomeHood(m_hood));
@@ -255,13 +255,6 @@ public class RobotContainer {
         SmartDashboard.putString("Current Shooter State", "new ShooterState(" +  String.valueOf(PhotonUtils.getDistanceToPose(shooterPose, AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
       })
     );
-
-    SmartDashboard.putData("Align To Hub",
-      new ParallelCommandGroup(
-        new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
-        new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValues)
-      )
-    );
   }
  
 
@@ -323,7 +316,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
         new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
-        new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValues)
+        new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesHigh)
       )
     );
     NamedCommands.registerCommand("Deploy Intake", new IntakeDeploy(m_intakeDeploy));

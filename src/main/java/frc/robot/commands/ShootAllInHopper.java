@@ -132,7 +132,7 @@ public class ShootAllInHopper extends Command {
         if (Robot.isSimulation()){ 
             flyReady = flywheel.atRealTarget(50);
             if (hoodReady && flyReady && aligned &&  spindexer.hasBalls()) {
-                double kShooterEfficiency = 0.48;
+                double kShooterEfficiency = 0.68;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
                 double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;
