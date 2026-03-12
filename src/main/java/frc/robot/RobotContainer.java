@@ -15,6 +15,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.AlignToTrench;
+import frc.robot.commands.AllSystemsTest;
 import frc.robot.commands.AutoClimbCommand;
 import frc.robot.commands.DeployClimber;
 import frc.robot.commands.FlywheelSysID;
@@ -110,6 +111,8 @@ public class RobotContainer {
     }
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
+    autoChooser.addOption("Systems Test", new AllSystemsTest(m_drive, m_intakeDeploy, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_flywheel, m_climber, m_hood).getSystemsTest());
+    
 
     emergencyShotChooser.setDefaultOption("Default", ShooterConstants.kDefaultShooterState);
     emergencyShotChooser.addOption("Tower", ShooterConstants.kTowerShotState);
