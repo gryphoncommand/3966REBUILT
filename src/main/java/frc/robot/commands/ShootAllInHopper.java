@@ -136,7 +136,7 @@ public class ShootAllInHopper extends Command {
         if (Robot.isSimulation()){ 
             double now = Timer.getFPGATimestamp();
 
-            if (hoodReady && flyReady && aligned && now - lastShotTime > 0.25 && spindexer.getBalls() != 0) {
+            if (hoodReady && flyReady && aligned && now - lastShotTime > 0.2 && spindexer.getBalls() != 0) {
                 startedShooting = true;
                 double kShooterEfficiency = 0.68;
 

@@ -159,7 +159,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         double currentOmega = shooterSim.getAngularVelocity().in(RadiansPerSecond);
         
         // Apply realistic velocity drop
-        double newOmega = currentOmega - (deltaOmegaRadPerSec * torqueRandomizer.nextDouble(1, 1.5));
+        double newOmega = currentOmega - (deltaOmegaRadPerSec * torqueRandomizer.nextDouble(1.2, 1.8));
         shooterSim.setAngularVelocity(newOmega);
         
         // Update TalonFX sim rotor velocity to match new flywheel state
