@@ -101,8 +101,8 @@ public class Spindexer extends SubsystemBase {
         }
     }
 
-    public boolean hasBalls(){
-        return simBalls > 0;
+    public double getBalls(){
+        return simBalls;
     }
 
     public boolean isFull(){
