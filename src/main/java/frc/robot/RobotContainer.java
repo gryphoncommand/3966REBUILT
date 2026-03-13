@@ -311,7 +311,7 @@ public class RobotContainer {
   }
 
   private void configureNamedCommands(){
-    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer));
+    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy));
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
         new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),

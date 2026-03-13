@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.Random;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -27,8 +29,9 @@ import frc.robot.Configs;
 import frc.robot.Constants.ShooterConstants;
 
 public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
+    private double Jkgm2 = 0.01;
     private final FlywheelSim shooterSim =
-        new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(2), 0.001, 1), DCMotor.getNeoVortex(2), 0);
+        new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(2), Jkgm2, 1), DCMotor.getNeoVortex(2), 0.0);
 
     private double targetVelocityRpm = 0;
     private double wheelAngle = 0.0;
@@ -41,6 +44,8 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     private final TalonFXSimState m_flywheelSim;
 
     private double realTarget = 0;
+
+    private Random torqueRandomizer = new Random();
 
     final VelocityVoltage m_flywheelVelocityVoltage = new VelocityVoltage(0);
     
@@ -141,8 +146,8 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     public void simulateShot(double ballExitVelocityMps) {
         double ballMassKg = 0.226796;
         // Flywheel parameters
-        double flywheelRadiusM = 0.0508; // example: 5 cm radius
-        double J = 0.00087791953448;  // your flywheel moment of inertia from simulation
+        double flywheelRadiusM = 0.0508;
+        double J = Jkgm2;
         
         // Angular momentum removed by the ball
         double deltaL = ballMassKg * flywheelRadiusM * ballExitVelocityMps;
@@ -154,7 +159,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         double currentOmega = shooterSim.getAngularVelocity().in(RadiansPerSecond);
         
         // Apply realistic velocity drop
-        double newOmega = currentOmega - deltaOmegaRadPerSec;
+        double newOmega = currentOmega - (deltaOmegaRadPerSec * torqueRandomizer.nextDouble(1, 1.5));
         shooterSim.setAngularVelocity(newOmega);
         
         // Update TalonFX sim rotor velocity to match new flywheel state
