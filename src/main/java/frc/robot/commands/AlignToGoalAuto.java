@@ -24,6 +24,7 @@ public class AlignToGoalAuto extends Command {
     private double yawError;
     private Debouncer alignDebouncer = new Debouncer(0.2);
     private boolean SOTM;
+    private boolean overridden;
 
     public AlignToGoalAuto(DriveSubsystem drive, Pose2d goalPose, boolean SOTM) {
         this.drive = drive;
@@ -48,6 +49,7 @@ public class AlignToGoalAuto extends Command {
         turnPID.setSetpoint(0.0);
 
         PPHolonomicDriveController.overrideRotationFeedback(() -> {
+            overridden = true;
             if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)) {
                 try {
                     goalPose = drive.getField().getObject("SOTM Goal").getPose();
@@ -70,6 +72,26 @@ public class AlignToGoalAuto extends Command {
 
     @Override
     public void execute() {
+        if (!overridden) {
+            if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)) {
+                try {
+                    goalPose = drive.getField().getObject("SOTM Goal").getPose();
+                } catch (Exception e) {}
+            }
+
+            // Compute yaw error from shooter pose instead of robot center
+            yawError = PositionCalculations.getYawChangeToPose(
+                    drive.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter),
+                    goalPose);
+            SmartDashboard.putNumber("Yaw Align Error", Units.radiansToDegrees(yawError));
+
+            // PID output
+            double turn = turnPID.calculate(yawError);
+            turn = MathUtil.clamp(turn, -1.0, 1.0);
+
+            drive.drive(0, 0, -turn, true);
+        }
+
         boolean withinAngleTol = Math.abs(yawError) < AlignmentConstants.ANGLE_TOLERANCE_RAD;
         boolean slowEnoughRot = Math.abs(drive.getCurrentSpeeds().omegaRadiansPerSecond) < AlignmentConstants.ANG_VEL_TOLERANCE_RAD_PER_SEC;
         boolean slowEnoughTrans = Math.abs(MovementCalculations.getVelocityMagnitude(drive.getCurrentSpeeds()).in(MetersPerSecond)) < AlignmentConstants.SPEED_VEL_TOLERANCE;
@@ -83,6 +105,7 @@ public class AlignToGoalAuto extends Command {
         // Debouncer ensures it's stable for required time
         boolean alignedNow = alignDebouncer.calculate(withinAngleTol && slowEnoughRot && slowEnoughTrans);
         drive.setAlign(alignedNow);
+        overridden = false;
     }
 
     @Override

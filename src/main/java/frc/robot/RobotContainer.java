@@ -7,6 +7,7 @@ package frc.robot;
 import frc.FuelSim;
 import frc.littletonUtils.AllianceFlipUtil;
 import frc.robot.Constants.AlignmentConstants;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
@@ -44,11 +45,13 @@ import org.photonvision.PhotonUtils;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -57,11 +60,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Hood.*;
@@ -72,6 +78,7 @@ import frc.robot.subsystems.Intake.IntakeDeployIO;
 import frc.robot.subsystems.Intake.IntakeDeploySimTalonFX;
 import frc.robot.subsystems.Intake.IntakeDeploySparkFlex;
 import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
+import frc.robot.commands.SOTMDuringAuto;
 
 public class RobotContainer {
 
@@ -110,6 +117,27 @@ public class RobotContainer {
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
     SmartDashboard.putData("Auto Chooser", autoChooser);
     SmartDashboard.putData("Shoot All", new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer));
+
+    SmartDashboard.putData("Add Balls", new ConditionalCommand(new InstantCommand(), new InstantCommand(m_spindexer::addBall), Robot::isReal));
+    try {
+      SmartDashboard.putData("Run Auto", new SequentialCommandGroup(
+        AutoBuilder.pathfindToPoseFlipped(new Pose2d(new Translation2d(3.747, 7.419), new Rotation2d(Units.degreesToRadians(179.167))), AutoConstants.constraints),
+        new ParallelCommandGroup(
+          AutoBuilder.followPath(PathPlannerPath.fromPathFile("Depot shot to climb")),
+          new ParallelRaceGroup(
+            new ParallelCommandGroup(
+              new AlignToGoalAuto(m_drive, AlignmentConstants.HubPose, true),
+              new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.RealShootingValues)
+            ),
+            new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer)
+          )
+        )
+      ));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    SmartDashboard.putData("Align To Goal", new AlignToGoal(m_drive, m_driverController, Constants.AlignmentConstants.BlueHubPose, false));
+    SmartDashboard.putData("Return to Start", m_drive.goToPose(new Pose2d(new Translation2d(3.747, 7.419), new Rotation2d(Units.degreesToRadians(179.167)))));
   }
 
   private void configureDefaultCommands() {
@@ -197,8 +225,21 @@ public class RobotContainer {
     m_driverController.povRight()
     .toggleOnTrue(new StowClimber(m_climber));
     m_driverController.povDown()
-    .toggleOnTrue(new DeployClimber(m_climber))
-    .onTrue(new RunCommand(()->m_flywheel.set(0), m_flywheel));
+      .toggleOnTrue(new DeployClimber(m_climber))
+      .onTrue(new RunCommand(()->m_flywheel.set(0), m_flywheel));
+    //TODO: Debug, remove before merge
+    try {
+      m_driverController.povUp()
+        .toggleOnTrue(new ParallelCommandGroup(
+          AutoBuilder.followPath(PathPlannerPath.fromPathFile("Depot shot to climb")),
+          new ParallelRaceGroup(
+            new SOTMDuringAuto(m_drive, m_hood, m_flywheel).withName("Da aim aim"),
+            new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer)
+          )
+        ));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     
     m_operatorController.rightTrigger()
         .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState))
