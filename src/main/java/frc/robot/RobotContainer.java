@@ -227,19 +227,6 @@ public class RobotContainer {
     m_driverController.povDown()
       .toggleOnTrue(new DeployClimber(m_climber))
       .onTrue(new RunCommand(()->m_flywheel.set(0), m_flywheel));
-    //TODO: Debug, remove before merge
-    try {
-      m_driverController.povUp()
-        .toggleOnTrue(new ParallelCommandGroup(
-          AutoBuilder.followPath(PathPlannerPath.fromPathFile("Depot shot to climb")),
-          new ParallelRaceGroup(
-            new SOTMDuringAuto(m_drive, m_hood, m_flywheel).withName("Da aim aim"),
-            new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer)
-          )
-        ));
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
     
     m_operatorController.rightTrigger()
         .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState))
