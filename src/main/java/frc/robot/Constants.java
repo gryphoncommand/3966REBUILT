@@ -282,6 +282,7 @@ public final class Constants {
 
     // Tolerances
     public static final double ANGLE_TOLERANCE_RAD = Units.degreesToRadians(5.0);
+    public static final double SOTM_ANGLE_TOLERANCE_RAD = Units.degreesToRadians(10.0);
     public static final double ANG_VEL_TOLERANCE_RAD_PER_SEC = Math.toRadians(5.0);
 
     public static final double SPEED_VEL_TOLERANCE = DriveConstants.kMaxSpeedMetersPerSecond/6;

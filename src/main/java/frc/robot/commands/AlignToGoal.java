@@ -82,7 +82,7 @@ public class AlignToGoal extends Command {
         boolean slowEnoughTrans = Math.abs(MovementCalculations.getVelocityMagnitude(drive.getCurrentSpeeds()).in(MetersPerSecond)) < AlignmentConstants.SPEED_VEL_TOLERANCE;
 
         if (SOTM) {
-            withinAngleTol = Math.abs(yawError) < AlignmentConstants.ANGLE_TOLERANCE_RAD;
+            withinAngleTol = Math.abs(yawError) < AlignmentConstants.SOTM_ANGLE_TOLERANCE_RAD;
             slowEnoughRot = true;
             slowEnoughTrans = true;
         }
