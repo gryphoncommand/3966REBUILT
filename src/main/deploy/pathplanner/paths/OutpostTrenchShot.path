@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.747,
-        "y": 7.419
+        "x": 0.31866015971605977,
+        "y": 0.48184560780833974
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.40213610332113,
-        "y": 5.879874756556916
+        "x": 1.123451641526175,
+        "y": 1.4797870452528832
       },
       "isLocked": false,
-      "linkedName": "Corner 3"
+      "linkedName": "Outpost"
     },
     {
       "anchor": {
-        "x": 2.374500000000001,
-        "y": 3.8373205128205132
+        "x": 3.513682342502218,
+        "y": 0.6186601597160597
       },
       "prevControl": {
-        "x": 2.686734139593099,
-        "y": 5.057943064719327
+        "x": 2.513682342502218,
+        "y": 0.6186601597160597
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "SOTM End"
+      "linkedName": "Outpost Trench"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.5,
-    "rotation": -0.9963478965049255
+    "velocity": 0,
+    "rotation": -8.676110532418386
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -160.51128444325292
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

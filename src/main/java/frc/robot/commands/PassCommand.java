@@ -19,7 +19,6 @@ public class PassCommand extends Command {
 
     public PassCommand(DriveSubsystem drive, CommandXboxController driverController, HoodIO hood, FlywheelIO flywheel){
         this.drive = drive;
-        // declare requirements so scheduling conflicts are avoided
         addRequirements(drive, hood, flywheel);
         depot = Math.abs(drive.getCurrentPose().getY() - AlignmentConstants.PassingPoseDepot.getY()) < Math.abs(drive.getCurrentPose().getY() - AlignmentConstants.PassingPoseOutpost.getY());
         
@@ -31,8 +30,8 @@ public class PassCommand extends Command {
         );
 
         ConditionalCommand choosePassingShot = new ConditionalCommand(
-            new PreparePassSOTM(hood, flywheel, drive, ShooterConstants.RealPassingValues, AlignmentConstants.PassingPoseDepot),
-            new PreparePassSOTM(hood, flywheel, drive, ShooterConstants.RealPassingValues, AlignmentConstants.PassingPoseOutpost),
+            new PrepareSOTM(hood, flywheel, drive, AlignmentConstants.PassingPoseDepot, ShooterConstants.RealPassingValues),
+            new PrepareSOTM(hood, flywheel, drive, AlignmentConstants.PassingPoseOutpost, ShooterConstants.RealPassingValues),
             () -> depot
         );
 
@@ -44,6 +43,7 @@ public class PassCommand extends Command {
 
     @Override
     public void initialize() {
+        setName("Prepare Pass");
         passGroup.initialize();
     }
 

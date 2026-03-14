@@ -22,7 +22,6 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -31,7 +30,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -47,6 +45,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.Vision;
+import frc.GryphonLib.ChassisAccelerations;
 import frc.GryphonLib.MovementCalculations;
 import frc.GryphonLib.PositionCalculations;
 import frc.littletonUtils.PoseEstimator;
@@ -73,16 +72,14 @@ public class DriveSubsystem extends SubsystemBase {
   private double gyroOffset = 0.0;
 
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
-  private static Vector<N3> SingleTagStdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10));
-  private static Matrix<N3, N1> SingleTagStdDevsMat = new Matrix<>(SingleTagStdDevs.getStorage());
-  private static Vector<N3> MultiTagStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(5));
-  private static Matrix<N3, N1> MultiTagStdDevsMat = new Matrix<>(MultiTagStdDevs.getStorage());
   private final PoseEstimator poseEstimator;
   private final Field2d field2d = new Field2d();
   private final StructArrayPublisher<SwerveModuleState> publisher;
   private final StructArrayPublisher<SwerveModuleState> desiredPublisher;
   private double currentTimestamp = Timer.getTimestamp();
   private boolean aligned = false;
+  private ChassisAccelerations currentAccelerationFieldRelative = new ChassisAccelerations();
+  private ChassisSpeeds prevSpeeds = new ChassisSpeeds();
 
 
 
@@ -359,7 +356,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public ChassisSpeeds getCurrentSpeedsFieldRelative(){
-    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()).plus(new Rotation2d(DriverStation.getAlliance().get() == Alliance.Blue ? 0 : Math.PI)));
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()));
   }
 
   public Command goToPose(Pose2d goalPose){
@@ -427,34 +424,19 @@ public class DriveSubsystem extends SubsystemBase {
     if (Vision.getResult1() != null){
       Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1());
       if (visionBotPose1.isPresent()){
-        SmartDashboard.putBoolean("Camera 1 Finding Pose", true);
-        if (visionBotPose1.get().targetsUsed.size() > 1){
-          poseEstimator.addVisionData(List.of(visionBotPose1.get()), MultiTagStdDevsMat);
-        } else{
-          poseEstimator.addVisionData(List.of(visionBotPose1.get()), SingleTagStdDevsMat);
-        }
-        field2d.getObject("Camera1 Pose Guess").setPose(visionBotPose1.get().estimatedPose.toPose2d());
-      } else{
-        SmartDashboard.putBoolean("Camera 1 Finding Pose", false);
+        poseEstimator.addVisionData(List.of(visionBotPose1.get()), Vision.updateEstimationStdDevs(visionBotPose1, visionBotPose1.get().targetsUsed));
+        Logger.recordOutput("PoseEst/Camera1 Pose Guess", visionBotPose1.get().estimatedPose);
       }
     } if (Vision.getResult2() != null){
       Optional<EstimatedRobotPose> visionBotPose2 = Vision.getEstimatedGlobalPoseCam2(getCurrentPose(), Vision.getResult2());
       if (visionBotPose2.isPresent()){
-        if (visionBotPose2.get().targetsUsed.size() > 1){
-          poseEstimator.addVisionData(List.of(visionBotPose2.get()), MultiTagStdDevsMat);
-        } else{
-          poseEstimator.addVisionData(List.of(visionBotPose2.get()), SingleTagStdDevsMat);
-        }
-        field2d.getObject("Camera2 Pose Guess").setPose(visionBotPose2.get().estimatedPose.toPose2d());
+        poseEstimator.addVisionData(List.of(visionBotPose2.get()), Vision.updateEstimationStdDevs(visionBotPose2, visionBotPose2.get().targetsUsed));
+        Logger.recordOutput("PoseEst/Camera2 Pose Guess", visionBotPose2.get().estimatedPose);
       }
     } if (Vision.getResult3() != null){
       Optional<EstimatedRobotPose> visionBotPose3 = Vision.getEstimatedGlobalPoseCam3(getCurrentPose(), Vision.getResult3());
       if (visionBotPose3.isPresent()){
-        if (visionBotPose3.get().targetsUsed.size() > 1){
-          poseEstimator.addVisionData(List.of(visionBotPose3.get()), MultiTagStdDevsMat);
-        } else{
-          poseEstimator.addVisionData(List.of(visionBotPose3.get()), SingleTagStdDevsMat);
-        }
+        poseEstimator.addVisionData(List.of(visionBotPose3.get()), Vision.updateEstimationStdDevs(visionBotPose3, visionBotPose3.get().targetsUsed));
         field2d.getObject("Camera1 Pose Guess").setPose(visionBotPose3.get().estimatedPose.toPose2d());
       }
     } 
@@ -465,12 +447,17 @@ public class DriveSubsystem extends SubsystemBase {
       getCurrentSpeeds().toTwist2d(Timer.getTimestamp() - currentTimestamp)
     );
 
-      field2d.setRobotPose(poseEstimator.getLatestPose());
-      publisher.set(getStates());
-      desiredPublisher.set(getDesiredStates());
+    field2d.setRobotPose(poseEstimator.getLatestPose());
+    publisher.set(getStates());
+    desiredPublisher.set(getDesiredStates());
     SmartDashboard.putData("Field", field2d);
     SmartDashboard.putNumber("Current Speed", MovementCalculations.getVelocityMagnitude(getCurrentSpeeds()).magnitude());
+
+    currentAccelerationFieldRelative = new ChassisAccelerations(prevSpeeds, getCurrentSpeedsFieldRelative(), Timer.getTimestamp() - currentTimestamp);
+
+    prevSpeeds = getCurrentSpeedsFieldRelative();
     currentTimestamp = Timer.getTimestamp();
+
   }
 
   @Override
@@ -509,5 +496,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double getDistanceToPose(Pose2d pose){
     return getCurrentPose().getTranslation().getDistance(pose.getTranslation());
+  }
+
+  public ChassisAccelerations getAcceleration(){
+    return currentAccelerationFieldRelative;
   }
 }

@@ -5,82 +5,19 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "Deploy Intake"
-          }
-        },
-        {
-          "type": "race",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "DepotLinePickup"
+                  "pathName": "CenterToOutpost"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Run Intake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Prepare to Shoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot All Balls"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Further DepotLinePickup"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Intake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Prepare to Shoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot All Balls"
+                  "name": "Deploy Intake"
                 }
               }
             ]
@@ -91,9 +28,28 @@
           "data": {
             "commands": [
               {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.0
+                }
+              },
+              {
                 "type": "named",
                 "data": {
-                  "name": "Home Hood"
+                  "name": "Outpost Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "OutpostTrenchShot"
                 }
               },
               {
@@ -103,13 +59,13 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Climb"
+                        "name": "Prepare to Shoot"
                       }
                     },
                     {
-                      "type": "path",
+                      "type": "named",
                       "data": {
-                        "pathName": "Depot shot to climb"
+                        "name": "Shoot All Balls"
                       }
                     }
                   ]
@@ -119,9 +75,41 @@
           }
         },
         {
-          "type": "named",
+          "type": "race",
           "data": {
-            "name": "Stop"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Outpost Trench To Center"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Prepare to Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot All Balls"
+                }
+              }
+            ]
           }
         }
       ]

@@ -37,9 +37,9 @@ public class HoodTalonFX extends SubsystemBase implements HoodIO {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Hood Angle (deg)", getAngle());
-    SmartDashboard.putNumber("Desired Hood Angle", targetAngleDeg);
-    SmartDashboard.putNumber("Applied Hood Volts", hoodMotor.getMotorVoltage().getValue().in(Volts));
+    Logger.recordOutput("Hood/Hood Angle (deg)", getAngle());
+    Logger.recordOutput("Hood/Desired Hood Angle", targetAngleDeg);
+    Logger.recordOutput("Hood/Applied Hood Volts", hoodMotor.getMotorVoltage().getValue().in(Volts));
     Logger.recordOutput("FinalComponentPoses/Hood Position", new Pose3d(0, 0.09, 0.41, new Rotation3d(Units.degreesToRadians(-getAngle() + ShooterConstants.kHoodMinAngleDeg), 0.0, 0.0)));
   }
 

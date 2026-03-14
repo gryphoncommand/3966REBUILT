@@ -2,7 +2,6 @@ package frc.robot.subsystems.Climber;
 
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
-import static edu.wpi.first.units.Units.Inches;
 
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -20,7 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 
@@ -91,8 +89,9 @@ public class ClimberSimTalonFX extends SubsystemBase implements ClimberIO {
         climberVisual.setLength(heightMeters * 2.0);
 
         SmartDashboard.putData("Climber Mech", mech2d);
-        SmartDashboard.putNumber("Climber Height (in)", inches);
-        SmartDashboard.putNumber("Climber Motor Rots", motorRotations);
+        Logger.recordOutput("Climber/Climber Height (in)", inches);
+        Logger.recordOutput("Climber/Climber Motor Rots", motorRotations);
+        Logger.recordOutput("Climber/Applied Volts", motorVoltage.in(Volts)/2);
 
         Logger.recordOutput(
             "FinalComponentPoses/Climber Position",
@@ -126,14 +125,11 @@ public class ClimberSimTalonFX extends SubsystemBase implements ClimberIO {
     }
 
     @Override
-    public Distance getPosition() {
+    public double getPosition() {
         double rotations =
             climberMotor.getPosition().getValue().in(Rotations);
 
-        double inches =
-            rotations * ClimberConstants.kInchesPerMotorRotation;
-
-        return Inches.of(inches);
+        return rotations;
     }
 
     @Override

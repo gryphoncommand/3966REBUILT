@@ -18,7 +18,13 @@ public interface FlywheelIO extends Subsystem {
 
   boolean atTarget(double threshold);
 
+  boolean atRealTarget(double threshold);
+
+  void setRealTarget(double rpm);
+
   SubsystemBase returnSubsystem();
 
   double getVoltage();
+
+  void stop();
 }

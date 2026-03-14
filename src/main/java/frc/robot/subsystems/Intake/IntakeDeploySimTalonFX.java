@@ -3,6 +3,7 @@ package frc.robot.subsystems.Intake;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -86,7 +87,8 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
         );
 
         SmartDashboard.putData("Intake Deploy Mech", mech2d);
-        SmartDashboard.putNumber("Intake Deploy Angle (deg)", getPosition());
+        Logger.recordOutput("Intake/Intake Deploy Angle (deg)", getPosition());
+        Logger.recordOutput("Intake/Requested Intake Position", targetAngleDeg);
         Logger.recordOutput("FinalComponentPoses/Intake Position", new Pose3d(-0.29, 0, 0.33, new Rotation3d(0.0, Units.degreesToRadians(getPosition()), 0.0)));
     }
 
@@ -98,7 +100,6 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
     @Override
     public void setPosition(double rotations) {
         targetAngleDeg = Units.rotationsToDegrees(rotations);
-        SmartDashboard.putNumber("Requested Intake Position", targetAngleDeg);
 
         double simAngleDeg = 180 - targetAngleDeg;
 
@@ -113,7 +114,7 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
     @Override
     public void setVelocity(double rpm) {
         intakeMotor.setControl(
-            new com.ctre.phoenix6.controls.VelocityVoltage(rpm));
+            new VelocityVoltage(rpm));
     }
 
     @Override

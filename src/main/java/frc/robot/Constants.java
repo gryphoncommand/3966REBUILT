@@ -49,8 +49,7 @@ public final class Constants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
     public static final double kMaxSpeedMetersPerSecond = 4.8;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 5.0;
-    public static final double kMaxAutomatedSpeedMetersPerSecond = 1;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 40.0;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     // Chassis configuration
@@ -139,22 +138,23 @@ public final class Constants {
 
   public static class VisionConstants {
     public static final String kCameraName1 = "ShooterLL";
-    public static final String kCameraName2 = "ArduR";
+    public static final String kCameraName2 = "FrontArducam";
     public static final String kCameraName3 = "ArduL";
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center,
     // pitched upward.
-    private static final double camPitch1 = Units.degreesToRadians(-20);
+    private static final double camPitch1 = -Units.degreesToRadians(20);
     private static final double camYaw1 = Units.degreesToRadians(90);
     
+    // TODO: ts has GOTTA be wrong idk
     public static final Transform3d kRobotToCam1 =
-            new Transform3d(new Translation3d(0.301, 0.254, 0.401), new Rotation3d(0, camPitch1, camYaw1));
+            new Transform3d(new Translation3d(Units.inchesToMeters(9.75), Units.inchesToMeters(9.75), Units.inchesToMeters(16.732283)), new Rotation3d(0, camPitch1, camYaw1));
     public static final Transform3d kCamToRobot1 = kRobotToCam1.inverse();
 
     // some of these probably need to be flipped
-    private static final double camPitch2 = Units.degreesToRadians(0);
-    private static final double camYaw2 = -Units.degreesToRadians(15);
+    private static final double camPitch2 = -Units.degreesToRadians(8);
+    private static final double camYaw2 = Units.degreesToRadians(0);
     public static final Transform3d kRobotToCam2 =
-            new Transform3d(new Translation3d(Units.inchesToMeters(6.25), Units.inchesToMeters(12), Units.inchesToMeters(11.75)), new Rotation3d(Math.PI, camPitch2, camYaw2));
+            new Transform3d(new Translation3d(Units.inchesToMeters(8.25), Units.inchesToMeters(10.25), Units.inchesToMeters(19.5)), new Rotation3d(0, camPitch2, camYaw2));
     public static final Transform3d kCamToRobot2 = kRobotToCam2.inverse();
 
     // some of these probably need to be flipped
@@ -169,7 +169,7 @@ public final class Constants {
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(2, 2, 4);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
   }
 
@@ -178,8 +178,13 @@ public final class Constants {
     public static int kFollowerWheelCanID = 10;
     public static int kHoodCANID = 11;
 
-    public static double kFlywheelRPMOffset = 200;
-    public static double kPhaseDelay = 0.2;
+    //TODO: test
+    public static boolean accountForAccel = false;
+
+    public static double kFlywheelRPMOffset = 250;
+    public static double kShootDelay = 0.2;
+    public static double kPhaseDelay = 0.02;
+
 
     public static double kHoodGearRatio = 198/10;
     public static double kHoodLengthMeters = Units.inchesToMeters(5);
@@ -187,35 +192,53 @@ public final class Constants {
     public static double kHoodMaxAngleDeg = 52.5;
     public static double kHoodMinAngleDeg = 22.6;
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
-
+    public static double kDefaultFlywheelSpeed = 0.0;
     public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(Math.PI/2));
-
 
     public static ShooterState kShooterStowState = new ShooterState(3, kHoodMinAngleDeg, 0, 1.2);
     public static ShooterState kDefaultShooterState = new ShooterState(3, 35, 2000, 1.2);
+    public static ShooterState kCornerShotState = new ShooterState(5.1, 41, 3225, 1.2);
+    public static ShooterState kTowerShotState = new ShooterState(3.415, 36, 2750, 1.2);
+    public static ShooterState kTrenchShotState = new ShooterState(3.168, 35.0, 1900, 1.10);
 
-    public static List<ShooterState> RealShootingValues = List.of(
-      new ShooterState(1.5, 23.0, 2400, 0.9),
-      new ShooterState(2.095, 25.0, 2570, 1.10),
-      new ShooterState(2.300, 28.0, 2600, 1.12), // Interpolated
-      new ShooterState(2.493, 30.0, 2650, 1.15),
-      new ShooterState(2.850, 32.5, 2700, 1.13), // Interpolated
-      new ShooterState(3.168, 35.0, 2800, 1.10),
-      new ShooterState(3.500, 36.5, 2815, 1.07), // Interpolated
-      new ShooterState(3.820, 38.0, 2830, 1.04),
-      new ShooterState(4.150, 38.5, 2950, 1.07), // Interpolated
-      new ShooterState(4.414, 39.0, 3050, 1.10),
-      new ShooterState(4.800, 40.5, 3150, 1.18), // Extended Range
-      new ShooterState(5.250, 42.0, 3250, 1.25)  // Extended Range
-  );
+
+    public static List<ShooterState> RealShootingValuesLow = List.of(
+      new ShooterState(1.500, 21.0, 1750, 0.95),
+      new ShooterState(2.095, 24.0, 1775, 0.95),
+      new ShooterState(2.300, 26.5, 1775, 1.00),
+      new ShooterState(2.493, 29.0, 1850, 1.05),
+      new ShooterState(2.850, 32.5, 1950, 1.08),
+      new ShooterState(3.168, 35.0, 1950, 1.10), // Tuned
+      new ShooterState(3.500, 36.5, 2056, 1.07), // Tuned
+      new ShooterState(3.820, 38.0, 2110, 1.14),
+      new ShooterState(4.150, 39.5, 2150, 1.22),
+      new ShooterState(4.414, 41.0, 2430, 1.30),
+      new ShooterState(4.800, 42.5, 2500, 1.40),
+      new ShooterState(5.250, 44.0, 2700, 1.52)
+    );
+
+    public static List<ShooterState> RealShootingValuesHigh = List.of(
+      new ShooterState(1.500, 23.0, 1520, 1.05),
+      new ShooterState(2.095, 23.5, 1740, 1.15),
+      new ShooterState(2.300, 24.0, 1810, 1.18),
+      new ShooterState(2.493, 24.5, 1870, 1.22),
+      new ShooterState(2.850, 25.0, 1900, 1.30),
+      new ShooterState(3.168, 26.0, 1960, 1.35),
+      new ShooterState(3.500, 27.0, 2075, 1.42),
+      new ShooterState(3.820, 28.0, 2170, 1.50),
+      new ShooterState(4.150, 29.0, 2260, 1.58),
+      new ShooterState(4.414, 30.0, 2330, 1.63),
+      new ShooterState(4.800, 31.0, 2400, 1.72),
+      new ShooterState(5.250, 32.0, 2500, 1.85)
+    );
 
     public static List<ShooterState> RealPassingValues = List.of(
-      new ShooterState(1.5, kHoodMaxAngleDeg, 2650, 0.9),
-      new ShooterState(2.5, 53, 2900, 0.9),
-      new ShooterState(3.5, 51, 2950, 0.95),
-      new ShooterState(4.5, 49, 3100, 1),
-      new ShooterState(6.0, 47, 3300, 1.05),
-      new ShooterState(8.0, 45, 3700, 1.1)
+      new ShooterState(1.5, kHoodMaxAngleDeg, 2200, 0.9),
+      new ShooterState(2.5, 53, 2450, 0.9),
+      new ShooterState(3.5, 51, 2600, 0.95),
+      new ShooterState(4.5, 49, 2650, 1),
+      new ShooterState(6.0, 47, 2900, 1.05),
+      new ShooterState(8.0, 45, 3050, 1.1)
     );
   }
 
@@ -242,26 +265,32 @@ public final class Constants {
     public static double kInchesPerMotorRotation = 10/kMotorRotationsPer10Inch;
     public static double kMotorRotationsPerInch = 1/kInchesPerMotorRotation;
     public static double kFullUpPosition = 70;
-    public static double kClimbPosition = 40;
     public static int kClimberCanID = 17;
+
+    public static Pose2d kRightClimbPose = new Pose2d(1.2, 2.911, new Rotation2d());
+    public static Pose2d kLeftClimbPose = new Pose2d(0.7, 4.510, new Rotation2d(Math.PI));
+    public static Pose2d kMidClimbPose = new Pose2d(0.768, 3.781, new Rotation2d(Math.PI));
+
+    public static Pose2d kRightPreClimb = new Pose2d(1.2, 2.191, new Rotation2d());
+    public static Pose2d kLeftPreClimb = new Pose2d(0.73, 5.0, new Rotation2d(Math.PI));
   }
 
   public static class IntakeConstants {
     public static int kRollerCanID = 12;
-    public static double kIntakeSpeedRPM = 500;
+    public static double kIntakeSpeedRPM = 300;
 
 
     public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (14/36)
     public static double kShaftToIntakeDeployRatio = 36/16;
-    public static double kIntakeDeployAngle = 0.02;
+    public static double kIntakeDeployAngle = 0.03;
     public static double kIntakeStowAngle = 0.85;
-    public static double kIntakeAgitateAngle = 0.15;
+    public static double kIntakeAgitateAngle = 0.20;
     public static int kDeployCanID = 14;
     public static double kIntakeLengthMeters = Units.inchesToMeters(14.678);
   }
 
   public static class AlignmentConstants {
-    public static final PIDController turnPID = new PIDController(1.0, 0.0, 0.001);
+    public static final PIDController turnPID = new PIDController(1.0, 0.0, 0.00);
     static {turnPID.enableContinuousInput(-Math.PI, Math.PI);}
 
     public static final Pose2d RedHubPose = new Pose2d(11.916, 4.055, new Rotation2d());
@@ -272,8 +301,8 @@ public final class Constants {
     public static final Pose2d BlueAllianceZoneEnd = new Pose2d(4.3, 0, new Rotation2d());
     public static final Pose2d RedAllianceZoneEnd = new Pose2d(12.2, 0, new Rotation2d());
 
-    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(2.412, 2.2688, new Rotation2d()));
-    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(2.412, 5.707, new Rotation2d()));
+    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(2.412, 3.0688, new Rotation2d()));
+    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(2.412, 5.007, new Rotation2d()));
 
     public static final double kMidFieldY = Units.feetToMeters(13.15);
     public static final double kMidFieldHubBlockWidth = 1.0;

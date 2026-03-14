@@ -10,7 +10,6 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ShooterConstants;
@@ -23,6 +22,7 @@ public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
 
   private double targetReference = 0;
   private ControlType currentControlType = ControlType.kPosition;
+  private double realTarget = 0;
 
   public FlywheelSparkFlex() {
     shooterMotor.configure(Configs.FlywheelConfig.flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -31,10 +31,14 @@ public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Shooter Velocity (RPM)", getVelocity());
-    SmartDashboard.putNumber("Desired Flywheel Speed", pid.getSetpoint());
-    Logger.recordOutput("Flywheel Applied Output (Duty Cycle)", shooterMotor.getAppliedOutput());
-    Logger.recordOutput("Flywheel Applied Output (Volts)", getVoltage());
+    if (pid.getSetpoint() == 0){
+      realTarget = 0;
+    }
+    Logger.recordOutput("Flywheel/Flywheel Velocity (RPM)", getVelocity());
+    Logger.recordOutput("Flywheel/Effective Desired Flywheel Speed", pid.getSetpoint());
+    Logger.recordOutput("Flywheel/Desired Flywheel Speed", realTarget);
+    Logger.recordOutput("Flywheel/Flywheel Applied Output (Duty Cycle)", shooterMotor.getAppliedOutput());
+    Logger.recordOutput("Flywheel/Flywheel Applied Output (Volts)", getVoltage());
   }
 
   @Override
@@ -86,6 +90,16 @@ public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   }
 
   @Override
+  public void setRealTarget(double rpm) {
+      realTarget = rpm;
+  }
+
+  @Override
+  public boolean atRealTarget(double threshold) {
+      return Math.abs(getVelocity() - realTarget) < threshold;
+  }
+
+  @Override
   public SubsystemBase returnSubsystem() {
     return this;
   }
@@ -94,4 +108,11 @@ public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   public double getVoltage() {
       return shooterMotor.getAppliedOutput() * shooterMotor.getBusVoltage();
   }
+
+  @Override
+    public void stop() {
+      setVelocity(0);
+      setRealTarget(0);
+      set(0);
+    }
 }

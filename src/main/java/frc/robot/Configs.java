@@ -144,7 +144,8 @@ public final class Configs {
                 IntakeDeployConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(1.8, 0, 0.2)
+                    // TODO: Tune so autos are faster
+                    .pid(2.4, 0, 0.2)
                     .outputRange(-0.9, 0.9);
         }
 
@@ -156,9 +157,9 @@ public final class Configs {
                 slot0ConfigsDrive.kS = 0;
                 slot0ConfigsDrive.kV = 0;
                 slot0ConfigsDrive.kA = 0;
-                slot0ConfigsDrive.kP = 3;
+                slot0ConfigsDrive.kP = 10;
                 slot0ConfigsDrive.kI = 0; 
-                slot0ConfigsDrive.kD = 2;
+                slot0ConfigsDrive.kD = 3;
 
                 deploySimConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
@@ -181,27 +182,30 @@ public final class Configs {
                         .smartCurrentLimit(70)
                         .inverted(false)
                         .openLoopRampRate(0)
-                        .closedLoopRampRate(0.001);
+                        .closedLoopRampRate(0);
                 flywheelConfig.encoder
                     .positionConversionFactor(1)
                     .velocityConversionFactor(1);
                 flywheelConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(2.88e-5, 1e-6, 0.0)
+                    .pid(0.00510241666/2, 0, 0.0)
                     .iZone(100)
                     .outputRange(-1, 1);
                 flywheelConfig.closedLoop.feedForward
-                    .kS(0.22004)
-                    .kV(0.0018275)
-                    .kA(0.000152095);
+                    .kS(0.28043)
+                    .kV(0.001933)
+                    .kA(0.0005902);
+                flywheelConfig.closedLoop.maxMotion
+                    .maxAcceleration(8000)
+                    .allowedProfileError(40);
 
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
                 // PID + FF tuning
                 slot0ConfigsDrive.kS = 0.0;
-                slot0ConfigsDrive.kV = 0.105;
-                slot0ConfigsDrive.kA = 0.0091257;
-                slot0ConfigsDrive.kP = 0.0017271;
+                slot0ConfigsDrive.kV = 0.001933*58;
+                slot0ConfigsDrive.kA = 0.0005902*58;
+                slot0ConfigsDrive.kP = 0.00510241666 * 85;
                 slot0ConfigsDrive.kI = 0.0;
                 slot0ConfigsDrive.kD = 0.0;
 
@@ -221,7 +225,7 @@ public final class Configs {
                 slot0Configs.kS = 0;
                 slot0Configs.kV = 0;
                 slot0Configs.kA = 0;
-                slot0Configs.kP = 3.0;
+                slot0Configs.kP = 5.0;
                 slot0Configs.kI = 0;
                 slot0Configs.kD = 0.4;
 
@@ -261,7 +265,7 @@ public final class Configs {
         static {
                 kickerConfig
                         .idleMode(IdleMode.kBrake)
-                        .smartCurrentLimit(40)
+                        .smartCurrentLimit(70)
                         .inverted(false)
                         .openLoopRampRate(0)
                         .closedLoopRampRate(0);
@@ -273,7 +277,7 @@ public final class Configs {
                     // These are example gains you may need to them for your own robot!
                     .pid(0.0, 0.0, 0.0)
                     .iZone(100)
-                    .outputRange(-0.9, 0.9);
+                    .outputRange(-1, 1);
                 kickerConfig.closedLoop.feedForward
                     .kV(0.016)
                     .kA(0);
@@ -317,7 +321,7 @@ public final class Configs {
                 slot0Configs.kS = 0.5;
                 slot0Configs.kV = 0;
                 slot0Configs.kA = 0;
-                slot0Configs.kP = 5.0;
+                slot0Configs.kP = 4.0;
                 slot0Configs.kI = 1.0; 
                 slot0Configs.kD = 0.1;
                 slot0Configs.kG = 0.3;
@@ -340,7 +344,7 @@ public final class Configs {
                 // Motor behavior
                 HoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-                HoodConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+                HoodConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
                 HoodConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Constants.ShooterConstants.kHoodMaxAngleDeg * ShooterConstants.kHoodGearRatio / 360.0;
                 HoodConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;

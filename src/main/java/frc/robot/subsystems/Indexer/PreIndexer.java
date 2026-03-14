@@ -2,11 +2,12 @@ package frc.robot.subsystems.Indexer;
 
 import static edu.wpi.first.units.Units.RPM;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs.PreIndexerConfig;
 import frc.robot.Constants.IndexerConstants;
@@ -24,8 +25,8 @@ public class PreIndexer extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("PreIndexer RPM", preIndexerMotor.getVelocity().getValue().in(RPM));
-        SmartDashboard.putNumber("Desired PreIndexer RPM", targetRPM);
+        Logger.recordOutput("Indexing/PreIndexer RPM", preIndexerMotor.getVelocity().getValue().in(RPM));
+        Logger.recordOutput("Indexing/Desired PreIndexer RPM", targetRPM);
     }
 
     public void set(double speed) {

@@ -5,9 +5,11 @@
 package frc.robot;
 
 import frc.FuelSim;
+import frc.GryphonLib.ShooterState;
 import frc.littletonUtils.AllianceFlipUtil;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
@@ -15,6 +17,8 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.AlignToGoalAuto;
 import frc.robot.commands.AlignToTrench;
+import frc.robot.commands.AllSystemsTest;
+import frc.robot.commands.AutoClimbCommand;
 import frc.robot.commands.DeployClimber;
 import frc.robot.commands.FlywheelSysID;
 import frc.robot.commands.HomeHood;
@@ -24,7 +28,6 @@ import frc.robot.commands.SetShooterToDefinedState;
 import frc.robot.commands.SetToDashboardSpeeds;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootAllInHopper;
-import frc.robot.commands.StowClimber;
 import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.commands.Indexing.RunPreIndexer;
 import frc.robot.commands.Intake.IntakeDeploy;
@@ -78,7 +81,6 @@ import frc.robot.subsystems.Intake.IntakeDeployIO;
 import frc.robot.subsystems.Intake.IntakeDeploySimTalonFX;
 import frc.robot.subsystems.Intake.IntakeDeploySparkFlex;
 import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
-import frc.robot.commands.SOTMDuringAuto;
 
 public class RobotContainer {
 
@@ -102,6 +104,7 @@ public class RobotContainer {
       new CommandXboxController(OIConstants.kOperatorControllerPort);
 
   private final SendableChooser<Command> autoChooser;
+  private final SendableChooser<ShooterState> emergencyShotChooser = new SendableChooser<>();
 
   public RobotContainer() {
     new Vision();
@@ -115,8 +118,16 @@ public class RobotContainer {
     }
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
+    autoChooser.addOption("Systems Test", new AllSystemsTest(m_drive, m_intakeDeploy, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_flywheel, m_climber, m_hood).getSystemsTest());
+    
+
+    emergencyShotChooser.setDefaultOption("Default", ShooterConstants.kDefaultShooterState);
+    emergencyShotChooser.addOption("Tower", ShooterConstants.kTowerShotState);
+    emergencyShotChooser.addOption("Trench", ShooterConstants.kTrenchShotState);
+    emergencyShotChooser.addOption("Corner", ShooterConstants.kCornerShotState);
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    SmartDashboard.putData("Shoot All", new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer));
+    SmartDashboard.putData("Shot Chooser", emergencyShotChooser);
+    SmartDashboard.putData("Shoot All", new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, true, true));
 
     SmartDashboard.putData("Add Balls", new ConditionalCommand(new InstantCommand(), new InstantCommand(m_spindexer::addBall), Robot::isReal));
     try {
@@ -127,9 +138,9 @@ public class RobotContainer {
           new ParallelRaceGroup(
             new ParallelCommandGroup(
               new AlignToGoalAuto(m_drive, AlignmentConstants.HubPose, true),
-              new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.RealShootingValues)
+              new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow)
             ),
-            new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer)
+            new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, true, true)
           )
         )
       ));
@@ -164,6 +175,15 @@ public class RobotContainer {
         }
       }, m_preIndexer)
     );
+
+    m_flywheel.setDefaultCommand(
+      new RunCommand(()->{
+        m_flywheel.setVelocity(ShooterConstants.kDefaultFlywheelSpeed);
+        if (ShooterConstants.kDefaultFlywheelSpeed == 0){
+          m_flywheel.stop();
+        }
+      }, m_flywheel)
+    );
   }
 
   private void configureButtonBindings() {
@@ -176,29 +196,33 @@ public class RobotContainer {
         AlignmentConstants.PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(2.412, 2.2688, new Rotation2d()));
         AlignmentConstants.PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(2.412, 5.707, new Rotation2d()));
       }, m_drive));
-    m_driverController.povRight().onTrue(
-      new InstantCommand(()->{
-        Pose2d shooterPose = m_drive.getCurrentPose().plus(ShooterConstants.kRobotToShooter);
-        SmartDashboard.putString("Current Shooter State", "new ShooterState(" +  String.valueOf(PhotonUtils.getDistanceToPose(shooterPose, AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
-      })
-    );
+    // m_driverController.povRight().onTrue(
+    //   new InstantCommand(()->{
+    //     Pose2d shooterPose = m_drive.getCurrentPose().plus(ShooterConstants.kRobotToShooter);
+    //     SmartDashboard.putString("Current Shooter State", "new ShooterState(" +  String.valueOf(PhotonUtils.getDistanceToPose(shooterPose, AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
+    //   })
+    // );
 
     m_driverController.rightBumper()
       .whileTrue(new RepeatCommand(new DeferredCommand(()->
         new ParallelCommandGroup(
             new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
-            new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.RealShootingValues)
+            new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow)
         ), Set.of(m_drive, m_hood, m_flywheel))))
-      .onFalse(new RunCommand(()->m_flywheel.set(0), m_flywheel))
+      .onFalse(new RunCommand(()->m_flywheel.stop(), m_flywheel))
       .onFalse(new HomeHood(m_hood));
 
-    m_driverController.rightTrigger().whileTrue(runIntakeRollers);
     m_driverController.rightTrigger()
         .whileTrue(runIntakeRollers)
-        // .whileTrue(new AgitateIntake(m_intakeDeploy))
-        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, true).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, true).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     m_driverController.leftTrigger()
-      .whileTrue(new IntakeDeploy(m_intakeDeploy))
+      .whileTrue(
+        Commands.either(
+            new IntakeDeploy(m_intakeDeploy),
+            new InstantCommand(),
+            () -> m_intakeDeploy.getPosition() > 20
+        )
+      )
       .whileTrue(runIntakeRollers)
       .whileTrue(new RunPreIndexer(m_preIndexer));
       
@@ -210,27 +234,32 @@ public class RobotContainer {
         , Set.of(m_drive, m_hood, m_flywheel)
       ))
     )
-    .onFalse(new RunCommand(()->m_flywheel.set(0), m_flywheel))
+    .onFalse(new RunCommand(()->m_flywheel.stop(), m_flywheel))
     .onFalse(new HomeHood(m_hood));
 
     m_driverController.b().whileTrue(new AlignToTrench(m_drive, m_driverController));
     m_driverController.a()
-      .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState))
-      .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
-      .onFalse(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kShooterStowState));
+      .whileTrue(
+        new DeferredCommand(()->new SetShooterToDefinedState(m_hood, m_flywheel,
+          emergencyShotChooser.getSelected()
+        ), Set.of(m_hood, m_flywheel))
+      )
+      .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
+      .onFalse(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kShooterStowState).withTimeout(0.1));
     m_driverController.povLeft().whileTrue(new HomeHood(m_hood).alongWith(new RunCommand(()->m_flywheel.set(0), m_flywheel)));
     m_driverController.y()
       .whileTrue(new RunCommand(()->m_intakeRollers.set(-0.3), m_intakeRollers))
       .onFalse(new RunCommand(()->m_intakeRollers.set(0.0), m_intakeRollers));
-    m_driverController.povRight()
-    .toggleOnTrue(new StowClimber(m_climber));
     m_driverController.povDown()
       .toggleOnTrue(new DeployClimber(m_climber))
       .onTrue(new RunCommand(()->m_flywheel.set(0), m_flywheel));
+    m_driverController.povUp().whileTrue(new RunCommand(()->m_climber.set(-0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0), m_climber));
+    m_driverController.povRight().toggleOnTrue(new AutoClimbCommand(m_drive, m_climber));
+    
     
     m_operatorController.rightTrigger()
         .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState))
-        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     m_operatorController.x().toggleOnTrue(new SetToDashboardSpeeds(m_hood, m_flywheel));
     m_operatorController.povUp().whileTrue(new RunCommand(()->m_climber.set(0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0.0), m_climber));
     m_operatorController.povDown().whileTrue(new RunCommand(()->m_climber.set(-0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0.0), m_climber));
@@ -253,13 +282,6 @@ public class RobotContainer {
         Pose2d shooterPose = m_drive.getCurrentPose().plus(ShooterConstants.kRobotToShooter);
         SmartDashboard.putString("Current Shooter State", "new ShooterState(" +  String.valueOf(PhotonUtils.getDistanceToPose(shooterPose, AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
       })
-    );
-
-    SmartDashboard.putData("Align To Hub",
-      new ParallelCommandGroup(
-        new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true),
-        new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.RealShootingValues)
-      )
     );
   }
  
@@ -294,7 +316,7 @@ public class RobotContainer {
     );
 
     instance.registerIntake(
-        -(0.635 + 2*IntakeConstants.kIntakeLengthMeters)/2, -(0.635)/2, -(0.737)/2, (0.737)/2, // robot-centric coordinates for bounding box
+        -(0.635 + 2*(IntakeConstants.kIntakeLengthMeters*0.9))/2, -(0.635)/2, -(0.7)/2, (0.7)/2, // robot-centric coordinates for bounding box
         () -> (SmartDashboard.getBoolean("Intake Deployed", true) && !m_spindexer.isFull()), // (optional) BooleanSupplier for whether the intake should be active at a given moment
         new Runnable() {public void run() {m_spindexer.addBall();};}); // (optional) Runnable called whenever a fuel is intaked
 
@@ -313,23 +335,27 @@ public class RobotContainer {
       })
       .withName("Reset Fuel")
       .ignoringDisable(true));
+
+    instance.enableAirResistance();
   }
 
   private void configureNamedCommands(){
-    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer));
+    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy));
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
         new AlignToGoalAuto(m_drive, AlignmentConstants.HubPose, true),
-        new PrepareSOTM(m_hood, m_flywheel, m_drive, ShooterConstants.RealShootingValues)
+        new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow)
       )
     );
+    NamedCommands.registerCommand("Outpost Intake", new InstantCommand(()->{for (int i = 0; i < 25; i++){m_spindexer.addBall();}}));
     NamedCommands.registerCommand("Deploy Intake", new IntakeDeploy(m_intakeDeploy));
     NamedCommands.registerCommand("Stow Intake", new IntakeStow(m_intakeDeploy));
     NamedCommands.registerCommand("Run Intake", new RunCommand(()->m_intakeRollers.setVelocity(IntakeConstants.kIntakeSpeedRPM), m_intakeRollers).finallyDo(()->m_intakeRollers.set(0)));
     NamedCommands.registerCommand("Home Hood", new HomeHood(m_hood));
     NamedCommands.registerCommand("Climb", new DeployClimber(m_climber));
+    NamedCommands.registerCommand("Deploy Climber", new RunCommand(()->m_climber.setPosition(ClimberConstants.kFullUpPosition), m_climber));
     NamedCommands.registerCommand("Stop", new RunCommand(()->m_drive.stop(), m_drive).withTimeout(1));
-    
+    NamedCommands.registerCommand("Auto Climb", new AutoClimbCommand(m_drive, m_climber));
   }
 
   private void configureLogger(){

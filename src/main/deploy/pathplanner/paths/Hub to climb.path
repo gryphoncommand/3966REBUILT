@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4,
-        "y": 3.75
+        "x": 2.374500000000001,
+        "y": 3.8373205128205132
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1500015408359023,
-        "y": 3.7491222667962227
+        "x": 2.1245015408359036,
+        "y": 3.8364427796167364
       },
       "isLocked": false,
       "linkedName": "SOTM End"
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Climb"
     }
   ],
   "rotationTargets": [],
@@ -48,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -0.9963478965049255
   },
   "useDefaultConstraints": true
 }
