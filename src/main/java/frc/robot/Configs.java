@@ -40,7 +40,8 @@ public final class Configs {
 
 
                 driveConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 1/3;
-                driveConfig.CurrentLimits.withSupplyCurrentLimit(80).withSupplyCurrentLimitEnable(true);
+                driveConfig.CurrentLimits.withSupplyCurrentLimit(55)
+                .withSupplyCurrentLimitEnable(true);
                 
                 // Motor behavior
                 driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -120,7 +121,8 @@ public final class Configs {
             slot0Configs.kI = 0.0;
             slot0Configs.kD = 0.0;
 
-            intakeRollerConfig.CurrentLimits.withSupplyCurrentLimit(Amps.of(30));
+            intakeRollerConfig.CurrentLimits.withSupplyCurrentLimit(Amps.of(20));
+            intakeRollerConfig.CurrentLimits.withSupplyCurrentLimitEnable(true);
             
             // Motor behavior
             intakeRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -252,7 +254,8 @@ public final class Configs {
             slot0Configs.kI = 0.0;
             slot0Configs.kD = 0.0;
 
-            PreIndexerConfig.CurrentLimits.withSupplyCurrentLimit(Amps.of(30));
+            PreIndexerConfig.CurrentLimits.withSupplyCurrentLimit(Amps.of(20));
+            PreIndexerConfig.CurrentLimits.withSupplyCurrentLimitEnable(true);
             
             // Motor behavior
             PreIndexerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -292,7 +295,7 @@ public final class Configs {
         static {
                 SpindexerConfig
                         .idleMode(IdleMode.kBrake)
-                        .smartCurrentLimit(40)
+                        .smartCurrentLimit(30)
                         .inverted(false)
                         .openLoopRampRate(0)
                         .closedLoopRampRate(0);
@@ -330,9 +333,9 @@ public final class Configs {
 
                 HoodConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
-                HoodConfig.CurrentLimits.withSupplyCurrentLimit(50).withSupplyCurrentLimitEnable(true);
+                HoodConfig.CurrentLimits.withSupplyCurrentLimit(30).withSupplyCurrentLimitEnable(true);
 
-                HoodConfig.CurrentLimits.StatorCurrentLimit = 50.0;
+                HoodConfig.CurrentLimits.StatorCurrentLimit = 30.0;
                 HoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
                 HoodConfig.MotorOutput.PeakForwardDutyCycle = 0.13;

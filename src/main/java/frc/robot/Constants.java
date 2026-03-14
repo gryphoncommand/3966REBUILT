@@ -277,7 +277,7 @@ public final class Constants {
 
   public static class IntakeConstants {
     public static int kRollerCanID = 12;
-    public static double kIntakeSpeedRPM = 300;
+    public static double kIntakeSpeedRPM = 350;
 
 
     public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (14/36)
