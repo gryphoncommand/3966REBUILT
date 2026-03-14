@@ -233,12 +233,12 @@ public final class Constants {
     );
 
     public static List<ShooterState> RealPassingValues = List.of(
-      new ShooterState(1.5, kHoodMaxAngleDeg, 2200, 0.9),
-      new ShooterState(2.5, 53, 2450, 0.9),
-      new ShooterState(3.5, 51, 2600, 0.95),
-      new ShooterState(4.5, 49, 2650, 1),
-      new ShooterState(6.0, 47, 2900, 1.05),
-      new ShooterState(8.0, 45, 3050, 1.1)
+      new ShooterState(1.5, kHoodMaxAngleDeg, 2200, 1.0),
+      new ShooterState(2.5, 53, 2450, 1.1),
+      new ShooterState(3.5, 51, 2500, 1.2),
+      new ShooterState(4.5, 49, 2550, 1.3),
+      new ShooterState(6.0, 47, 2600, 1.4),
+      new ShooterState(8.0, 45, 2750, 1.4)
     );
   }
 
