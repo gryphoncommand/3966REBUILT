@@ -145,7 +145,6 @@ public final class Constants {
     private static final double camPitch1 = -Units.degreesToRadians(20);
     private static final double camYaw1 = Units.degreesToRadians(90);
     
-    // TODO: ts has GOTTA be wrong idk
     public static final Transform3d kRobotToCam1 =
             new Transform3d(new Translation3d(Units.inchesToMeters(9.75), Units.inchesToMeters(9.75), Units.inchesToMeters(16.732283)), new Rotation3d(0, camPitch1, camYaw1));
     public static final Transform3d kCamToRobot1 = kRobotToCam1.inverse();
@@ -182,7 +181,7 @@ public final class Constants {
     public static boolean accountForAccel = false;
 
     public static double kFlywheelRPMOffset = 250;
-    public static double kShootDelay = 0.2;
+    public static double kShootDelay = 0.05;
     public static double kPhaseDelay = 0.02;
 
 
@@ -290,7 +289,7 @@ public final class Constants {
   }
 
   public static class AlignmentConstants {
-    public static final PIDController turnPID = new PIDController(2.0, 0.00, 0.00);
+    public static final PIDController turnPID = new PIDController(3.0, 0.00, 0.00);
     static {turnPID.enableContinuousInput(-Math.PI, Math.PI);}
 
     public static final Pose2d RedHubPose = new Pose2d(11.916, 4.055, new Rotation2d());

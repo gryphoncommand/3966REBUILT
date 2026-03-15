@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.GryphonLib.MovementCalculations;
 import frc.GryphonLib.PositionCalculations;
 import frc.robot.Constants.AlignmentConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
@@ -62,16 +63,14 @@ public class AlignToGoalAuto extends Command {
                 } catch (Exception e) {}
             }
 
-            Pose2d nextPose = drive.getCurrentPose().exp(drive.getCurrentSpeedsFieldRelative().toTwist2d(0.05));
-
             // Compute yaw error from shooter pose instead of robot center
             yawError = PositionCalculations.getYawChangeToPose(
-                    nextPose.transformBy(kRobotToShooter),
+                    drive.getCurrentPose().transformBy(kRobotToShooter),
                     goalPose);
             SmartDashboard.putNumber("Yaw Align Error", Units.radiansToDegrees(yawError));
 
             // PID output
-            double turn = turnPID.calculate(yawError) * 1.5;
+            double turn = turnPID.calculate(yawError) * DriveConstants.kMaxAngularSpeed;
 
             return -turn;
         });

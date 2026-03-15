@@ -25,6 +25,12 @@
                 "data": {
                   "name": "Run Intake"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Prepare to Shoot"
+                }
               }
             ]
           }
@@ -47,6 +53,12 @@
                       "type": "named",
                       "data": {
                         "name": "Shoot All Balls"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Align to Shoot"
                       }
                     }
                   ]

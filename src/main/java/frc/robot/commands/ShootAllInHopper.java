@@ -138,7 +138,7 @@ public class ShootAllInHopper extends Command {
 
             if (hoodReady && flyReady && aligned && now - lastShotTime > 0.2 && spindexer.getBalls() != 0) {
                 startedShooting = true;
-                double kShooterEfficiency = 0.68;
+                double kShooterEfficiency = 0.73;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
                 double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;

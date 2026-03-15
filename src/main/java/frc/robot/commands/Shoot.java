@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -48,6 +50,7 @@ public class Shoot extends Command {
     private boolean neeedAlign = true;
     private boolean reachedSetpoint;
     private boolean agitateAngle;
+    private BooleanSupplier shouldAgitate;
 
     /**
      * Shoot command: runs the flywheel (assumed already set) and only feeds balls
@@ -59,7 +62,7 @@ public class Shoot extends Command {
      * @param feedRPM roller velocity to use when feeding
      * @param stopFlywheelOnEnd if true, zeroes the flywheel when the command ends
      */
-    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign) {
+    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign, BooleanSupplier shouldAgitate) {
         this.driveData = driveData;
         this.hood = hood;
         this.flywheel = flywheel;
@@ -67,6 +70,7 @@ public class Shoot extends Command {
         this.spindexer = spindexer;
         this.neeedAlign = neeedAlign;
         this.intake = intake;
+        this.shouldAgitate = shouldAgitate;
 
         if (stopFlywheelOnEnd){
             addRequirements(flywheel);
@@ -97,7 +101,7 @@ public class Shoot extends Command {
      * Convenience constructor that leaves the flywheel running when command ends.
      */
     public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
-        this(driveData, hood, flywheel, rollers, kicker, preIndexer, spindexer, intake, false, true);
+        this(driveData, hood, flywheel, rollers, kicker, preIndexer, spindexer, intake, false, true, ()->true);
     }
 
     @Override
@@ -135,7 +139,7 @@ public class Shoot extends Command {
             double now = Timer.getFPGATimestamp();
 
             if (hoodReady && flyReady && aligned && now - lastShotTime > 0.2 && spindexer.getBalls() != 0) {
-                double kShooterEfficiency = 0.68;
+                double kShooterEfficiency = 0.73;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
                 double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;
@@ -164,15 +168,20 @@ public class Shoot extends Command {
         }
 
         if (hoodReady && flyReady && aligned){
-            if (intake.atTarget(0.02) && agitateTimer.get() > 0.2){
-                if (agitateAngle){
-                    intake.setPosition(IntakeConstants.kIntakeAgitateAngle);
-                } else {
-                    intake.setPosition(IntakeConstants.kIntakeDeployAngle);
+            if (shouldAgitate.getAsBoolean()){
+                if (intake.atTarget(0.02) && agitateTimer.get() > 0.2){
+                    if (agitateAngle){
+                        intake.setPosition(IntakeConstants.kIntakeAgitateAngle);
+                    } else {
+                        intake.setPosition(IntakeConstants.kIntakeDeployAngle);
+                    }
+                    agitateTimer.restart();
+
+                    agitateAngle = !agitateAngle;
                 }
+            } else {
+                intake.setPosition(IntakeConstants.kIntakeDeployAngle);
                 agitateTimer.restart();
-                
-                agitateAngle = !agitateAngle;
             }
         }
 
