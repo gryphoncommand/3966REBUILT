@@ -64,13 +64,11 @@ public class AutoClimbCommand extends Command {
                 Pose2d startPose = drive.getCurrentPose();
 
                 return new RunCommand(() ->
-                    drive.drive(-0.1, 0, 0, false),
+                    drive.drive(-0.1, 0.005, 0, false),
                     drive
                 )
                 .until(() ->
-                    drive.getCurrentPose()
-                        .getTranslation()
-                        .getDistance(startPose.getTranslation()) >= 0.6
+                    Math.abs(drive.getCurrentPose().getX() - startPose.getX()) >= 0.6
                 )
                 .andThen(
                 new RunCommand(() ->

@@ -40,6 +40,7 @@ public class Shoot extends Command {
     private final Spindexer spindexer;
     private final boolean stopFlywheelOnEnd;
     private final IntakeDeployIO intake;
+    private final Timer agitateTimer = new Timer();
     private double lastShotTime = 0;
     private boolean spindexerDirection = false;
     private FeedShooterFactory passthroughFactory;
@@ -101,6 +102,7 @@ public class Shoot extends Command {
 
     @Override
     public void initialize() {
+        agitateTimer.reset();
         agitateAngle = false;
         setName("Shoot");
         // Rollers start stopped until shooter is ready.
@@ -121,6 +123,7 @@ public class Shoot extends Command {
 
         if (!reachedSetpoint && flywheel.atRealTarget(100)){
             Logger.recordOutput("Shoot Report", "Started Shooting");
+            agitateTimer.restart();
             reachedSetpoint = true;
         }
         
@@ -161,13 +164,14 @@ public class Shoot extends Command {
         }
 
         if (hoodReady && flyReady && aligned){
-            if (intake.atTarget(0.05)){
+            if (intake.atTarget(0.02) && agitateTimer.get() > 0.2){
                 if (agitateAngle){
                     intake.setPosition(IntakeConstants.kIntakeAgitateAngle);
                 } else {
                     intake.setPosition(IntakeConstants.kIntakeDeployAngle);
                 }
-
+                agitateTimer.restart();
+                
                 agitateAngle = !agitateAngle;
             }
         }

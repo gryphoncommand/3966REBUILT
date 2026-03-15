@@ -44,7 +44,7 @@ public class FeedShooterFactory {
             if (preIndexer.getTargetRPM() != IndexerConstants.kPreIndexerSpeed){
                 preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed);
             }
-            if (timer.get() > 0.5 && Math.abs(spindexer.getVelocity()) < 200){
+            if (timer.get() > 1.5 && Math.abs(spindexer.getVelocity()) < 60){
                 spindexerDirection = !spindexerDirection;
                 start(spindexerDirection);
             }

@@ -121,9 +121,9 @@ public class RobotContainer {
     autoChooser.addOption("Systems Test", new AllSystemsTest(m_drive, m_intakeDeploy, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_flywheel, m_climber, m_hood).getSystemsTest());
     
 
-    emergencyShotChooser.setDefaultOption("Default", ShooterConstants.kDefaultShooterState);
+    emergencyShotChooser.addOption("Default", ShooterConstants.kDefaultShooterState);
     emergencyShotChooser.addOption("Tower", ShooterConstants.kTowerShotState);
-    emergencyShotChooser.addOption("Trench", ShooterConstants.kTrenchShotState);
+    emergencyShotChooser.setDefaultOption("Trench", ShooterConstants.kTrenchShotState);
     emergencyShotChooser.addOption("Corner", ShooterConstants.kCornerShotState);
     SmartDashboard.putData("Auto Chooser", autoChooser);
     SmartDashboard.putData("Shot Chooser", emergencyShotChooser);
@@ -183,6 +183,18 @@ public class RobotContainer {
           m_flywheel.stop();
         }
       }, m_flywheel)
+    );
+
+
+    m_intakeRollers.setDefaultCommand(
+      new RunCommand(()->{
+        if (m_driverController.leftTrigger().getAsBoolean()){
+          m_intakeRollers.setVelocity(IntakeConstants.kIntakeSpeedRPM);
+        } else {
+          m_intakeRollers.setVelocity(0);
+          m_intakeRollers.set(0);
+        }
+      }, m_intakeRollers)
     );
   }
 

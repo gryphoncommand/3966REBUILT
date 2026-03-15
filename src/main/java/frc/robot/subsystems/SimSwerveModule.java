@@ -23,7 +23,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import frc.robot.Configs;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
 public class SimSwerveModule implements SwerveModuleIO {
@@ -33,7 +32,7 @@ public class SimSwerveModule implements SwerveModuleIO {
   private final TalonFXSimState m_turningSim;
 
   final VelocityVoltage m_driveRequest = new VelocityVoltage(0);
-  private final SlewRateLimiter m_driveRateLimiter = new SlewRateLimiter(DriveConstants.kMaxAccelerationMetersPerSecondSquared);
+  private final SlewRateLimiter m_driveRateLimiter = new SlewRateLimiter(4.8);
 
   // final VelocityVoltage m_driveRequest = new VelocityVoltage(0);
   private final PositionVoltage m_turnControlRequest = new PositionVoltage(0);

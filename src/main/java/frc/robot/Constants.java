@@ -206,15 +206,15 @@ public final class Constants {
       new ShooterState(1.500, 21.0, 1750, 0.95),
       new ShooterState(2.095, 24.0, 1775, 0.95),
       new ShooterState(2.300, 26.5, 1775, 1.00),
-      new ShooterState(2.493, 29.0, 1850, 1.05),
-      new ShooterState(2.850, 32.5, 1950, 1.08),
-      new ShooterState(3.168, 35.0, 1950, 1.10), // Tuned
-      new ShooterState(3.500, 36.5, 2056, 1.07), // Tuned
-      new ShooterState(3.820, 38.0, 2110, 1.14),
-      new ShooterState(4.150, 39.5, 2150, 1.22),
-      new ShooterState(4.414, 41.0, 2430, 1.30),
-      new ShooterState(4.800, 42.5, 2500, 1.40),
-      new ShooterState(5.250, 44.0, 2700, 1.52)
+      new ShooterState(2.493, 29.0, 1750, 1.05),
+      new ShooterState(2.850, 32.5, 1800, 1.08),
+      new ShooterState(3.240, 35.0, 1825, 1.10), // Tuned
+      new ShooterState(3.500, 36.5, 1906, 1.07), // Tuned
+      new ShooterState(3.820, 38.0, 1960, 1.14),
+      new ShooterState(4.150, 39.5, 1975, 1.22),
+      new ShooterState(4.414, 41.0, 2056, 1.30),
+      new ShooterState(4.800, 42.5, 2350, 1.40),
+      new ShooterState(5.250, 44.0, 2450, 1.52)
     );
 
     public static List<ShooterState> RealShootingValuesHigh = List.of(
@@ -234,11 +234,11 @@ public final class Constants {
 
     public static List<ShooterState> RealPassingValues = List.of(
       new ShooterState(1.5, kHoodMaxAngleDeg, 2200, 1.0),
-      new ShooterState(2.5, 53, 2450, 1.1),
-      new ShooterState(3.5, 51, 2500, 1.2),
-      new ShooterState(4.5, 49, 2550, 1.3),
-      new ShooterState(6.0, 47, 2600, 1.4),
-      new ShooterState(8.0, 45, 2750, 1.4)
+      new ShooterState(2.5, 53, 2200, 1.1),
+      new ShooterState(3.5, 51, 2300, 1.2),
+      new ShooterState(4.5, 49, 2350, 1.3),
+      new ShooterState(6.0, 47, 2400, 1.4),
+      new ShooterState(8.0, 45, 2650, 1.4)
     );
   }
 
@@ -267,8 +267,8 @@ public final class Constants {
     public static double kFullUpPosition = 70;
     public static int kClimberCanID = 17;
 
-    public static Pose2d kRightClimbPose = new Pose2d(1.2, 2.911, new Rotation2d());
-    public static Pose2d kLeftClimbPose = new Pose2d(0.7, 4.510, new Rotation2d(Math.PI));
+    public static Pose2d kRightClimbPose = new Pose2d(1.2, 3.011, new Rotation2d());
+    public static Pose2d kLeftClimbPose = new Pose2d(0.7, 4.410, new Rotation2d(Math.PI));
     public static Pose2d kMidClimbPose = new Pose2d(0.768, 3.781, new Rotation2d(Math.PI));
 
     public static Pose2d kRightPreClimb = new Pose2d(1.2, 2.191, new Rotation2d());
@@ -290,7 +290,7 @@ public final class Constants {
   }
 
   public static class AlignmentConstants {
-    public static final PIDController turnPID = new PIDController(3.0, 0.00, 0.00);
+    public static final PIDController turnPID = new PIDController(2.0, 0.00, 0.00);
     static {turnPID.enableContinuousInput(-Math.PI, Math.PI);}
 
     public static final Pose2d RedHubPose = new Pose2d(11.916, 4.055, new Rotation2d());
@@ -301,8 +301,8 @@ public final class Constants {
     public static final Pose2d BlueAllianceZoneEnd = new Pose2d(4.3, 0, new Rotation2d());
     public static final Pose2d RedAllianceZoneEnd = new Pose2d(12.2, 0, new Rotation2d());
 
-    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(2.412, 3.0688, new Rotation2d()));
-    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(2.412, 5.007, new Rotation2d()));
+    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(2.412, 2.288, new Rotation2d()));
+    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(2.412, 5.607, new Rotation2d()));
 
     public static final double kMidFieldY = Units.feetToMeters(13.15);
     public static final double kMidFieldHubBlockWidth = 1.0;

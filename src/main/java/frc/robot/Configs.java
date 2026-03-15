@@ -191,7 +191,7 @@ public final class Configs {
                 flywheelConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(0.00510241666/2, 0, 0.0)
+                    .pid(0.00510241666/4, 0, 0.0)
                     .iZone(100)
                     .outputRange(-1, 1);
                 flywheelConfig.closedLoop.feedForward
@@ -274,7 +274,7 @@ public final class Configs {
                         .closedLoopRampRate(0);
                 kickerConfig.encoder
                     .positionConversionFactor(IndexerConstants.kKickerGearRatio)
-                    .velocityConversionFactor(IndexerConstants.kKickerGearRatio/60);
+                    .velocityConversionFactor(IndexerConstants.kKickerGearRatio);
                 kickerConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
@@ -295,7 +295,7 @@ public final class Configs {
         static {
                 SpindexerConfig
                         .idleMode(IdleMode.kBrake)
-                        .smartCurrentLimit(30)
+                        .smartCurrentLimit(50)
                         .inverted(false)
                         .openLoopRampRate(0)
                         .closedLoopRampRate(0);
@@ -309,7 +309,7 @@ public final class Configs {
                     .iZone(100)
                     .outputRange(-0.9, 0.9);
                 SpindexerConfig.closedLoop.feedForward
-                    .kV(0.00186)
+                    .kV(0.0185)
                     .kA(0);
         }
     }

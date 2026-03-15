@@ -71,7 +71,7 @@ public class AlignToGoalAuto extends Command {
             SmartDashboard.putNumber("Yaw Align Error", Units.radiansToDegrees(yawError));
 
             // PID output
-            double turn = turnPID.calculate(yawError) * 3;
+            double turn = turnPID.calculate(yawError) * 1.5;
 
             return -turn;
         });
