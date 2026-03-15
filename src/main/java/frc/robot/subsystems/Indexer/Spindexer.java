@@ -89,8 +89,8 @@ public class Spindexer extends SubsystemBase {
 
     public void addBall(){
         simBalls += 1;
-        if (simBalls >= 51){
-            simBalls = 50;
+        if (simBalls >= 41){
+            simBalls = 40;
         }
     }
 
@@ -106,6 +106,6 @@ public class Spindexer extends SubsystemBase {
     }
 
     public boolean isFull(){
-      return simBalls >= 50;
+      return simBalls >= 40;
     }
 }

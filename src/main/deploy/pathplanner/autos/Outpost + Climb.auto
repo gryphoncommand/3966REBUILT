@@ -30,28 +30,41 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "OutpostToShoot"
-          }
-        },
-        {
-          "type": "race",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Prepare to Shoot"
+                  "pathName": "OutpostToShoot"
                 }
               },
               {
-                "type": "named",
+                "type": "race",
                 "data": {
-                  "name": "Shoot All Balls"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Prepare to Shoot"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot All Balls"
+                      }
+                    }
+                  ]
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Outpost Shot to Climb"
           }
         },
         {

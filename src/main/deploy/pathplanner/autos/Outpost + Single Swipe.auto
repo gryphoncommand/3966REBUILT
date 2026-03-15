@@ -43,25 +43,32 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "OutpostTrenchShot"
-          }
-        },
-        {
-          "type": "race",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Prepare to Shoot"
+                  "pathName": "OutpostTrenchShot"
                 }
               },
               {
-                "type": "named",
+                "type": "race",
                 "data": {
-                  "name": "Shoot All Balls"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Prepare to Shoot"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Shoot All Balls"
+                      }
+                    }
+                  ]
                 }
               }
             ]

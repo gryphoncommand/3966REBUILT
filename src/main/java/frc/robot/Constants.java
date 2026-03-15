@@ -290,7 +290,7 @@ public final class Constants {
   }
 
   public static class AlignmentConstants {
-    public static final PIDController turnPID = new PIDController(1.0, 0.0, 0.00);
+    public static final PIDController turnPID = new PIDController(3.0, 0.00, 0.00);
     static {turnPID.enableContinuousInput(-Math.PI, Math.PI);}
 
     public static final Pose2d RedHubPose = new Pose2d(11.916, 4.055, new Rotation2d());
@@ -311,6 +311,7 @@ public final class Constants {
 
     // Tolerances
     public static final double ANGLE_TOLERANCE_RAD = Units.degreesToRadians(5.0);
+    public static final double SOTM_ANGLE_TOLERANCE_RAD = Units.degreesToRadians(10.0);
     public static final double ANG_VEL_TOLERANCE_RAD_PER_SEC = Math.toRadians(5.0);
 
     public static final double SPEED_VEL_TOLERANCE = DriveConstants.kMaxSpeedMetersPerSecond/6;

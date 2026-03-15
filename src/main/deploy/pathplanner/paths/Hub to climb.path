@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.31866015971605977,
-        "y": 0.48184560780833974
+        "x": 1.380984915705412,
+        "y": 5.0208695652173905
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.422558402360413,
-        "y": 0.7092332837615785
+        "x": 1.1309864565413144,
+        "y": 5.019991832013614
       },
       "isLocked": false,
-      "linkedName": "Outpost"
+      "linkedName": "SOTM End"
     },
     {
       "anchor": {
-        "x": 1.7029015084294583,
-        "y": 2.196051464063886
+        "x": 1.072141025641027,
+        "y": 3.75
       },
       "prevControl": {
-        "x": 1.6103609797837963,
-        "y": 1.9638096707578978
+        "x": 1.5008785295780713,
+        "y": 3.7526958138790563
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Outpost Shot"
+      "linkedName": "Climb"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -49.68589983950272
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -0.9963478965049255
   },
   "useDefaultConstraints": true
 }
