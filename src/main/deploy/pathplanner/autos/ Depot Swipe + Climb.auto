@@ -62,12 +62,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Hub to climb"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Auto Climb"

@@ -8,6 +8,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,6 +17,7 @@ import frc.GryphonLib.MovementCalculations;
 import frc.GryphonLib.PositionCalculations;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AlignToGoalAuto extends Command {
@@ -25,11 +28,14 @@ public class AlignToGoalAuto extends Command {
     private Debouncer alignDebouncer = new Debouncer(0.2);
     private boolean SOTM;
     private boolean overridden;
+    private Transform2d kRobotToShooter;
 
     public AlignToGoalAuto(DriveSubsystem drive, Pose2d goalPose, boolean SOTM) {
         this.drive = drive;
         this.goalPose = goalPose;
         this.SOTM = SOTM;
+
+        kRobotToShooter = Robot.isReal() ? ShooterConstants.kRobotToShooter : new Transform2d(ShooterConstants.kRobotToShooter.getX(), ShooterConstants.kRobotToShooter.getY(), new Rotation2d(Math.PI/2));
 
         if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)) {
             try {
@@ -56,15 +62,16 @@ public class AlignToGoalAuto extends Command {
                 } catch (Exception e) {}
             }
 
+            Pose2d nextPose = drive.getCurrentPose().exp(drive.getCurrentSpeedsFieldRelative().toTwist2d(0.05));
+
             // Compute yaw error from shooter pose instead of robot center
             yawError = PositionCalculations.getYawChangeToPose(
-                    drive.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter),
+                    nextPose.transformBy(kRobotToShooter),
                     goalPose);
             SmartDashboard.putNumber("Yaw Align Error", Units.radiansToDegrees(yawError));
 
             // PID output
-            double turn = turnPID.calculate(yawError);
-            turn = MathUtil.clamp(turn, -1.0, 1.0);
+            double turn = turnPID.calculate(yawError) * 3;
 
             return -turn;
         });
@@ -81,7 +88,7 @@ public class AlignToGoalAuto extends Command {
 
             // Compute yaw error from shooter pose instead of robot center
             yawError = PositionCalculations.getYawChangeToPose(
-                    drive.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter),
+                    drive.getCurrentPose().transformBy(kRobotToShooter),
                     goalPose);
             SmartDashboard.putNumber("Yaw Align Error", Units.radiansToDegrees(yawError));
 

@@ -77,7 +77,7 @@ public class AlignToGoal extends Command {
         SmartDashboard.putNumber("Yaw Align Error", Units.radiansToDegrees(yawError));
 
         // PID output
-        double turn = turnPID.calculate(yawError);
+        double turn = turnPID.calculate(yawError) * 3;
         turn = MathUtil.clamp(turn, -1.0, 1.0);
 
         // Drive with driver’s translation + auto-turn

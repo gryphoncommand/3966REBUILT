@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.40213610332113,
-        "y": 5.879874756556916
+        "x": 2.4014321537085594,
+        "y": 6.307218832949462
       },
       "isLocked": false,
       "linkedName": "Corner 3"
     },
     {
       "anchor": {
-        "x": 2.374500000000001,
-        "y": 3.8373205128205132
+        "x": 1.380984915705412,
+        "y": 5.0208695652173905
       },
       "prevControl": {
-        "x": 2.686734139593099,
-        "y": 5.057943064719327
+        "x": 2.583159726143312,
+        "y": 6.169995590009021
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,7 +29,21 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.4,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {

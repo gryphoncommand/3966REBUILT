@@ -316,7 +316,7 @@ public class RobotContainer {
     );
 
     instance.registerIntake(
-        -(0.635 + 2*(IntakeConstants.kIntakeLengthMeters*0.9))/2, -(0.635)/2, -(0.7)/2, (0.7)/2, // robot-centric coordinates for bounding box
+        -(0.635 + 2*(IntakeConstants.kIntakeLengthMeters*0.9))/2, -(0.635)/2, -(0.6)/2, (0.65)/2, // robot-centric coordinates for bounding box
         () -> (SmartDashboard.getBoolean("Intake Deployed", true) && !m_spindexer.isFull()), // (optional) BooleanSupplier for whether the intake should be active at a given moment
         new Runnable() {public void run() {m_spindexer.addBall();};}); // (optional) Runnable called whenever a fuel is intaked
 
