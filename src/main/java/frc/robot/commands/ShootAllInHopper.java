@@ -134,7 +134,7 @@ public class ShootAllInHopper extends Command {
         // Only feed when both hood and flywheel report on-target
         boolean hoodReady = hood.atTarget(5.0);
         boolean flyReady = flywheel.atRealTarget(750);
-        boolean aligned = turret.atTarget(2);
+        boolean aligned = turret.atTarget(8);
         if (!neeedAlign){
             aligned = true;
         }

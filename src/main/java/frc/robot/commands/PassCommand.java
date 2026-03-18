@@ -11,21 +11,22 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Hood.HoodIO;
+import frc.robot.subsystems.Turret.TurretIO;
 
 public class PassCommand extends Command {
     private ParallelCommandGroup passGroup;
     private DriveSubsystem drive;
     private boolean depot;
 
-    public PassCommand(DriveSubsystem drive, CommandXboxController driverController, HoodIO hood, FlywheelIO flywheel){
+    public PassCommand(DriveSubsystem drive, CommandXboxController driverController, HoodIO hood, FlywheelIO flywheel, TurretIO turret){
         this.drive = drive;
-        addRequirements(drive, hood, flywheel);
+        addRequirements(hood, flywheel);
         depot = Math.abs(drive.getCurrentPose().getY() - AlignmentConstants.PassingPoseDepot.getY()) < Math.abs(drive.getCurrentPose().getY() - AlignmentConstants.PassingPoseOutpost.getY());
         
         // choose depot vs outpost align command by comparing current Y
         ConditionalCommand choosePassingAlign = new ConditionalCommand(
-            new AlignToGoal(drive, driverController, AlignmentConstants.PassingPoseDepot, true),
-            new AlignToGoal(drive, driverController, AlignmentConstants.PassingPoseOutpost, true),
+            new AimTurretToGoal(drive, turret, AlignmentConstants.PassingPoseDepot, true),
+            new AimTurretToGoal(drive, turret, AlignmentConstants.PassingPoseOutpost, true),
             () -> depot
         );
 

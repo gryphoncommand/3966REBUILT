@@ -192,7 +192,7 @@ public final class Constants {
     public static double kHoodMinAngleDeg = 22.6;
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
     public static double kDefaultFlywheelSpeed = 0.0;
-    public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(Math.PI/2));
+    public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d());
 
     public static ShooterState kShooterStowState = new ShooterState(3, kHoodMinAngleDeg, 0, 1.2);
     public static ShooterState kDefaultShooterState = new ShooterState(3, 35, 1500, 1.2);
@@ -251,9 +251,40 @@ public final class Constants {
     public static double kTurretHomeAngleDeg = 0.0;
 
     public static double kTurretLengthMeters = Units.inchesToMeters(8.0);
-    public static double kTurretMOI = 0.01;
+    public static double kTurretMOI = 1e-2;
     public static double kTurretHeightMeters = Units.inchesToMeters(18.0);
-  }
+
+    // Closed-loop tuning (starting points)
+    public static double kTurretP = 1.5;
+    public static double kTurretI = 0.0;
+    public static double kTurretD = 0.08;
+    public static double kTurretMaxVolts = 12.0;
+    public static double kTurretClosedLoopRampSec = 1;
+
+    // Feedforward (rotor units). Tune with SysId for best results.
+    public static double kTurretKS = 0.0;
+    public static double kTurretKV = 0.0 / (KrakenMotorConstants.kFreeSpeedRpm / 60.0);
+    public static double kTurretKA = 0.0;
+
+    // Motion Magic constraints (mechanism-space)
+    public static double kTurretMaxOutputRps = 2;
+    public static double kTurretMaxOutputDegPerSec = Units.rotationsToDegrees(kTurretMaxOutputRps);
+    public static double kTurretCruiseVelocityDegPerSec = kTurretMaxOutputDegPerSec * 0.9;
+    public static double kTurretAccelerationTimeSec = 0.3;
+    public static double kTurretAccelerationDegPerSec2 =
+        kTurretCruiseVelocityDegPerSec / kTurretAccelerationTimeSec;
+
+    // Motion Magic constraints converted to rotor units
+    public static double kTurretCruiseVelocityRps =
+        Units.degreesToRotations(kTurretCruiseVelocityDegPerSec) * kTurretGearRatio;
+      public static double kTurretAccelerationRps2 =
+          Units.degreesToRotations(kTurretAccelerationDegPerSec2) * kTurretGearRatio;
+
+      // Hard-stop wrap behavior
+      public static double kTurretWrapTriggerDeg = 170.0; // target near +/-180 to trigger wrap
+      public static double kTurretWrapNearLimitDeg = 6.0; // turret near hard stop to allow wrap
+      public static double kTurretWrapExitDeg = 3.0; // release wrap once reached limit
+    }
 
   public static class IndexerConstants {
     public static int kSpindexerCanID = 13;

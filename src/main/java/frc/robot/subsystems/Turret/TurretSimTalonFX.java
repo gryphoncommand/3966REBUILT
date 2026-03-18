@@ -2,17 +2,21 @@ package frc.robot.subsystems.Turret;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -53,14 +57,17 @@ public class TurretSimTalonFX extends SubsystemBase implements TurretIO {
         mech2d.getRoot("TurretRoot", 0.3, 0.3);
     private final MechanismLigament2d turretVisual =
         root.append(new MechanismLigament2d("Turret", 0.25, 0, 6, new Color8Bit(Color.kPurple)));
+    
+    private final Supplier<Pose2d> drivePoseSupplier;
 
-    public TurretSimTalonFX() {
+    public TurretSimTalonFX(Supplier<Pose2d> drivePoseGetter) {
         turretMotor.getConfigurator().apply(Configs.Turret.TurretConfig.withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.CounterClockwise_Positive)));
         double rotorPos =
             turretSim.getAngleRads() / (2 * Math.PI)
             * TurretConstants.kTurretGearRatio;
 
         turretSimState.setRawRotorPosition(rotorPos);
+        this.drivePoseSupplier = drivePoseGetter;
     }
     
     @Override
@@ -86,11 +93,14 @@ public class TurretSimTalonFX extends SubsystemBase implements TurretIO {
 
         turretVisual.setAngle(getAngle());
 
+        Pose2d shooterPose = drivePoseSupplier.get().transformBy(ShooterConstants.kRobotToShooter);
+
         SmartDashboard.putData("Turret Mech", mech2d);
         Logger.recordOutput("Turret/Closed Loop Error",turretMotor.getClosedLoopError().getValueAsDouble());
         Logger.recordOutput("Turret/Desired Turret Angle", targetAngleDeg);
         Logger.recordOutput("Turret/Turret Angle (deg)", getAngle());   
         Logger.recordOutput("Turret/Applied Turret Volts", turretSimState.getMotorVoltage());
+        Logger.recordOutput("Turret/Current Turret Pose", new Pose2d(shooterPose.getX(), shooterPose.getY(), shooterPose.getRotation().plus(new Rotation2d(Units.degreesToRadians(getAngle())))));
         Logger.recordOutput(
             "FinalComponentPoses/Turret Position",
             new Pose3d(
@@ -112,10 +122,10 @@ public class TurretSimTalonFX extends SubsystemBase implements TurretIO {
     public void setAngle(double degrees) {
         targetAngleDeg = degrees;
         turretMotor.setControl(
-            new PositionVoltage(
+            new MotionMagicVoltage(
                 Units.degreesToRotations(degrees)
                 * TurretConstants.kTurretGearRatio
-            ).withSlot(0)
+            )
         );
     }
 

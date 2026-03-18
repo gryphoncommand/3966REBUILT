@@ -4,8 +4,8 @@ import static edu.wpi.first.units.Units.Volts;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.geometry.Pose3d;
@@ -22,7 +22,7 @@ public class TurretTalonFX extends SubsystemBase implements TurretIO {
   private final TalonFX turretMotor =
       new TalonFX(TurretConstants.kTurretCanID);
 
-  private final PositionVoltage positionRequest = new PositionVoltage(0);
+  private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0);
 
   private double targetAngleDeg = TurretConstants.kTurretHomeAngleDeg;
 
@@ -60,7 +60,7 @@ public class TurretTalonFX extends SubsystemBase implements TurretIO {
   public void setAngle(double degrees) {
     targetAngleDeg = degrees;
     SmartDashboard.putNumber("Requested Turret Position", degrees);
-    turretMotor.setControl(positionRequest.withPosition(degrees * kRotationsPerDegree));
+    turretMotor.setControl(motionMagicRequest.withPosition(degrees * kRotationsPerDegree));
   }
 
   @Override

@@ -96,7 +96,7 @@ public class RobotContainer {
   private final PreIndexer m_preIndexer = new PreIndexer();
   private final Spindexer m_spindexer = new Spindexer();
   private final HoodIO m_hood = Robot.isReal() ? new HoodTalonFX() : new HoodSimTalonFX();
-  private final TurretIO m_turret = Robot.isReal() ? new TurretTalonFX() : new TurretSimTalonFX();
+  private final TurretIO m_turret = Robot.isReal() ? new TurretTalonFX() : new TurretSimTalonFX(m_drive::getCurrentPose);
   private final IntakeRollersTalonFX m_intakeRollers = new IntakeRollersTalonFX();
   private final ClimberIO m_climber = Robot.isReal() ? new ClimberTalonFX() : new ClimberSimTalonFX();
 
@@ -142,7 +142,6 @@ public class RobotContainer {
           AutoBuilder.followPath(PathPlannerPath.fromPathFile("Depot shot to climb")),
           new ParallelRaceGroup(
             new ParallelCommandGroup(
-              new AlignToGoalAuto(m_drive, AlignmentConstants.HubPose, true),
               new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow),
               new AimTurretToGoal(m_drive, m_turret, AlignmentConstants.HubPose, true)
             ),
@@ -183,12 +182,9 @@ public class RobotContainer {
     );
 
     m_flywheel.setDefaultCommand(
-      new RunCommand(()->{
-        m_flywheel.setVelocity(ShooterConstants.kDefaultFlywheelSpeed);
-        if (ShooterConstants.kDefaultFlywheelSpeed == 0){
-          m_flywheel.stop();
-        }
-      }, m_flywheel)
+      new DeferredCommand(()->
+        new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow)
+      , Set.of(m_flywheel, m_hood))
     );
 
 
@@ -201,6 +197,10 @@ public class RobotContainer {
           m_intakeRollers.set(0);
         }
       }, m_intakeRollers)
+    );
+
+    m_turret.setDefaultCommand(
+      new AimTurretToGoal(m_drive, m_turret, AlignmentConstants.HubPose, true)
     );
   }
 
@@ -221,14 +221,7 @@ public class RobotContainer {
     //   })
     // );
 
-    m_driverController.rightBumper()
-      .whileTrue(new RepeatCommand(new DeferredCommand(()->
-        new ParallelCommandGroup(
-            new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow),
-            new AimTurretToGoal(m_drive, m_turret, AlignmentConstants.HubPose, true)
-        ), Set.of(m_hood, m_flywheel, m_turret))))
-      .onFalse(new RunCommand(()->m_flywheel.stop(), m_flywheel))
-      .onFalse(new HomeHood(m_hood));
+    m_driverController.rightBumper();
 
     m_driverController.rightTrigger()
         .whileTrue(runIntakeRollers)
@@ -248,8 +241,8 @@ public class RobotContainer {
     m_driverController.x()
     .whileTrue(
       new RepeatCommand(new DeferredCommand(()->
-        new PassCommand(m_drive, m_driverController, m_hood, m_flywheel)
-        , Set.of(m_drive, m_hood, m_flywheel)
+        new PassCommand(m_drive, m_driverController, m_hood, m_flywheel, m_turret)
+        , Set.of(m_hood, m_flywheel, m_turret)
       ))
     )
     .onFalse(new RunCommand(()->m_flywheel.stop(), m_flywheel))

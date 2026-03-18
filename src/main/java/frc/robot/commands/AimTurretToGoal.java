@@ -38,7 +38,7 @@ public class AimTurretToGoal extends Command {
             }
         }
 
-        Pose2d shooterPose = drive.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter);
+        Pose2d shooterPose = drive.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter).exp(drive.getCurrentSpeedsFieldRelative().toTwist2d(0.02));
         double yawErrorRad = PositionCalculations.getYawChangeToPose(shooterPose, goalPose);
 
         double desiredAngleDeg = Units.radiansToDegrees(yawErrorRad);
@@ -47,14 +47,18 @@ public class AimTurretToGoal extends Command {
         turret.setAngle(wrappedAngleDeg);
 
         Logger.recordOutput("Turret/Yaw Error (deg)", desiredAngleDeg);
-        Logger.recordOutput("Turret/Desired Turret Angle", wrappedAngleDeg);
+        Logger.recordOutput("Turret/Requested Angle (deg)", wrappedAngleDeg);
+        Logger.recordOutput("Turret/Desired Turret Angle", wrappedAngleDeg);        
     }
 
     private double wrapToLimits(double angleDeg) {
         double min = TurretConstants.kTurretMinAngleDeg;
         double max = TurretConstants.kTurretMaxAngleDeg;
         double range = max - min;
-        
+        if (range <= 0.0) {
+            return MathUtil.clamp(angleDeg, min, max);
+        }
+
         double wrapped = angleDeg;
         while (wrapped < min) {
             wrapped += range;

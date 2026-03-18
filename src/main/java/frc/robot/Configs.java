@@ -363,12 +363,12 @@ public final class Configs {
         static {
                 var slot0Configs = TurretConfig.Slot0;
                 // PID + FF tuning
-                slot0Configs.kS = 0.0;
-                slot0Configs.kV = 0.0;
-                slot0Configs.kA = 0.0;
-                slot0Configs.kP = 0.9;
-                slot0Configs.kI = 0.0;
-                slot0Configs.kD = 0.05;
+                slot0Configs.kS = TurretConstants.kTurretKS;
+                slot0Configs.kV = TurretConstants.kTurretKV;
+                slot0Configs.kA = TurretConstants.kTurretKA;
+                slot0Configs.kP = TurretConstants.kTurretP;
+                slot0Configs.kI = TurretConstants.kTurretI;
+                slot0Configs.kD = TurretConstants.kTurretD;
 
                 TurretConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
@@ -377,10 +377,23 @@ public final class Configs {
                 TurretConfig.CurrentLimits.StatorCurrentLimit = 50.0;
                 TurretConfig.CurrentLimits.StatorCurrentLimitEnable = true;
                 
+                TurretConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod =
+                    TurretConstants.kTurretClosedLoopRampSec;
+
+                TurretConfig.Voltage.PeakForwardVoltage = TurretConstants.kTurretMaxVolts;
+                TurretConfig.Voltage.PeakReverseVoltage = -TurretConstants.kTurretMaxVolts;
+
                 // Motor behavior
                 TurretConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
                 TurretConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+                TurretConfig.MotionMagic.MotionMagicCruiseVelocity =
+                    TurretConstants.kTurretCruiseVelocityRps;
+                TurretConfig.MotionMagic.MotionMagicAcceleration =
+                    TurretConstants.kTurretAccelerationRps2;
+                TurretConfig.MotionMagic.MotionMagicJerk =
+                    0;
 
                 TurretConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
                     TurretConstants.kTurretMaxAngleDeg * TurretConstants.kTurretGearRatio / 360.0;
