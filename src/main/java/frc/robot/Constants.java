@@ -195,7 +195,7 @@ public final class Constants {
     public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(Math.PI/2));
 
     public static ShooterState kShooterStowState = new ShooterState(3, kHoodMinAngleDeg, 0, 1.2);
-    public static ShooterState kDefaultShooterState = new ShooterState(3, 35, 2000, 1.2);
+    public static ShooterState kDefaultShooterState = new ShooterState(3, 35, 1500, 1.2);
     public static ShooterState kCornerShotState = new ShooterState(5.1, 41, 3225, 1.2);
     public static ShooterState kTowerShotState = new ShooterState(3.415, 36, 2750, 1.2);
     public static ShooterState kTrenchShotState = new ShooterState(3.168, 35.0, 1900, 1.10);
@@ -212,8 +212,8 @@ public final class Constants {
       new ShooterState(3.820, 38.0, 1960, 1.14),
       new ShooterState(4.150, 39.5, 1975, 1.22),
       new ShooterState(4.414, 41.0, 2056, 1.30),
-      new ShooterState(4.800, 42.5, 2350, 1.40),
-      new ShooterState(5.250, 44.0, 2450, 1.52)
+      new ShooterState(4.800, 42.5, 2150, 1.40),
+      new ShooterState(5.250, 44.0, 2250, 1.52)
     );
 
     public static List<ShooterState> RealShootingValuesHigh = List.of(
@@ -281,15 +281,15 @@ public final class Constants {
 
     public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (14/36)
     public static double kShaftToIntakeDeployRatio = 36/16;
-    public static double kIntakeDeployAngle = 0.03;
-    public static double kIntakeStowAngle = 0.85;
+    public static double kIntakeDeployAngle = 0.02;
+    public static double kIntakeStowAngle = 0.7;
     public static double kIntakeAgitateAngle = 0.20;
     public static int kDeployCanID = 14;
     public static double kIntakeLengthMeters = Units.inchesToMeters(14.678);
   }
 
   public static class AlignmentConstants {
-    public static final PIDController turnPID = new PIDController(3.0, 0.00, 0.00);
+    public static final PIDController turnPID = new PIDController(2.0, 0.00, 0.00);
     static {turnPID.enableContinuousInput(-Math.PI, Math.PI);}
 
     public static final Pose2d RedHubPose = new Pose2d(11.916, 4.055, new Rotation2d());

@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
+import java.util.Random;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.filter.Debouncer;
@@ -51,6 +53,8 @@ public class ShootAllInHopper extends Command {
     private boolean neeedAlign = true;
     private boolean reachedSetpoint;
     private boolean agitateAngle;
+    private Random simEnder = new Random();
+    private int simEnd;
 
     /**
      * Shoot command: runs the flywheel (assumed already set) and only feeds balls
@@ -112,6 +116,9 @@ public class ShootAllInHopper extends Command {
         indexingStopped = true;
         reachedSetpoint = false;
         startedShooting = false;
+        if (Robot.isSimulation()){
+            simEnd = simEnder.nextInt(0, 6);
+        }
     }
 
     @Override
@@ -190,7 +197,7 @@ public class ShootAllInHopper extends Command {
             }
             return false;
 		} else {
-			return spindexer.getBalls() < 5;
+			return spindexer.getBalls() <= simEnd;
 		}
     }
 

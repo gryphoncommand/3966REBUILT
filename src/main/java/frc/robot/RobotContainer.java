@@ -295,6 +295,7 @@ public class RobotContainer {
         SmartDashboard.putString("Current Shooter State", "new ShooterState(" +  String.valueOf(PhotonUtils.getDistanceToPose(shooterPose, AlignmentConstants.HubPose)) + ", " + String.valueOf(m_hood.getAngle()) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)");
       })
     );
+
   }
  
 
@@ -343,7 +344,7 @@ public class RobotContainer {
     
       CommandScheduler.getInstance().schedule(Commands.runOnce(() -> {
           FuelSim.getInstance().clearFuel();
-          FuelSim.getInstance().spawnStartingFuel();
+          // FuelSim.getInstance().spawnStartingFuel();
       })
       .withName("Reset Fuel")
       .ignoringDisable(true));
@@ -353,7 +354,13 @@ public class RobotContainer {
 
   private void configureNamedCommands(){
     NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy));
-    NamedCommands.registerCommand("Prepare to Shoot", new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow));
+    NamedCommands.registerCommand("Speedup Flywheel", new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow));
+    NamedCommands.registerCommand("Prepare to Shoot", 
+      new ParallelCommandGroup(
+        new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow),
+        new AlignToGoalAuto(m_drive, AlignmentConstants.HubPose, true)
+      )
+    );
     NamedCommands.registerCommand("Align to Shoot", new AlignToGoalAuto(m_drive, AlignmentConstants.HubPose, true));
     NamedCommands.registerCommand("Outpost Intake", new InstantCommand(()->{for (int i = 0; i < 25; i++){m_spindexer.addBall();}}));
     NamedCommands.registerCommand("Deploy Intake", new IntakeDeploy(m_intakeDeploy));

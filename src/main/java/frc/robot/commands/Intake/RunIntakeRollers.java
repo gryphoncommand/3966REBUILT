@@ -26,5 +26,6 @@ public class RunIntakeRollers extends Command {
     @Override
     public void end(boolean interrupted) {
         intakeRollers.setVelocity(0);
+        intakeRollers.set(0);
     }
 }

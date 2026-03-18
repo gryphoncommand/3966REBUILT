@@ -147,7 +147,7 @@ public final class Configs {
                     .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
                     // These are example gains you may need to them for your own robot!
                     // TODO: Tune so autos are faster
-                    .pid(2.4, 0, 0.2)
+                    .pid(2.0, 0, 0.2)
                     .outputRange(-0.9, 0.9);
         }
 
@@ -197,7 +197,7 @@ public final class Configs {
                 flywheelConfig.closedLoop.feedForward
                     .kS(0.28043)
                     .kV(0.001933)
-                    .kA(0.0005902);
+                    .kA(0.0005902*60);
                 flywheelConfig.closedLoop.maxMotion
                     .maxAcceleration(8000)
                     .allowedProfileError(40);

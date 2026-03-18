@@ -34,15 +34,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Further DepotLinePickup"
+                  "name": "Prepare to Shoot"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Run Intake"
+                  "name": "Shoot All Balls"
                 }
               }
             ]
@@ -53,15 +53,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Prepare to Shoot"
+                  "pathName": "Further DepotLinePickup"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot All Balls"
+                  "name": "Run Intake"
                 }
               }
             ]

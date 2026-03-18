@@ -53,19 +53,32 @@
                 }
               },
               {
-                "type": "race",
+                "type": "sequential",
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
+                      "type": "wait",
                       "data": {
-                        "name": "Prepare to Shoot"
+                        "waitTime": 0.5
                       }
                     },
                     {
-                      "type": "named",
+                      "type": "race",
                       "data": {
-                        "name": "Shoot All Balls"
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Prepare to Shoot"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Shoot All Balls"
+                            }
+                          }
+                        ]
                       }
                     }
                   ]

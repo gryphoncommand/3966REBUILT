@@ -41,8 +41,8 @@ public class IntakeDeploySparkFlex extends SubsystemBase implements IntakeDeploy
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Intake/Intake Deploy Angle (deg)", Units.rotationsToDegrees(getPosition()));
-        Logger.recordOutput("Intake/Requested Intake Position", pid.getSetpoint());
+        Logger.recordOutput("Intake/Intake Deploy Angle (deg)", getPosition());
+        Logger.recordOutput("Intake/Requested Intake Position", getMechPosition(pid.getSetpoint()));
         Logger.recordOutput("FinalComponentPoses/Intake Position", new Pose3d(-0.29, 0, 0.33, new Rotation3d(0.0, Units.degreesToRadians(getPosition()), 0.0)));
     }
 

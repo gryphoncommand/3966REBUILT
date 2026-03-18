@@ -484,6 +484,12 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void setCurrentPose(Pose2d newPose) {
     poseEstimator.resetPose(newPose);
+
+    Rotation2d adjustedRotation = newPose.getRotation();
+    if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
+      adjustedRotation = adjustedRotation.plus(new Rotation2d(Math.PI));
+    }
+    gyroOffset = adjustedRotation.getDegrees() + m_gyro.getAngle(IMUAxis.kZ);
   }
 
   public void setAlign(boolean alignedNow) {

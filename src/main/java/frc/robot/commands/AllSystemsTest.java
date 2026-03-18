@@ -4,6 +4,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.commands.Intake.IntakeDeploy;
@@ -57,11 +58,17 @@ public class AllSystemsTest {
         FeedShooterFactory indexers = new FeedShooterFactory(m_kicker, m_preindexer, m_spindexer);
         SequentialCommandGroup test = new SequentialCommandGroup(
             new IntakeDeploy(m_intakeDeploy),
+            new WaitCommand(2),
             new IntakeStow(m_intakeDeploy),
-            new RunIntakeRollers(m_intakeRollers).withTimeout(0.5),
+            new WaitCommand(2),
+            new RunIntakeRollers(m_intakeRollers).withTimeout(1),
+            new WaitCommand(1),
             new RunCommand(()->indexers.start(false)).withTimeout(1).finallyDo(()->indexers.stop()),
-            new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState),
-            new DeployClimber(m_climber).withTimeout(3),
+            new WaitCommand(1),
+            new SetShooterToDefinedStateOnce(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState),
+            new WaitCommand(1),
+            new DeployClimber(m_climber).withTimeout(1.5),
+            new WaitCommand(1.5),
             new RunCommand(()->m_drive.driveRobotRelativeChassis(new ChassisSpeeds(0.5, 0, 0)), m_drive).withTimeout(0.5),
             new InstantCommand(m_drive::stop, m_drive)
         );

@@ -62,6 +62,14 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
         intakeSimState.setRawRotorPosition(rotorPos);
     }
 
+    private double getMechPosition(double absRotations) {
+        double absDegrees = Units.rotationsToDegrees(absRotations);
+        double gearRatio = IntakeConstants.kShaftToIntakeDeployRatio;
+        double mechDegrees = (absDegrees / gearRatio);
+
+        return mechDegrees;
+    }
+
     @Override
     public void periodic() {
         intakeSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
@@ -99,7 +107,7 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
 
     @Override
     public void setPosition(double rotations) {
-        targetAngleDeg = Units.rotationsToDegrees(rotations);
+        targetAngleDeg = getMechPosition(rotations);
 
         double simAngleDeg = 180 - targetAngleDeg;
 
