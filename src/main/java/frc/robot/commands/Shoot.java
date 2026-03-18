@@ -10,8 +10,6 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -33,12 +31,14 @@ import frc.robot.subsystems.Indexer.PreIndexer;
 import frc.robot.subsystems.Indexer.Spindexer;
 import frc.robot.subsystems.Intake.IntakeDeployIO;
 import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
+import frc.robot.subsystems.Turret.TurretIO;
 
 public class Shoot extends Command {
 
     private final DriveSubsystem driveData;
     private final HoodIO hood;
     private final FlywheelIO flywheel;
+    private final TurretIO turret;
     private final Spindexer spindexer;
     private final boolean stopFlywheelOnEnd;
     private final IntakeDeployIO intake;
@@ -62,10 +62,11 @@ public class Shoot extends Command {
      * @param feedRPM roller velocity to use when feeding
      * @param stopFlywheelOnEnd if true, zeroes the flywheel when the command ends
      */
-    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign, BooleanSupplier shouldAgitate) {
+    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, TurretIO turret, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign, BooleanSupplier shouldAgitate) {
         this.driveData = driveData;
         this.hood = hood;
         this.flywheel = flywheel;
+        this.turret = turret;
         this.stopFlywheelOnEnd = stopFlywheelOnEnd;
         this.spindexer = spindexer;
         this.neeedAlign = neeedAlign;
@@ -80,16 +81,17 @@ public class Shoot extends Command {
         addRequirements(kicker, preIndexer, spindexer, intake);
     }
 
-    private Translation3d launchVel(LinearVelocity vel, Angle angle) {
+    private Translation3d launchVel(LinearVelocity vel, Angle angle, Angle turretYaw) {
         Pose3d robot = new Pose3d(driveData.getCurrentPose());
         ChassisSpeeds fieldSpeeds = driveData.getCurrentSpeedsFieldRelative();
 
         double horizontalVel = Math.cos(angle.in(Radians)) * vel.in(MetersPerSecond);
         double verticalVel = Math.sin(angle.in(Radians)) * vel.in(MetersPerSecond);
+        double turretHeading = robot.getRotation().toRotation2d().getRadians() + turretYaw.in(Radians);
         double xVel =
-                horizontalVel * Math.cos(robot.getRotation().toRotation2d().getRadians() + Math.PI / 2);
+                horizontalVel * Math.cos(turretHeading);
         double yVel =
-                horizontalVel * Math.sin(robot.getRotation().toRotation2d().getRadians() + Math.PI / 2);
+                horizontalVel * Math.sin(turretHeading);
 
         xVel += fieldSpeeds.vxMetersPerSecond;
         yVel += fieldSpeeds.vyMetersPerSecond;
@@ -97,11 +99,17 @@ public class Shoot extends Command {
         return new Translation3d(xVel, yVel, verticalVel);
     }
 
+    private Angle getTurretYaw() {
+        double baseOffset = ShooterConstants.kRobotToShooter.getRotation().getRadians();
+        double turretYaw = Units.degreesToRadians(turret.getAngle()) + baseOffset;
+        return Radians.of(turretYaw);
+    }
+
     /**
      * Convenience constructor that leaves the flywheel running when command ends.
      */
-    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
-        this(driveData, hood, flywheel, rollers, kicker, preIndexer, spindexer, intake, false, true, ()->true);
+    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, TurretIO turret, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
+        this(driveData, hood, flywheel, turret, rollers, kicker, preIndexer, spindexer, intake, false, true, ()->true);
     }
 
     @Override
@@ -120,7 +128,7 @@ public class Shoot extends Command {
         // Only feed when both hood and flywheel report on-target
         boolean hoodReady = hood.atTarget(5.0);
         boolean flyReady = flywheel.atRealTarget(750);
-        boolean aligned = driveData.getAligned();
+        boolean aligned = turret.atTarget(2);
         if (!neeedAlign){
             aligned = true;
         }
@@ -146,9 +154,9 @@ public class Shoot extends Command {
                 double wheelRadius = Units.inchesToMeters(2);
                 double ballSpeed = wheelRadPerSec * wheelRadius * kShooterEfficiency;
 
-                Pose2d ballPose2d = driveData.getCurrentPose().transformBy(new Transform2d(ShooterConstants.kRobotToShooter.getX(), ShooterConstants.kRobotToShooter.getY(), new Rotation2d(Math.PI/2)));
+                Pose2d ballPose2d = driveData.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter);
                 Translation3d initialPosition = new Translation3d(ballPose2d.getX(), ballPose2d.getY(), Units.inchesToMeters(17.701451));
-                FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle())));
+                FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle()), getTurretYaw()));
 
                 lastShotTime = now;
                 spindexer.removeBall();
@@ -162,7 +170,7 @@ public class Shoot extends Command {
             indexingStopped = false;
         } else if (!(aligned && flyReady && hoodReady)) {
             intake.setPosition(IntakeConstants.kIntakeDeployAngle);
-            Logger.recordOutput("Shoot Report", "Shooter Not Ready, Align " + aligned + ", Flywheel " + flyReady + ", Hood "+ hoodReady);
+            Logger.recordOutput("Shoot Report", "Shooter Not Ready, Turret " + aligned + ", Flywheel " + flyReady + ", Hood "+ hoodReady);
             passthroughFactory.stop();
             indexingStopped = true;
         }

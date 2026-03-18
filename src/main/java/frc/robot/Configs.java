@@ -17,6 +17,7 @@ import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.TurretConstants;
 
 public final class Configs {
     public static final class MAXSwerveModule {
@@ -353,6 +354,40 @@ public final class Configs {
                 HoodConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
                 HoodConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Constants.ShooterConstants.kHoodMinAngleDeg * ShooterConstants.kHoodGearRatio / 360.0;
                 HoodConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        }
+    }
+
+    public static final class Turret {
+        public static final TalonFXConfiguration TurretConfig = new TalonFXConfiguration();
+
+        static {
+                var slot0Configs = TurretConfig.Slot0;
+                // PID + FF tuning
+                slot0Configs.kS = 0.0;
+                slot0Configs.kV = 0.0;
+                slot0Configs.kA = 0.0;
+                slot0Configs.kP = 0.9;
+                slot0Configs.kI = 0.0;
+                slot0Configs.kD = 0.05;
+
+                TurretConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+
+                TurretConfig.CurrentLimits.withSupplyCurrentLimit(40).withSupplyCurrentLimitEnable(true);
+
+                TurretConfig.CurrentLimits.StatorCurrentLimit = 50.0;
+                TurretConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+                
+                // Motor behavior
+                TurretConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+                TurretConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+                TurretConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+                    TurretConstants.kTurretMaxAngleDeg * TurretConstants.kTurretGearRatio / 360.0;
+                TurretConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+                TurretConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+                    TurretConstants.kTurretMinAngleDeg * TurretConstants.kTurretGearRatio / 360.0;
+                TurretConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         }
     }
 }

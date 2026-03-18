@@ -241,6 +241,20 @@ public final class Constants {
     );
   }
 
+  public static class TurretConstants {
+    public static int kTurretCanID = 18;
+
+    // Positive is clockwise when viewed from above the robot.
+    public static double kTurretGearRatio = 20.0; // TODO: Update with measured gear ratio
+    public static double kTurretMinAngleDeg = -180.0;
+    public static double kTurretMaxAngleDeg = 180.0;
+    public static double kTurretHomeAngleDeg = 0.0;
+
+    public static double kTurretLengthMeters = Units.inchesToMeters(8.0);
+    public static double kTurretMOI = 0.01;
+    public static double kTurretHeightMeters = Units.inchesToMeters(18.0);
+  }
+
   public static class IndexerConstants {
     public static int kSpindexerCanID = 13;
     public static int kPreIndexerCanID = 15;
