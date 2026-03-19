@@ -9,6 +9,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -114,20 +115,13 @@ public class Vision extends SubsystemBase {
         return 0;
     }
 
-    public static Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam1(PhotonPipelineResult result) {
+    public static Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam1(PhotonPipelineResult result, Pose2d referencePose) {
         if (result == null || !result.hasTargets()){
             return Optional.empty();
         }
 
-        Optional<EstimatedRobotPose> update = Optional.empty();
-        if (result.getTargets().size() > 1){
-            update = poseEstimator1.estimateCoprocMultiTagPose(result);
-        }
-        else {
-            update = poseEstimator1.estimateLowestAmbiguityPose(result);
-        }
-        
-        
+        Optional<EstimatedRobotPose> update = poseEstimator1.estimateClosestToReferencePose(result, new Pose3d(referencePose));
+            
         return update;
     }
 
@@ -157,8 +151,8 @@ public class Vision extends SubsystemBase {
             }
 
             if (numTags == 0) {
-                // No tags visible. Default to single-tag std devs
-                curStdDevs = VisionConstants.kSingleTagStdDevs;
+                // No tags visible.
+                curStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
             } else {
                 // One or more tags visible, run the full heuristic.
                 avgDist /= numTags;
@@ -167,8 +161,8 @@ public class Vision extends SubsystemBase {
                 // Increase std devs based on (average) distance
                 if (numTags == 1 && avgDist > 2)
                     estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-                // Tweak the 30 here to change how much we trust multi tag as distances increase
-                else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+                // TODO Tweak the constant here PLEASE to change how much we trust multi tag as distances increase
+                else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 15));
                 curStdDevs = estStdDevs;
             }
         }

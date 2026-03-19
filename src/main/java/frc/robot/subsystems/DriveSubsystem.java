@@ -422,7 +422,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Distance To Hub (m)", PhotonUtils.getDistanceToPose(getCurrentPose(), AlignmentConstants.HubPose));
     SmartDashboard.putBoolean("Aligned to Goal", aligned);
     if (Vision.getResult1() != null){
-      Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1());
+      Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1(), getCurrentPose());
       if (visionBotPose1.isPresent()){
         poseEstimator.addVisionData(List.of(visionBotPose1.get()), Vision.updateEstimationStdDevs(visionBotPose1, visionBotPose1.get().targetsUsed));
         Logger.recordOutput("PoseEst/Camera1 Pose Guess", visionBotPose1.get().estimatedPose);
