@@ -147,13 +147,16 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         double ballMassKg = 0.226796;
         // Flywheel parameters
         double flywheelRadiusM = 0.0508;
-        double J = Jkgm2;
+        double flywheelFuelFrictionN = 1; //TODO: fake ahh number; accounts for normal force and CoF
+
+        // Torque done on the wheel by friction
+        double frictionTorqueNm = flywheelFuelFrictionN * flywheelRadiusM;
         
-        // Angular momentum removed by the ball
-        double deltaL = ballMassKg * flywheelRadiusM * ballExitVelocityMps;
-        
-        // Convert to angular velocity drop (rad/s)
-        double deltaOmegaRadPerSec = deltaL / J;
+        // Convert to angular acceleration (rad/s^2)
+        double alphaRadPerSec2 = frictionTorqueNm / Jkgm2;
+
+        // COnvert to change in angular velocity (rad/s)
+        double deltaOmegaRadPerSec = alphaRadPerSec2 * (1.0 / 50); // TODO: Time step also fake ahh; approximate contact time w/ fuel
         
         // Current flywheel velocity (rad/s)
         double currentOmega = shooterSim.getAngularVelocity().in(RadiansPerSecond);

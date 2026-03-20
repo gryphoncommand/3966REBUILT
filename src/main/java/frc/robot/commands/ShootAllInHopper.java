@@ -8,6 +8,8 @@ import java.util.Random;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.MathShared;
+import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -154,7 +156,8 @@ public class ShootAllInHopper extends Command {
                 double wheelRadius = Units.inchesToMeters(2);
                 double ballSpeed = wheelRadPerSec * wheelRadius * kShooterEfficiency;
 
-                Pose2d ballPose2d = driveData.getCurrentPose().transformBy(new Transform2d(ShooterConstants.kRobotToShooter.getX(), ShooterConstants.kRobotToShooter.getY(), new Rotation2d(Math.PI/2)));
+                double offset = 25 * (Math.random() - 0.5);
+                Pose2d ballPose2d = driveData.getCurrentPose().transformBy(new Transform2d(ShooterConstants.kRobotToShooter.getX(), offset, new Rotation2d(Math.PI)));
                 Translation3d initialPosition = new Translation3d(ballPose2d.getX(), ballPose2d.getY(), Units.inchesToMeters(17.701451));
                 FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle())));
 
