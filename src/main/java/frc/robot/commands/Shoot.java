@@ -125,7 +125,7 @@ public class Shoot extends Command {
             aligned = true;
         }
 
-        if (!reachedSetpoint && flywheel.atRealTarget(100)){
+        if (!reachedSetpoint && flywheel.atRealTarget(50)){
             Logger.recordOutput("Shoot Report", "Started Shooting");
             agitateTimer.restart();
             reachedSetpoint = true;

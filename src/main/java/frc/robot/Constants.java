@@ -168,8 +168,8 @@ public final class Constants {
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(2, 2, 4);
-    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(1, 1, 2);
+    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.35, 0.35, 0.5);
   }
 
   public static class ShooterConstants {
@@ -195,7 +195,7 @@ public final class Constants {
     public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(Math.PI/2));
 
     public static ShooterState kShooterStowState = new ShooterState(3, kHoodMinAngleDeg, 0, 1.2);
-    public static ShooterState kDefaultShooterState = new ShooterState(3, 35, 1500, 1.2);
+    public static ShooterState kDefaultShooterState = new ShooterState(3, 35, 1300, 1.2);
     public static ShooterState kCornerShotState = new ShooterState(5.1, 41, 3225, 1.2);
     public static ShooterState kTowerShotState = new ShooterState(3.415, 36, 2750, 1.2);
     public static ShooterState kTrenchShotState = new ShooterState(3.168, 35.0, 1900, 1.10);
@@ -203,11 +203,11 @@ public final class Constants {
 
     public static List<ShooterState> RealShootingValuesLow = List.of(
       new ShooterState(1.500, 21.0, 1750, 0.95),
-      new ShooterState(2.095, 24.0, 1775, 0.95),
-      new ShooterState(2.300, 26.5, 1775, 1.00),
-      new ShooterState(2.493, 29.0, 1750, 1.05),
-      new ShooterState(2.850, 32.5, 1800, 1.08),
-      new ShooterState(3.240, 35.0, 1825, 1.10), // Tuned
+      new ShooterState(2.095, 25.0, 1925, 0.95),
+      new ShooterState(2.300, 26.5, 1925, 1.00),
+      new ShooterState(2.493, 29.0, 1850, 1.05),
+      new ShooterState(2.850, 32.5, 1875, 1.08),
+      new ShooterState(3.240, 35.0, 1900, 1.10), // Tuned
       new ShooterState(3.500, 36.5, 1906, 1.07), // Tuned
       new ShooterState(3.820, 38.0, 1960, 1.14),
       new ShooterState(4.150, 39.5, 1975, 1.22),
@@ -218,7 +218,7 @@ public final class Constants {
 
     public static List<ShooterState> RealShootingValuesHigh = List.of(
       new ShooterState(1.500, 23.0, 1520, 1.05),
-      new ShooterState(2.095, 23.5, 1740, 1.15),
+      new ShooterState(2.095, 23.5, 1890, 1.15),
       new ShooterState(2.300, 24.0, 1810, 1.18),
       new ShooterState(2.493, 24.5, 1870, 1.22),
       new ShooterState(2.850, 25.0, 1900, 1.30),
@@ -271,19 +271,21 @@ public final class Constants {
     public static Pose2d kMidClimbPose = new Pose2d(0.768, 3.781, new Rotation2d(Math.PI));
 
     public static Pose2d kRightPreClimb = new Pose2d(1.2, 2.191, new Rotation2d());
-    public static Pose2d kLeftPreClimb = new Pose2d(0.73, 5.0, new Rotation2d(Math.PI));
+    public static Pose2d kLeftPreClimb = new Pose2d(0.73, 4.8, new Rotation2d(Math.PI));
   }
 
   public static class IntakeConstants {
     public static int kRollerCanID = 12;
-    public static double kIntakeSpeedRPM = 350;
+    public static double kIntakeSpeedRPM = 400;
+
 
 
     public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (14/36)
     public static double kShaftToIntakeDeployRatio = 36/16;
-    public static double kIntakeDeployAngle = 0.02;
-    public static double kIntakeStowAngle = 0.7;
+    public static double kIntakeDeployAngle = 0.0475;
+    public static double kIntakeStowAngle = 0.75;
     public static double kIntakeAgitateAngle = 0.20;
+    
     public static int kDeployCanID = 14;
     public static double kIntakeLengthMeters = Units.inchesToMeters(14.678);
   }

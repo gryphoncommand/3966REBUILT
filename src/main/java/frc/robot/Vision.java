@@ -23,8 +23,8 @@ import java.util.Optional;
 
 public class Vision extends SubsystemBase {
     private static final PhotonCamera camera1 = new PhotonCamera(VisionConstants.kCameraName1);
-    private static final PhotonCamera camera2 = new PhotonCamera(VisionConstants.kCameraName2);
-    private static final PhotonCamera camera3 = new PhotonCamera(VisionConstants.kCameraName3);
+    // private static final PhotonCamera camera2 = new PhotonCamera(VisionConstants.kCameraName2);
+    // private static final PhotonCamera camera3 = new PhotonCamera(VisionConstants.kCameraName3);
 
 
     private static PhotonPipelineResult result1 = null;
@@ -44,14 +44,14 @@ public class Vision extends SubsystemBase {
         if (!results1.isEmpty()){
             result1 = results1.get(results1.size() - 1);
         }
-        var results2 = camera2.getAllUnreadResults();
-        if (!results2.isEmpty()){
-            result2 = results2.get(results2.size() - 1);
-        }
-        var results3 = camera3.getAllUnreadResults();
-        if (!results3.isEmpty()){
-            result3 = results3.get(results3.size() - 1);
-        }
+        // var results2 = camera2.getAllUnreadResults();
+        // if (!results2.isEmpty()){
+        //     result2 = results2.get(results2.size() - 1);
+        // }
+        // var results3 = camera3.getAllUnreadResults();
+        // if (!results3.isEmpty()){
+        //     result3 = results3.get(results3.size() - 1);
+        // }
     }
 
     public static PhotonPipelineResult getResult1() {
@@ -70,13 +70,13 @@ public class Vision extends SubsystemBase {
         return camera1;
     }
 
-    public static PhotonCamera getCamera2() {
-        return camera2;
-    }
+    // public static PhotonCamera getCamera2() {
+    //     return camera2;
+    // }
 
-    public static PhotonCamera getCamera3() {
-        return camera3;
-    }
+    // public static PhotonCamera getCamera3() {
+    //     return camera3;
+    // }
 
     public static boolean resultHasTargets() {
         return (result1 != null && result1.hasTargets()) || (result2 != null && result2.hasTargets()) || (result3 != null && result3.hasTargets());
@@ -162,7 +162,7 @@ public class Vision extends SubsystemBase {
                 if (numTags == 1 && avgDist > 2)
                     estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
                 // TODO Tweak the constant here PLEASE to change how much we trust multi tag as distances increase
-                else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 15));
+                else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
                 curStdDevs = estStdDevs;
             }
         }

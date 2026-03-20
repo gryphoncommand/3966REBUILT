@@ -49,22 +49,15 @@
           }
         },
         {
-          "type": "race",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Further DepotLinePickup"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Intake"
-                }
-              }
-            ]
+            "pathName": "Depot shot to climb"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Climb"
           }
         }
       ]

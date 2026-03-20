@@ -7,12 +7,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.GryphonLib.MovementCalculations;
-import frc.littletonUtils.AllianceFlipUtil;
+import frc.GryphonLib.AllianceFlipUtil;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Climber.ClimberIO;
@@ -24,6 +26,9 @@ public class AutoClimbCommand extends Command {
     public AutoClimbCommand(DriveSubsystem drive, ClimberIO climber) {
 
         addRequirements(drive, climber.returnSubsystem());
+
+        Logger.recordOutput("Auto Climb Pre Climb", getNearestPreClimbPose(drive));
+        Logger.recordOutput("Auto Climb Climb Pose", getNearestClimbPose(drive));
 
         sequence = Commands.sequence(
 

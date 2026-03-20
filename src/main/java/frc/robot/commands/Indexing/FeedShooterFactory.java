@@ -33,8 +33,11 @@ public class FeedShooterFactory {
     }
 
     public void stop(){
+        kicker.setVelocity(0);
         kicker.set(0);
+        preIndexer.setVelocity(0);
         preIndexer.set(0);
+        spindexer.setVelocity(0);
         spindexer.set(0);
         running = false;
     }

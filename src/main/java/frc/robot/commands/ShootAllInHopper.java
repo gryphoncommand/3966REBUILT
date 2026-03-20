@@ -47,12 +47,13 @@ public class ShootAllInHopper extends Command {
     private double lastShotTime = 0;
     private boolean spindexerDirection = false;
     private FeedShooterFactory passthroughFactory;
-    private Debouncer endTrigger = new Debouncer(0.5);
+    private Debouncer endTrigger = new Debouncer(1.5);
     private boolean startedShooting = false;
     private boolean indexingStopped = true;
     private boolean neeedAlign = true;
     private boolean reachedSetpoint;
     private boolean agitateAngle;
+    private Timer shootingTimer = new Timer();
     private Random simEnder = new Random();
     private int simEnd;
 
@@ -131,9 +132,10 @@ public class ShootAllInHopper extends Command {
             aligned = true;
         }
 
-        if (!reachedSetpoint && flywheel.atRealTarget(100)){
+        if (!reachedSetpoint && flywheel.atRealTarget(50)){
             Logger.recordOutput("Shoot Report", "Started Shooting");
             reachedSetpoint = true;
+            shootingTimer.restart();
         }
         
         if (!reachedSetpoint){
@@ -185,14 +187,13 @@ public class ShootAllInHopper extends Command {
                 agitateAngle = !agitateAngle;
             }
         }
-
         passthroughFactory.periodic();
     }
 
     @Override
     public boolean isFinished() {
         if (Robot.isReal()) {
-            if (startedShooting){
+            if (startedShooting && shootingTimer.get() > 3){
                 return endTrigger.calculate(spindexer.getStatorCurrent() < IndexerConstants.kActiveCurrentSpindexer);
             }
             return false;

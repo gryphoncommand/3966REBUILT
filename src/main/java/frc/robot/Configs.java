@@ -191,7 +191,7 @@ public final class Configs {
                 flywheelConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(0.00510241666/4, 0, 0.0)
+                    .pid(0.00510241666/8, 0, 0.0)
                     .iZone(100)
                     .outputRange(-1, 1);
                 flywheelConfig.closedLoop.feedForward

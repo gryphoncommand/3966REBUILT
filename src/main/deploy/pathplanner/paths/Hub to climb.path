@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.380984915705412,
-        "y": 5.0208695652173905
+        "x": 1.3186475409836067,
+        "y": 4.894108606557377
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.1309864565413144,
-        "y": 5.019991832013614
+        "x": 1.0686490818195091,
+        "y": 4.8932308733536
       },
       "isLocked": false,
       "linkedName": "SOTM End"
@@ -48,7 +48,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -0.9963478965049255
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

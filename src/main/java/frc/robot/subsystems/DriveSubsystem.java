@@ -25,6 +25,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -53,6 +54,7 @@ import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.VisionConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -125,7 +127,6 @@ public class DriveSubsystem extends SubsystemBase {
       .getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
     desiredPublisher = NetworkTableInstance.getDefault()
       .getStructArrayTopic("/DesiredSwerveStates", SwerveModuleState.struct).publish();
-    var alliance = DriverStation.getAlliance();
 
     poseEstimator = new PoseEstimator(stateStdDevs);
     
@@ -200,10 +201,7 @@ public class DriveSubsystem extends SubsystemBase {
         // Boolean supplier that controls when the path will be mirrored for the red alliance
         // This will flip the path being followed to the red side of the field.
         // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-        if (alliance.isPresent()) {
-          return alliance.get() == DriverStation.Alliance.Red;
-        }
-        return false;
+        return DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
       },
       this // Reference to this subsystem to set requirements
     );
@@ -356,7 +354,11 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public ChassisSpeeds getCurrentSpeedsFieldRelative(){
-    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds(), (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()));
+    boolean flipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+    double xv = getCurrentSpeeds().vxMetersPerSecond * (flipped ? 1 : -1);
+    double yv = getCurrentSpeeds().vyMetersPerSecond * (flipped ? 1 : -1);
+    double theta = getCurrentSpeeds().omegaRadiansPerSecond * (flipped ? 1 : -1);
+    return ChassisSpeeds.fromRobotRelativeSpeeds(new ChassisSpeeds(xv, yv, theta), (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()));
   }
 
   public Command goToPose(Pose2d goalPose){
@@ -425,6 +427,11 @@ public class DriveSubsystem extends SubsystemBase {
       Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1(), getCurrentPose());
       if (visionBotPose1.isPresent()){
         poseEstimator.addVisionData(List.of(visionBotPose1.get()), Vision.updateEstimationStdDevs(visionBotPose1, visionBotPose1.get().targetsUsed));
+        Pose3d[] usedTags = new Pose3d[visionBotPose1.get().targetsUsed.size()];
+        for (int i = 0; i < visionBotPose1.get().targetsUsed.size(); i++){
+          usedTags[i] = (VisionConstants.kTagLayout.getTagPose(visionBotPose1.get().targetsUsed.get(i).fiducialId).get());
+        }
+        Logger.recordOutput("PoseEst/Camera1 Used Tag Poses", usedTags);
         Logger.recordOutput("PoseEst/Camera1 Pose Guess", visionBotPose1.get().estimatedPose);
       }
     } if (Vision.getResult2() != null){

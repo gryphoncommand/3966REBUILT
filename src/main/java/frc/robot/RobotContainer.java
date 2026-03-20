@@ -6,7 +6,7 @@ package frc.robot;
 
 import frc.FuelSim;
 import frc.GryphonLib.ShooterState;
-import frc.littletonUtils.AllianceFlipUtil;
+import frc.GryphonLib.AllianceFlipUtil;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ClimberConstants;
@@ -127,7 +127,13 @@ public class RobotContainer {
     emergencyShotChooser.addOption("Corner", ShooterConstants.kCornerShotState);
     SmartDashboard.putData("Auto Chooser", autoChooser);
     SmartDashboard.putData("Shot Chooser", emergencyShotChooser);
-    SmartDashboard.putData("Shoot All", new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, true, true));
+    SmartDashboard.putData("Shoot All", 
+      new ParallelCommandGroup(
+        new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState),
+        new ShootAllInHopper(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, false))
+      );
+    
+    
 
     SmartDashboard.putData("Add Balls", new ConditionalCommand(new InstantCommand(), new InstantCommand(m_spindexer::addBall), Robot::isReal));
     try {
@@ -205,8 +211,8 @@ public class RobotContainer {
       new InstantCommand(()->{
         m_drive.zeroHeading();
         AlignmentConstants.HubPose = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose;
-        AlignmentConstants.PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(2.412, 2.2688, new Rotation2d()));
-        AlignmentConstants.PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(2.412, 5.707, new Rotation2d()));
+        AlignmentConstants.PassingPoseOutpost = (new Pose2d(AllianceFlipUtil.applyX(2.412), 2.2688, new Rotation2d()));
+        AlignmentConstants.PassingPoseDepot = (new Pose2d(AllianceFlipUtil.applyX(2.412), 5.707, new Rotation2d()));
       }, m_drive));
     // m_driverController.povRight().onTrue(
     //   new InstantCommand(()->{

@@ -1,8 +1,5 @@
 package frc.robot.subsystems.Indexer;
 
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.PersistMode;
@@ -63,7 +60,7 @@ public class Kicker extends SubsystemBase {
     }
 
     public double getVelocity() {
-        return RotationsPerSecond.of(encoder.getVelocity()).in(RPM);
+        return encoder.getVelocity();
     }
 
     public boolean atTarget(double threshold) {
