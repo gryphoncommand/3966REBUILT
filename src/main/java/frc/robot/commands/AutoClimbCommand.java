@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.GryphonLib.MovementCalculations;
 import frc.GryphonLib.AllianceFlipUtil;
@@ -50,7 +51,7 @@ public class AutoClimbCommand extends Command {
 
             // Drive to nearest (alliance-corrected) climb pose
             Commands.defer(
-                () -> PositionPIDCommand.generateCommand(drive, getNearestClimbPose(drive), Seconds.of(3))
+                () -> PositionPIDCommand.generateCommand(drive, getNearestClimbPose(drive), Seconds.of(1.5))
                 .andThen(
                 new RunCommand(() ->
                     drive.drive(0.0, 0, 0, false),
@@ -66,22 +67,16 @@ public class AutoClimbCommand extends Command {
 
             // Drive backwards robot-relative
             Commands.defer(() -> {
-                Pose2d startPose = drive.getCurrentPose();
-
                 return new RunCommand(() ->
-                    drive.drive(-0.1, 0.005, 0, false),
+                    drive.drive(-0.15, 0.005, 0, false),
                     drive
-                )
-                .until(() ->
-                    Math.abs(drive.getCurrentPose().getX() - startPose.getX()) >= 0.6
-                )
-                .andThen(
-                new RunCommand(() ->
-                    drive.drive(0.0, 0, 0, false),
-                    drive
-                ).until(()-> (MovementCalculations.getVelocityMagnitude(drive.getCurrentSpeeds()).in(MetersPerSecond) < 0.1)));
-
+                ).withTimeout(1);
             }, Set.of(drive)),
+
+            new InstantCommand(() ->
+                    drive.drive(0.0, 0.0, 0, false),
+                    drive
+            ),
 
             // Retract climber
             Commands.runOnce(() ->

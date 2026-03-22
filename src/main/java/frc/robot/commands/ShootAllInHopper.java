@@ -177,7 +177,7 @@ public class ShootAllInHopper extends Command {
         }
 
         if (hoodReady && flyReady && aligned){
-            if (intake.atTarget(0.05)){
+            if (intake.atTarget(0.02)){
                 if (agitateAngle){
                     intake.setPosition(IntakeConstants.kIntakeAgitateAngle);
                 } else {

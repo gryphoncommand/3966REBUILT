@@ -28,7 +28,6 @@ import frc.robot.commands.SetShooterToDefinedState;
 import frc.robot.commands.SetToDashboardSpeeds;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootAllInHopper;
-import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.commands.Indexing.RunPreIndexer;
 import frc.robot.commands.Intake.IntakeDeploy;
 import frc.robot.commands.Intake.IntakeStow;
@@ -194,7 +193,7 @@ public class RobotContainer {
 
     m_intakeRollers.setDefaultCommand(
       new RunCommand(()->{
-        if (m_driverController.leftTrigger().getAsBoolean()){
+        if (m_driverController.leftTrigger().getAsBoolean() || m_driverController.rightTrigger().getAsBoolean()){
           m_intakeRollers.setVelocity(IntakeConstants.kIntakeSpeedRPM);
         } else {
           m_intakeRollers.setVelocity(0);
@@ -205,7 +204,6 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    FeedShooterFactory testFactory = new FeedShooterFactory(m_kicker, m_preIndexer, m_spindexer);
     // Driver bindings
     m_driverController.start().onTrue(
       new InstantCommand(()->{
@@ -232,7 +230,8 @@ public class RobotContainer {
 
     m_driverController.rightTrigger()
         .whileTrue(runIntakeRollers)
-        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, true, m_driverController.leftTrigger().negate()::getAsBoolean).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, true, m_driverController.leftTrigger().negate()::getAsBoolean).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+
     m_driverController.leftTrigger()
       .whileTrue(
         Commands.either(
@@ -262,7 +261,7 @@ public class RobotContainer {
           emergencyShotChooser.getSelected()
         ), Set.of(m_hood, m_flywheel))
       )
-      .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, false, m_driverController.leftTrigger().negate()::getAsBoolean).withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
+      .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, false, m_driverController.leftTrigger().negate()::getAsBoolean).withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
       .onFalse(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kShooterStowState).withTimeout(0.1));
     m_driverController.povLeft().whileTrue(new HomeHood(m_hood).alongWith(new RunCommand(()->m_flywheel.set(0), m_flywheel)));
     m_driverController.y()
@@ -277,7 +276,7 @@ public class RobotContainer {
     
     m_operatorController.rightTrigger()
         .whileTrue(new SetShooterToDefinedState(m_hood, m_flywheel, ShooterConstants.kDefaultShooterState))
-        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, false, ()->true).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, false, ()->true).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     m_operatorController.x().toggleOnTrue(new SetToDashboardSpeeds(m_hood, m_flywheel));
     m_operatorController.povUp().whileTrue(new RunCommand(()->m_climber.set(0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0.0), m_climber));
     m_operatorController.povDown().whileTrue(new RunCommand(()->m_climber.set(-0.5), m_climber)).onFalse(new RunCommand(()->m_climber.set(0.0), m_climber));
@@ -289,11 +288,12 @@ public class RobotContainer {
       .whileTrue(new RunCommand(()->m_preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed), m_preIndexer))
       .onFalse(new RunCommand(()->m_preIndexer.setVelocity(0), m_preIndexer));
     m_operatorController.leftBumper()
-      .whileTrue(new RunCommand(()->testFactory.start(true), m_kicker, m_preIndexer, m_spindexer))
-      .onFalse(new RunCommand(()->testFactory.stop(), m_kicker, m_preIndexer, m_spindexer))
-      .whileTrue(runIntakeRollers)
-      // .whileTrue(new AgitateIntake(m_intakeDeploy))
-      .whileTrue(new RepeatCommand(new InstantCommand(()->testFactory.periodic())));
+      .whileTrue(new RunCommand(()->m_intakeDeploy.set(0.2), m_intakeDeploy))
+      .onFalse(new RunCommand(()->m_intakeDeploy.set(0.0), m_intakeDeploy));
+    m_operatorController.rightBumper()
+      .whileTrue(new RunCommand(()->m_intakeDeploy.set(-0.2), m_intakeDeploy))
+      .onFalse(new RunCommand(()->m_intakeDeploy.set(0.0), m_intakeDeploy));
+    
 
     m_operatorController.start().onTrue(
       new InstantCommand(()->{

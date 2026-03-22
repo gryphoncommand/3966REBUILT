@@ -32,7 +32,6 @@ import frc.robot.subsystems.Indexer.Kicker;
 import frc.robot.subsystems.Indexer.PreIndexer;
 import frc.robot.subsystems.Indexer.Spindexer;
 import frc.robot.subsystems.Intake.IntakeDeployIO;
-import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
 
 public class Shoot extends Command {
 
@@ -58,11 +57,10 @@ public class Shoot extends Command {
      *
      * @param hood hood subsystem (used to check atTarget)
      * @param flywheel flywheel subsystem (used to check atTarget)
-     * @param rollers intake/feeder rollers used to feed fuel into the flywheel
      * @param feedRPM roller velocity to use when feeding
      * @param stopFlywheelOnEnd if true, zeroes the flywheel when the command ends
      */
-    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign, BooleanSupplier shouldAgitate) {
+    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign, BooleanSupplier shouldAgitate) {
         this.driveData = driveData;
         this.hood = hood;
         this.flywheel = flywheel;
@@ -100,8 +98,8 @@ public class Shoot extends Command {
     /**
      * Convenience constructor that leaves the flywheel running when command ends.
      */
-    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
-        this(driveData, hood, flywheel, rollers, kicker, preIndexer, spindexer, intake, false, true, ()->true);
+    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
+        this(driveData, hood, flywheel, kicker, preIndexer, spindexer, intake, false, true, ()->true);
     }
 
     @Override

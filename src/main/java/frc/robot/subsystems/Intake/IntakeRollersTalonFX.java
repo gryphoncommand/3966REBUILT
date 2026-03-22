@@ -2,11 +2,12 @@ package frc.robot.subsystems.Intake;
 
 import static edu.wpi.first.units.Units.RPM;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkBase.ControlType;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.IntakeConstants;
@@ -26,8 +27,8 @@ public class IntakeRollersTalonFX extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Intake Roller Desired Velocity (RPM)", targetReference);
-    SmartDashboard.putNumber("Intake Roller Velocity (RPM)", getVelocity());
+    Logger.recordOutput("Intake/Intake Roller Desired Velocity (RPM)", targetReference);
+    Logger.recordOutput("Intake/Intake Roller Velocity (RPM)", getVelocity());
   }
 
   public void set(double speed) {
@@ -36,6 +37,7 @@ public class IntakeRollersTalonFX extends SubsystemBase {
 
   public void setVelocity(double rpm) {
     rpm = rpm * 43/18;
+    targetReference = rpm;
     
     rollerMotor.setControl(m_controlRequest.withVelocity(RPM.of(rpm * 43/18)));
   }

@@ -25,7 +25,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -54,7 +53,6 @@ import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.Constants.VisionConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -427,11 +425,6 @@ public class DriveSubsystem extends SubsystemBase {
       Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1(), getCurrentPose());
       if (visionBotPose1.isPresent()){
         poseEstimator.addVisionData(List.of(visionBotPose1.get()), Vision.updateEstimationStdDevs(visionBotPose1, visionBotPose1.get().targetsUsed));
-        Pose3d[] usedTags = new Pose3d[visionBotPose1.get().targetsUsed.size()];
-        for (int i = 0; i < visionBotPose1.get().targetsUsed.size(); i++){
-          usedTags[i] = (VisionConstants.kTagLayout.getTagPose(visionBotPose1.get().targetsUsed.get(i).fiducialId).get());
-        }
-        Logger.recordOutput("PoseEst/Camera1 Used Tag Poses", usedTags);
         Logger.recordOutput("PoseEst/Camera1 Pose Guess", visionBotPose1.get().estimatedPose);
       }
     } if (Vision.getResult2() != null){

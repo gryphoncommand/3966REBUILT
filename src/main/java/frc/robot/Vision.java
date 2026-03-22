@@ -1,5 +1,6 @@
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -23,7 +24,7 @@ import java.util.Optional;
 
 public class Vision extends SubsystemBase {
     private static final PhotonCamera camera1 = new PhotonCamera(VisionConstants.kCameraName1);
-    // private static final PhotonCamera camera2 = new PhotonCamera(VisionConstants.kCameraName2);
+    private static final PhotonCamera camera2 = new PhotonCamera(VisionConstants.kCameraName2);
     // private static final PhotonCamera camera3 = new PhotonCamera(VisionConstants.kCameraName3);
 
 
@@ -44,10 +45,10 @@ public class Vision extends SubsystemBase {
         if (!results1.isEmpty()){
             result1 = results1.get(results1.size() - 1);
         }
-        // var results2 = camera2.getAllUnreadResults();
-        // if (!results2.isEmpty()){
-        //     result2 = results2.get(results2.size() - 1);
-        // }
+        var results2 = camera2.getAllUnreadResults();
+        if (!results2.isEmpty()){
+            result2 = results2.get(results2.size() - 1);
+        }
         // var results3 = camera3.getAllUnreadResults();
         // if (!results3.isEmpty()){
         //     result3 = results3.get(results3.size() - 1);
@@ -70,9 +71,9 @@ public class Vision extends SubsystemBase {
         return camera1;
     }
 
-    // public static PhotonCamera getCamera2() {
-    //     return camera2;
-    // }
+    public static PhotonCamera getCamera2() {
+        return camera2;
+    }
 
     // public static PhotonCamera getCamera3() {
     //     return camera3;
@@ -96,12 +97,12 @@ public class Vision extends SubsystemBase {
         if (result1 != null && result1.hasTargets()) {
             allTargets.addAll(result1.getTargets());
         }
-        if (result2 != null && result2.hasTargets()) {
-            allTargets.addAll(result2.getTargets());
-        }
-        if (result3 != null && result3.hasTargets()) {
-            allTargets.addAll(result3.getTargets());
-        }
+        // if (result2 != null && result2.hasTargets()) {
+        //     allTargets.addAll(result2.getTargets());
+        // }
+        // if (result3 != null && result3.hasTargets()) {
+        //     allTargets.addAll(result3.getTargets());
+        // }
         return allTargets;
     }
 
@@ -120,8 +121,16 @@ public class Vision extends SubsystemBase {
             return Optional.empty();
         }
 
+        Pose3d[] usedTags = new Pose3d[result.targets.size()];
+        for (int i = 0; i < result.targets.size(); i++){
+          usedTags[i] = (VisionConstants.kTagLayout.getTagPose(result.targets.get(i).fiducialId).get());
+        }
+
+        Logger.recordOutput("PoseEst/Camera 1 Tags Used", usedTags);
+
         Optional<EstimatedRobotPose> update = poseEstimator1.estimateClosestToReferencePose(result, new Pose3d(referencePose));
             
+        
         return update;
     }
 
@@ -177,10 +186,16 @@ public class Vision extends SubsystemBase {
         }
 
         Optional<EstimatedRobotPose> update = Optional.empty();
-        if (result.getTargets().size() > 1){
-            update = poseEstimator2.estimateClosestToCameraHeightPose(result);
+
+        Pose3d[] usedTags = new Pose3d[result.targets.size()];
+        for (int i = 0; i < result.targets.size(); i++){
+          usedTags[i] = (VisionConstants.kTagLayout.getTagPose(result.targets.get(i).fiducialId).get());
         }
+
+        Logger.recordOutput("PoseEst/Camera 2 Tags Used", usedTags);
+
         
+        update = poseEstimator2.estimateClosestToCameraHeightPose(result);
         
         return update;
     }
