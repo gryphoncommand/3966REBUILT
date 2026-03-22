@@ -180,9 +180,9 @@ public final class Constants {
     public static boolean accountForAccel = false;
 
     // Fixed-hood, 3-wide drum shooter configuration
-    public static final int kDrumMotorCount = 3;
+    public static final int kDrumMotorCount = 6;
     public static final double kFixedHoodAngleDeg = 28.0;
-    public static final double kTargetFuelPerSecond = 15.5;
+    public static final double kTargetFuelPerSecond = 11.5;
     public static final int kSimShooterCount = 3;
     public static final double kSimTotalBps = kTargetFuelPerSecond;
     public static final double kSimPerShooterMeanIntervalSec = (double) kSimShooterCount / kSimTotalBps;

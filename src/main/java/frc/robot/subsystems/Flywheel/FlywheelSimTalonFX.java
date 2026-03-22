@@ -34,7 +34,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         new FlywheelSim(
             LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60(ShooterConstants.kDrumMotorCount), Jkgm2, 1),
             DCMotor.getKrakenX60(ShooterConstants.kDrumMotorCount),
-            0.0);
+            0.2);
 
     private double targetVelocityRpm = 0;
     private double wheelAngle = 0.0;
@@ -48,6 +48,8 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
 
     private double realTarget = 0;
 
+    private double pendingShotTorqueNm = 0;
+    private double shotTimeRemainingSec = 0;
     private Random torqueRandomizer = new Random();
 
     final VelocityVoltage m_flywheelVelocityVoltage = new VelocityVoltage(0);
@@ -62,15 +64,35 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
 
     @Override
     public void periodic() {
-        // get the motor voltage of the TalonFX
         var motorVoltageTurn = m_flywheelSim.getMotorVoltageMeasure();
+        double dt = 0.02; // 20ms loop
 
-        // use the motor voltage to calculate new position and velocity
-        // using WPILib's DCMotorSim class for physics simulation
+        double appliedLoadTorque = 0;
+        if (shotTimeRemainingSec > 0) {
+            // We apply the torque stored in pendingShotTorqueNm
+            appliedLoadTorque = pendingShotTorqueNm;
+            
+            // Reduce the remaining time
+            shotTimeRemainingSec -= dt;
+            
+            // If time is up, clear the torque buffer
+            if (shotTimeRemainingSec <= 0) {
+                shotTimeRemainingSec = 0;
+                pendingShotTorqueNm = 0;
+            }
+        }
+
+        // Update physics
         shooterSim.setInputVoltage(motorVoltageTurn.in(Volts));
-        shooterSim.update(0.02);
+        shooterSim.update(dt);
+        
+        double deltaOmegaB = 0;
 
-        double dt = 0.02;
+        // Apply the deceleration from the ball(s)
+        if (appliedLoadTorque > 0) {
+            double alpha = appliedLoadTorque / Jkgm2;
+            deltaOmegaB = (alpha * dt);
+        }
 
         // Current angular velocity
         double omega = shooterSim.getAngularVelocity().in(RadiansPerSecond);
@@ -86,14 +108,14 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         double alpha = frictionTorque / Jkgm2;
 
         // Apply velocity drop
-        double newOmega = omega - alpha * dt;
+        double deltaOmegaT = alpha * dt;
 
         // Prevent oscillation around zero
-        if (Math.abs(newOmega) < 1e-3) {
-            newOmega = 0;
+        if (Math.abs(deltaOmegaT) < 1e-3) {
+            deltaOmegaT = 0;
         }
 
-        shooterSim.setAngularVelocity(newOmega);
+        shooterSim.setAngularVelocity(omega - deltaOmegaB - deltaOmegaT);
 
         // apply the new rotor position and velocity to the TalonFX;
         // note that this is rotor position/velocity (before gear ratio), but
@@ -172,31 +194,25 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     }
 
     public void simulateShot(double ballExitVelocityMps) {
-        double ballMassKg = 0.226796;
-        // Flywheel parameters
-        double flywheelRadiusM = 0.0508;
-        double J = Jkgm2;
-
-        // Torque-based velocity drop: tau = r * F, F = m * dv / dt
-        double contactTimeSec = 0.03;
-        double torqueEfficiency = 0.80;
-        double forceN = (ballMassKg * ballExitVelocityMps) / contactTimeSec;
-        double shotTorqueNm = forceN * flywheelRadiusM * torqueEfficiency;
-        double maxMotorTorqueNm = DCMotor.getNeoVortex(ShooterConstants.kDrumMotorCount).stallTorqueNewtonMeters;
-        double maxAppliedTorqueNm = maxMotorTorqueNm * 0.75;
-        double appliedTorqueNm = Math.min(shotTorqueNm, maxAppliedTorqueNm);
-
-        double deltaOmegaRadPerSec = (appliedTorqueNm / J) * contactTimeSec;
-        
-        // Current flywheel velocity (rad/s)
+        ballExitVelocityMps *= 8/5; // Backspin
+        double ballMassKg = 0.226796; 
         double currentOmega = shooterSim.getAngularVelocity().in(RadiansPerSecond);
+
+        if (currentOmega < 10.0) return; // Flywheel is basically stopped
+
+        // Energy required for ONE ball: E = 1/2 * m * v^2
+        double ballEnergyJ = 0.5 * ballMassKg * Math.pow(ballExitVelocityMps, 2);
         
-        // Apply realistic velocity drop
-        double newOmega = currentOmega - (deltaOmegaRadPerSec * torqueRandomizer.nextDouble(0.9, 1.2));
-        shooterSim.setAngularVelocity(newOmega);
-        
-        // Update TalonFX sim rotor velocity to match new flywheel state
-        m_flywheelSim.setRotorVelocity(RotationsPerSecond.of(newOmega / (2*Math.PI)));
+        // Time one ball spends in contact with the wheel
+        double singleBallContactTime = 0.05; 
+
+        // Torque for one ball: T = (Energy / Time) / Velocity
+        double singleBallTorque = (ballEnergyJ / singleBallContactTime) / currentOmega;
+
+        // ADD to the current simulation state rather than overwriting it
+        // This allows "stacking" shots
+        this.pendingShotTorqueNm += (singleBallTorque * torqueRandomizer.nextDouble(1.4, 2.8)); // 1.4 for friction/compression losses
+        this.shotTimeRemainingSec += singleBallContactTime; 
     }
 
     @Override

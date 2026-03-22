@@ -146,7 +146,7 @@ public class ShootAllInHopper extends Command {
             double now = Timer.getFPGATimestamp();
 
             if (flyReady && aligned && spindexer.getBalls() != 0) {
-                double kShooterEfficiency = 0.73;
+                double kShooterEfficiency = 0.7;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
                 double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;

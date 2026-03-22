@@ -76,7 +76,7 @@ public class PrepareSOTM extends Command {
         ShooterState state = ShooterInterpolator.interpolate(
                 table, distanceToGoal);
 
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 5; i++) {
             var timeOfFlight = Seconds.of(state.flightTimeSec() + kTOFChange.get());
             double tof = timeOfFlight.in(Seconds);
             if (Robot.isReal()) {
