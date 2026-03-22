@@ -44,6 +44,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -58,7 +61,7 @@ public class FuelSim {
   protected static final double AIR_DENSITY = 1.2041; // kg/m^3
   protected static final double FIELD_COR =
       Math.sqrt(22 / 51.5); // coefficient of restitution with the field
-  protected static final double FUEL_COR = 0.5; // coefficient of restitution with another fuel
+  protected static final double FUEL_COR = 0.001; // coefficient of restitution with another fuel
   protected static final double NET_COR = 0.2; // coefficient of restitution with the net
   protected static final double ROBOT_COR = 0.1; // coefficient of restitution with a robot
   protected static final double FUEL_RADIUS = 0.075;
@@ -70,7 +73,7 @@ public class FuelSim {
   protected static final double TRENCH_BAR_HEIGHT = 0.102;
   protected static final double TRENCH_BAR_WIDTH = 0.152;
   protected static final double FRICTION =
-      0.1; // proportion of horizontal vel to lose per sec while on ground
+      0.8; // proportion of horizontal vel to lose per sec while on ground
   protected static final double FUEL_MASS = 0.448 * 0.45392; // kgs
   protected static final double FUEL_CROSS_AREA = Math.PI * FUEL_RADIUS * FUEL_RADIUS;
   // Drag coefficient of smooth sphere:
@@ -525,6 +528,11 @@ public class FuelSim {
   public void updateSim() {
     if (!running) return;
     stepSim();
+    if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red){
+      Logger.recordOutput("Basics/Scored Fuel", Hub.RED_HUB.getScore());
+    } else {
+      Logger.recordOutput("Basics/Scored Fuel", Hub.BLUE_HUB.getScore());
+    }
   }
 
   /** Run the simulation forward 1 time step (0.02s) */

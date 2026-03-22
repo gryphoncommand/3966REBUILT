@@ -8,27 +8,32 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.422558402360413,
-        "y": 0.7092332837615785
+        "x": 1.8076249999999994,
+        "y": 1.6314499999999996
       },
       "isLocked": false,
       "linkedName": "Outpost"
     },
     {
       "anchor": {
-        "x": 1.7029015084294583,
-        "y": 2.196051464063886
+        "x": 2.359383333333333,
+        "y": 1.6465666666666663
       },
       "prevControl": {
-        "x": 1.6103609797837963,
-        "y": 1.9638096707578978
+        "x": 1.890766666666667,
+        "y": 1.7901749999999992
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Outpost Shot"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.17231075697211157,
+      "rotationDegrees": -90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,10 +47,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -49.68589983950272
+    "rotation": 45.67403689798455
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Outpost",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0

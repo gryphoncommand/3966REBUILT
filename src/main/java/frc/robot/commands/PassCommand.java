@@ -10,16 +10,15 @@ import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
-import frc.robot.subsystems.Hood.HoodIO;
 
 public class PassCommand extends Command {
     private ParallelCommandGroup passGroup;
     private DriveSubsystem drive;
     private boolean depot;
 
-    public PassCommand(DriveSubsystem drive, CommandXboxController driverController, HoodIO hood, FlywheelIO flywheel){
+    public PassCommand(DriveSubsystem drive, CommandXboxController driverController, FlywheelIO flywheel){
         this.drive = drive;
-        addRequirements(drive, hood, flywheel);
+        addRequirements(drive, flywheel);
         depot = Math.abs(drive.getCurrentPose().getY() - AlignmentConstants.PassingPoseDepot.getY()) < Math.abs(drive.getCurrentPose().getY() - AlignmentConstants.PassingPoseOutpost.getY());
         
         // choose depot vs outpost align command by comparing current Y
@@ -30,8 +29,8 @@ public class PassCommand extends Command {
         );
 
         ConditionalCommand choosePassingShot = new ConditionalCommand(
-            new PrepareSOTM(hood, flywheel, drive, AlignmentConstants.PassingPoseDepot, ShooterConstants.RealPassingValues),
-            new PrepareSOTM(hood, flywheel, drive, AlignmentConstants.PassingPoseOutpost, ShooterConstants.RealPassingValues),
+            new PrepareSOTM(flywheel, drive, AlignmentConstants.PassingPoseDepot, ShooterConstants.RealPassingValues),
+            new PrepareSOTM(flywheel, drive, AlignmentConstants.PassingPoseOutpost, ShooterConstants.RealPassingValues),
             () -> depot
         );
 

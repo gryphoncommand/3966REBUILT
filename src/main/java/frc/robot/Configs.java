@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.Amps;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -16,7 +15,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ModuleConstants;
-import frc.robot.Constants.ShooterConstants;
 
 public final class Configs {
     public static final class MAXSwerveModule {
@@ -205,9 +203,9 @@ public final class Configs {
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
                 // PID + FF tuning
                 slot0ConfigsDrive.kS = 0.0;
-                slot0ConfigsDrive.kV = 0.001933*58;
-                slot0ConfigsDrive.kA = 0.0005902*58;
-                slot0ConfigsDrive.kP = 0.00510241666 * 85;
+                slot0ConfigsDrive.kV = 0.001933*68;
+                slot0ConfigsDrive.kA = 0.0005902*68;
+                slot0ConfigsDrive.kP = 0.00510241666 * 40;
                 slot0ConfigsDrive.kI = 0.0;
                 slot0ConfigsDrive.kD = 0.0;
 
@@ -215,29 +213,6 @@ public final class Configs {
                 
                 // Motor behavior
                 flywheelFXConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        }
-    }
-
-    public static final class Climber {
-        public static final TalonFXConfiguration ClimberConfig = new TalonFXConfiguration();
-
-        static {
-                var slot0Configs = ClimberConfig.Slot0;
-                // PID + FF tuning
-                slot0Configs.kS = 0;
-                slot0Configs.kV = 0;
-                slot0Configs.kA = 0;
-                slot0Configs.kP = 5.0;
-                slot0Configs.kI = 0;
-                slot0Configs.kD = 0.4;
-
-                ClimberConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
-                ClimberConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-                
-                // Motor behavior
-                ClimberConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        
         }
     }
 
@@ -315,44 +290,4 @@ public final class Configs {
     }
 
 
-    public static final class Hood {
-        public static final TalonFXConfiguration HoodConfig = new TalonFXConfiguration();
-
-        static {
-                var slot0Configs = HoodConfig.Slot0;
-                // PID + FF tuning
-                slot0Configs.kS = 0.5;
-                slot0Configs.kV = 0;
-                slot0Configs.kA = 0;
-                slot0Configs.kP = 4.0;
-                slot0Configs.kI = 1.0; 
-                slot0Configs.kD = 0.1;
-                slot0Configs.kG = 0.3;
-                slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
-
-
-                HoodConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-
-                HoodConfig.CurrentLimits.withSupplyCurrentLimit(30).withSupplyCurrentLimitEnable(true);
-
-                HoodConfig.CurrentLimits.StatorCurrentLimit = 30.0;
-                HoodConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-
-                HoodConfig.MotorOutput.PeakForwardDutyCycle = 0.13;
-                HoodConfig.MotorOutput.PeakReverseDutyCycle = 0.13;
-
-                HoodConfig.Voltage.PeakForwardVoltage = 3;
-                HoodConfig.Voltage.PeakReverseVoltage = -3;
-                
-                // Motor behavior
-                HoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-                HoodConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
-                HoodConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Constants.ShooterConstants.kHoodMaxAngleDeg * ShooterConstants.kHoodGearRatio / 360.0;
-                HoodConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-                HoodConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Constants.ShooterConstants.kHoodMinAngleDeg * ShooterConstants.kHoodGearRatio / 360.0;
-                HoodConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        }
-    }
 }

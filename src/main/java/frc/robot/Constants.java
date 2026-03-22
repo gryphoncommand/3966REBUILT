@@ -27,7 +27,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.GryphonLib.AllianceFlipUtil;
 import frc.GryphonLib.ShooterState;
 
@@ -175,69 +174,61 @@ public final class Constants {
   public static class ShooterConstants {
     public static int kFlywheelCanID = 9;
     public static int kFollowerWheelCanID = 10;
-    public static int kHoodCANID = 11;
+    public static int kThirdWheelCanID = 18;
 
     //TODO: test
     public static boolean accountForAccel = false;
+
+    // Fixed-hood, 3-wide drum shooter configuration
+    public static final int kDrumMotorCount = 3;
+    public static final double kFixedHoodAngleDeg = 28.0;
+    public static final double kTargetFuelPerSecond = 15.5;
+    public static final int kSimShooterCount = 3;
+    public static final double kSimTotalBps = kTargetFuelPerSecond;
+    public static final double kSimPerShooterMeanIntervalSec = (double) kSimShooterCount / kSimTotalBps;
+    public static final double kSimShotIntervalJitterFrac = 0.8;
+    public static final double kSimShooterXOffsetMeters = 0.37;
+    public static final double kSimShooterYSpacingMeters = 0.20;
+    public static final double kCoulombFrictionNm = 0.02;   // constant friction torque
+    public static final double kViscousFriction = 0.002;   // Nm per rad/s
 
     public static double kFlywheelRPMOffset = 250;
     public static double kShootDelay = 0.05;
     public static double kPhaseDelay = 0.02;
 
 
-    public static double kHoodGearRatio = 198/10;
-    public static double kHoodLengthMeters = Units.inchesToMeters(5);
-
-    public static double kHoodMaxAngleDeg = 52.5;
-    public static double kHoodMinAngleDeg = 22.6;
-    public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
     public static double kDefaultFlywheelSpeed = 0.0;
-    public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(Math.PI/2));
+    public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d());
 
-    public static ShooterState kShooterStowState = new ShooterState(3, kHoodMinAngleDeg, 0, 1.2);
-    public static ShooterState kDefaultShooterState = new ShooterState(3, 35, 1300, 1.2);
-    public static ShooterState kCornerShotState = new ShooterState(5.1, 41, 3225, 1.2);
-    public static ShooterState kTowerShotState = new ShooterState(3.415, 36, 2750, 1.2);
-    public static ShooterState kTrenchShotState = new ShooterState(3.168, 35.0, 1850, 1.10);
+    public static ShooterState kShooterStowState = new ShooterState(3, kFixedHoodAngleDeg, 0, 1.2);
+    public static ShooterState kDefaultShooterState = new ShooterState(3, kFixedHoodAngleDeg, 1300, 1.2);
+    public static ShooterState kCornerShotState = new ShooterState(5.1, kFixedHoodAngleDeg, 3225, 1.2);
+    public static ShooterState kTowerShotState = new ShooterState(3.415, kFixedHoodAngleDeg, 2750, 1.2);
+    public static ShooterState kTrenchShotState = new ShooterState(3.168, kFixedHoodAngleDeg, 1850, 1.10);
 
 
     public static List<ShooterState> RealShootingValuesLow = List.of(
-      new ShooterState(1.500, 21.0, 1750, 0.95),
-      new ShooterState(2.095, 25.0, 1925, 0.95),
-      new ShooterState(2.300, 26.5, 1925, 1.00),
-      new ShooterState(2.493, 29.0, 1850, 1.05),
-      new ShooterState(2.850, 32.5, 1875, 1.08),
-      new ShooterState(3.240, 35.0, 1900, 1.10), // Tuned
-      new ShooterState(3.500, 36.5, 1950, 1.07), // Tuned
-      new ShooterState(3.820, 38.0, 2056, 1.14),
-      new ShooterState(4.150, 39.5, 2175, 1.22),
-      new ShooterState(4.414, 41.0, 2156, 1.30),
-      new ShooterState(4.800, 42.5, 2250, 1.40),
-      new ShooterState(5.250, 44.0, 2350, 1.52)
-    );
-
-    public static List<ShooterState> RealShootingValuesHigh = List.of(
-      new ShooterState(1.500, 23.0, 1520, 1.05),
-      new ShooterState(2.095, 23.5, 1890, 1.15),
-      new ShooterState(2.300, 24.0, 1810, 1.18),
-      new ShooterState(2.493, 24.5, 1870, 1.22),
-      new ShooterState(2.850, 25.0, 1900, 1.30),
-      new ShooterState(3.168, 26.0, 1960, 1.35),
-      new ShooterState(3.500, 27.0, 2075, 1.42),
-      new ShooterState(3.820, 28.0, 2170, 1.50),
-      new ShooterState(4.150, 29.0, 2260, 1.58),
-      new ShooterState(4.414, 30.0, 2330, 1.63),
-      new ShooterState(4.800, 31.0, 2400, 1.72),
-      new ShooterState(5.250, 32.0, 2500, 1.85)
+      new ShooterState(1.500, kFixedHoodAngleDeg, 1750, 0.95),
+      new ShooterState(2.095, kFixedHoodAngleDeg, 1860, 0.98),
+      new ShooterState(2.300, kFixedHoodAngleDeg, 1900, 1.00),
+      new ShooterState(2.493, kFixedHoodAngleDeg, 1940, 1.03),
+      new ShooterState(2.850, kFixedHoodAngleDeg, 2000, 1.06),
+      new ShooterState(3.240, kFixedHoodAngleDeg, 2080, 1.10),
+      new ShooterState(3.500, kFixedHoodAngleDeg, 2120, 1.13),
+      new ShooterState(3.820, kFixedHoodAngleDeg, 2180, 1.18),
+      new ShooterState(4.150, kFixedHoodAngleDeg, 2240, 1.23),
+      new ShooterState(4.414, kFixedHoodAngleDeg, 2290, 1.27),
+      new ShooterState(4.800, kFixedHoodAngleDeg, 2370, 1.33),
+      new ShooterState(5.250, kFixedHoodAngleDeg, 2450, 1.40)
     );
 
     public static List<ShooterState> RealPassingValues = List.of(
-      new ShooterState(1.5, kHoodMaxAngleDeg, 2200, 1.0),
-      new ShooterState(2.5, 53, 2200, 1.1),
-      new ShooterState(3.5, 51, 2300, 1.2),
-      new ShooterState(4.5, 49, 2350, 1.3),
-      new ShooterState(6.0, 47, 2400, 1.4),
-      new ShooterState(8.0, 45, 2650, 1.4)
+      new ShooterState(1.5, kFixedHoodAngleDeg, 2200, 1.00),
+      new ShooterState(2.5, kFixedHoodAngleDeg, 2325, 1.10),
+      new ShooterState(3.5, kFixedHoodAngleDeg, 2450, 1.20),
+      new ShooterState(4.5, kFixedHoodAngleDeg, 2575, 1.30),
+      new ShooterState(6.0, kFixedHoodAngleDeg, 2750, 1.45),
+      new ShooterState(8.0, kFixedHoodAngleDeg, 3000, 1.65)
     );
   }
 
@@ -249,29 +240,13 @@ public final class Constants {
     public static double kSpindexerGearRatio = 4;
     public static double kKickerGearRatio = 28/24;
 
-    public static double kPreIndexerSpeed = 600;
-    public static double kSpindexerSpeed = 5000;
-    public static double kKickerSpeed = 6500;
+    public static double kPreIndexerSpeed = 1600;
+    public static double kSpindexerSpeed = 7000;
+    public static double kKickerSpeed = 9000;
     
 
     public static double kActiveCurrentSpindexer = 20;
     
-  }
-
-  public static class ClimberConstants{
-    public static double kGearRatio = 25;
-    public static double kMotorRotationsPer10Inch = 70;
-    public static double kInchesPerMotorRotation = 10/kMotorRotationsPer10Inch;
-    public static double kMotorRotationsPerInch = 1/kInchesPerMotorRotation;
-    public static double kFullUpPosition = 70;
-    public static int kClimberCanID = 17;
-
-    public static Pose2d kRightClimbPose = new Pose2d(1.2, 3.011, new Rotation2d());
-    public static Pose2d kLeftClimbPose = new Pose2d(0.7, 4.410, new Rotation2d(Math.PI));
-    public static Pose2d kMidClimbPose = new Pose2d(0.768, 3.781, new Rotation2d(Math.PI));
-
-    public static Pose2d kRightPreClimb = new Pose2d(1.2, 2.191, new Rotation2d());
-    public static Pose2d kLeftPreClimb = new Pose2d(0.73, 4.8, new Rotation2d(Math.PI));
   }
 
   public static class IntakeConstants {

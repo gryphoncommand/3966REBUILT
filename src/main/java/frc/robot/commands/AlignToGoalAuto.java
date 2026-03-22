@@ -8,7 +8,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,7 +17,6 @@ import frc.GryphonLib.PositionCalculations;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AlignToGoalAuto extends Command {
@@ -36,7 +34,7 @@ public class AlignToGoalAuto extends Command {
         this.goalPose = goalPose;
         this.SOTM = SOTM;
 
-        kRobotToShooter = Robot.isReal() ? ShooterConstants.kRobotToShooter : new Transform2d(ShooterConstants.kRobotToShooter.getX(), ShooterConstants.kRobotToShooter.getY(), new Rotation2d(Math.PI/2));
+        kRobotToShooter = ShooterConstants.kRobotToShooter;
 
         if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)) {
             try {

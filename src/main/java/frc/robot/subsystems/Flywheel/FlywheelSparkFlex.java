@@ -17,6 +17,7 @@ import frc.robot.Constants.ShooterConstants;
 public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   private final SparkFlex shooterMotor = new SparkFlex(ShooterConstants.kFlywheelCanID, MotorType.kBrushless);
   private final SparkFlex followerMotor = new SparkFlex(ShooterConstants.kFollowerWheelCanID, MotorType.kBrushless);
+  private final SparkFlex followerMotor2 = new SparkFlex(ShooterConstants.kThirdWheelCanID, MotorType.kBrushless);
   private final SparkClosedLoopController pid = shooterMotor.getClosedLoopController();
   private final RelativeEncoder encoder = shooterMotor.getEncoder();
 
@@ -27,6 +28,7 @@ public class FlywheelSparkFlex extends SubsystemBase implements FlywheelIO {
   public FlywheelSparkFlex() {
     shooterMotor.configure(Configs.FlywheelConfig.flywheelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     followerMotor.configure(Configs.FlywheelConfig.flywheelConfig.follow(ShooterConstants.kFlywheelCanID, true), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    followerMotor2.configure(Configs.FlywheelConfig.flywheelConfig.follow(ShooterConstants.kFlywheelCanID, true), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override

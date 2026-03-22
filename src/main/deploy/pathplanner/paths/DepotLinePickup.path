@@ -89,7 +89,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Depot Shot"
     }
   ],
   "rotationTargets": [
@@ -127,10 +127,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -121.32869286780404
+    "rotation": -42.472658161260334
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Depot",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

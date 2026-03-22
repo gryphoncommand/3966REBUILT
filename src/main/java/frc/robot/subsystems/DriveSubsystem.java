@@ -353,6 +353,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   public ChassisSpeeds getCurrentSpeedsFieldRelative(){
     boolean flipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+    if (Robot.isSimulation()){
+      flipped = true;
+    }
     double xv = getCurrentSpeeds().vxMetersPerSecond * (flipped ? 1 : -1);
     double yv = getCurrentSpeeds().vyMetersPerSecond * (flipped ? 1 : -1);
     double theta = getCurrentSpeeds().omegaRadiansPerSecond * (flipped ? 1 : -1);
@@ -451,7 +454,8 @@ public class DriveSubsystem extends SubsystemBase {
     publisher.set(getStates());
     desiredPublisher.set(getDesiredStates());
     SmartDashboard.putData("Field", field2d);
-    SmartDashboard.putNumber("Current Speed", MovementCalculations.getVelocityMagnitude(getCurrentSpeeds()).magnitude());
+    Logger.recordOutput("Drive/Current Speed", MovementCalculations.getVelocityMagnitude(getCurrentSpeeds()).magnitude());
+    Logger.recordOutput("Drive/FieldRelativeSpeeds", getCurrentSpeedsFieldRelative());
 
     currentAccelerationFieldRelative = new ChassisAccelerations(prevSpeeds, getCurrentSpeedsFieldRelative(), Timer.getTimestamp() - currentTimestamp);
 

@@ -31,7 +31,10 @@ import frc.robot.Constants.ShooterConstants;
 public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     private double Jkgm2 = 0.01;
     private final FlywheelSim shooterSim =
-        new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNeoVortex(2), Jkgm2, 1), DCMotor.getNeoVortex(2), 0.0);
+        new FlywheelSim(
+            LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60(ShooterConstants.kDrumMotorCount), Jkgm2, 1),
+            DCMotor.getKrakenX60(ShooterConstants.kDrumMotorCount),
+            0.0);
 
     private double targetVelocityRpm = 0;
     private double wheelAngle = 0.0;
@@ -66,6 +69,31 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         // using WPILib's DCMotorSim class for physics simulation
         shooterSim.setInputVoltage(motorVoltageTurn.in(Volts));
         shooterSim.update(0.02);
+
+        double dt = 0.02;
+
+        // Current angular velocity
+        double omega = shooterSim.getAngularVelocity().in(RadiansPerSecond);
+
+        // --- Friction torque ---
+        double coulomb = ShooterConstants.kCoulombFrictionNm * Math.signum(omega);
+        double viscous = ShooterConstants.kViscousFriction * omega;
+
+        // Total opposing torque
+        double frictionTorque = coulomb + viscous;
+
+        // Angular deceleration
+        double alpha = frictionTorque / Jkgm2;
+
+        // Apply velocity drop
+        double newOmega = omega - alpha * dt;
+
+        // Prevent oscillation around zero
+        if (Math.abs(newOmega) < 1e-3) {
+            newOmega = 0;
+        }
+
+        shooterSim.setAngularVelocity(newOmega);
 
         // apply the new rotor position and velocity to the TalonFX;
         // note that this is rotor position/velocity (before gear ratio), but
@@ -148,18 +176,23 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         // Flywheel parameters
         double flywheelRadiusM = 0.0508;
         double J = Jkgm2;
-        
-        // Angular momentum removed by the ball
-        double deltaL = ballMassKg * flywheelRadiusM * ballExitVelocityMps;
-        
-        // Convert to angular velocity drop (rad/s)
-        double deltaOmegaRadPerSec = deltaL / J;
+
+        // Torque-based velocity drop: tau = r * F, F = m * dv / dt
+        double contactTimeSec = 0.03;
+        double torqueEfficiency = 0.80;
+        double forceN = (ballMassKg * ballExitVelocityMps) / contactTimeSec;
+        double shotTorqueNm = forceN * flywheelRadiusM * torqueEfficiency;
+        double maxMotorTorqueNm = DCMotor.getNeoVortex(ShooterConstants.kDrumMotorCount).stallTorqueNewtonMeters;
+        double maxAppliedTorqueNm = maxMotorTorqueNm * 0.75;
+        double appliedTorqueNm = Math.min(shotTorqueNm, maxAppliedTorqueNm);
+
+        double deltaOmegaRadPerSec = (appliedTorqueNm / J) * contactTimeSec;
         
         // Current flywheel velocity (rad/s)
         double currentOmega = shooterSim.getAngularVelocity().in(RadiansPerSecond);
         
         // Apply realistic velocity drop
-        double newOmega = currentOmega - (deltaOmegaRadPerSec * torqueRandomizer.nextDouble(1.2, 1.8));
+        double newOmega = currentOmega - (deltaOmegaRadPerSec * torqueRandomizer.nextDouble(0.9, 1.2));
         shooterSim.setAngularVelocity(newOmega);
         
         // Update TalonFX sim rotor velocity to match new flywheel state
