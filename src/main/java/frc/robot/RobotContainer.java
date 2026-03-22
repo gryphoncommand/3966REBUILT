@@ -163,7 +163,7 @@ public class RobotContainer {
             .withName("Basic Drive"));
     m_preIndexer.setDefaultCommand(
       new RunCommand(()->{
-        if (m_driverController.leftTrigger().getAsBoolean()){
+        if (m_driverController.leftTrigger().getAsBoolean() || m_driverController.rightTrigger().getAsBoolean()){
           m_preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed);
         } else {
           m_preIndexer.setVelocity(0);
@@ -249,8 +249,9 @@ public class RobotContainer {
     m_driverController.y()
       .whileTrue(new RunCommand(()->m_intakeRollers.set(-0.3), m_intakeRollers))
       .onFalse(new RunCommand(()->m_intakeRollers.set(0.0), m_intakeRollers));
-    // Climber controls removed for simplified robot
-    
+    m_driverController.povRight().whileTrue(new RunCommand(()->{
+      m_drive.setX();
+    }, m_drive));
     
     m_operatorController.rightTrigger()
         .whileTrue(new SetShooterToDefinedState(m_flywheel, ShooterConstants.kDefaultShooterState))
@@ -316,21 +317,28 @@ public class RobotContainer {
 
     instance.start();
 
+    // Performance tuning for sim
+    instance.setLogEveryNTicks(5); // 25 Hz fuel pose logging
+    instance.setAdaptiveSubticks(2, 5, 40, 600);
+    instance.enableProfiling(50);
+
     SmartDashboard.putData("Reset Fuel", Commands.runOnce(() -> {
           FuelSim.getInstance().clearFuel();
           FuelSim.getInstance().spawnStartingFuel();
+          FuelSim.getInstance().reserveFuelForRobot((int) m_spindexer.getBalls());
       })
       .withName("Reset Fuel")
       .ignoringDisable(true));
     
       CommandScheduler.getInstance().schedule(Commands.runOnce(() -> {
           FuelSim.getInstance().clearFuel();
-          // FuelSim.getInstance().spawnStartingFuel();
+          FuelSim.getInstance().spawnStartingFuel();
       })
       .withName("Reset Fuel")
       .ignoringDisable(true));
 
     instance.enableAirResistance();
+    CommandScheduler.getInstance().schedule(new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true).withTimeout(0.1));
   }
 
   private void configureNamedCommands(){
@@ -364,5 +372,9 @@ public class RobotContainer {
   /** Returns the autonomous command. */
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
+  }
+
+  public int getSimBallCount() {
+    return (int) m_spindexer.getBalls();
   }
 }

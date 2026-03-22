@@ -32,7 +32,8 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
     private final TalonFXSimState intakeSimState =
         intakeMotor.getSimState();
 
-    double jKgMS = 0.3; // 0.069; // From CAD
+    double jKgMS = 0.069; // From CAD
+    
 
     private final SingleJointedArmSim intakeSim =
         new SingleJointedArmSim(

@@ -180,10 +180,10 @@ public final class Constants {
     public static boolean accountForAccel = false;
 
     // Fixed-hood, 3-wide drum shooter configuration
-    public static final int kDrumMotorCount = 6;
+    public static final int kDrumMotorCount = 2;
     public static final double kFixedHoodAngleDeg = 28.0;
-    public static final double kTargetFuelPerSecond = 11.5;
-    public static final int kSimShooterCount = 3;
+    public static final double kTargetFuelPerSecond = 15.0;
+    public static final int kSimShooterCount = 2;
     public static final double kSimTotalBps = kTargetFuelPerSecond;
     public static final double kSimPerShooterMeanIntervalSec = (double) kSimShooterCount / kSimTotalBps;
     public static final double kSimShotIntervalJitterFrac = 0.8;
@@ -191,6 +191,7 @@ public final class Constants {
     public static final double kSimShooterYSpacingMeters = 0.20;
     public static final double kCoulombFrictionNm = 0.02;   // constant friction torque
     public static final double kViscousFriction = 0.002;   // Nm per rad/s
+    public static final double kGearRatio = 2.0;
 
     public static double kFlywheelRPMOffset = 250;
     public static double kShootDelay = 0.05;

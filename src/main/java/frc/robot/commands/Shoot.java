@@ -162,11 +162,14 @@ public class Shoot extends Command {
                             )
                         );
                         Translation3d initialPosition = new Translation3d(ballPose2d.getX(), ballPose2d.getY(), Units.inchesToMeters(17.701451));
-                        FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - ShooterConstants.kFixedHoodAngleDeg)));
-
-                        nextShotTimeSec[i] = now + randomIntervalSec();
-                        spindexer.removeBall();
-                        ((FlywheelSimTalonFX)flywheel).simulateShot(wheelRadPerSec * wheelRadius);
+                        boolean spawned = FuelSim.getInstance().spawnFuelIfAvailable(
+                            initialPosition,
+                            launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - ShooterConstants.kFixedHoodAngleDeg)));
+                        if (spawned) {
+                            nextShotTimeSec[i] = now + randomIntervalSec();
+                            spindexer.removeBall();
+                            ((FlywheelSimTalonFX)flywheel).simulateShot(wheelRadPerSec * wheelRadius);
+                        }
                     }
                 }
             }

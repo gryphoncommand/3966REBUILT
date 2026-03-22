@@ -29,11 +29,11 @@ import frc.robot.Configs;
 import frc.robot.Constants.ShooterConstants;
 
 public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
-    private double Jkgm2 = 0.01;
+    private final double Jkgm2 = 0.01;//0.004;
     private final FlywheelSim shooterSim =
         new FlywheelSim(
-            LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60(ShooterConstants.kDrumMotorCount), Jkgm2, 1),
-            DCMotor.getKrakenX60(ShooterConstants.kDrumMotorCount),
+            LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60Foc(ShooterConstants.kDrumMotorCount), Jkgm2, ShooterConstants.kGearRatio),
+            DCMotor.getKrakenX60Foc(ShooterConstants.kDrumMotorCount),
             0.2);
 
     private double targetVelocityRpm = 0;
@@ -60,6 +60,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         m_flywheelMotor = new TalonFX(ShooterConstants.kFlywheelCanID);
         m_flywheelMotor.getConfigurator().apply(Configs.FlywheelConfig.flywheelFXConfig);
         m_flywheelSim = m_flywheelMotor.getSimState();
+        m_flywheelMotor.getVelocity().setUpdateFrequency(100);
     }
 
     @Override
@@ -97,7 +98,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         // Current angular velocity
         double omega = shooterSim.getAngularVelocity().in(RadiansPerSecond);
 
-        // --- Friction torque ---
+        // Friction torque
         double coulomb = ShooterConstants.kCoulombFrictionNm * Math.signum(omega);
         double viscous = ShooterConstants.kViscousFriction * omega;
 
@@ -115,14 +116,14 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
             deltaOmegaT = 0;
         }
 
-        shooterSim.setAngularVelocity(omega - deltaOmegaB - deltaOmegaT);
+        shooterSim.setAngularVelocity(omega - (deltaOmegaB + deltaOmegaT));
 
         // apply the new rotor position and velocity to the TalonFX;
         // note that this is rotor position/velocity (before gear ratio), but
         // DCMotorSim returns mechanism position/velocity (after gear ratio)
         AngularVelocity mechVel = shooterSim.getAngularVelocity();
 
-        m_flywheelSim.setRotorVelocity(mechVel.in(RotationsPerSecond));
+        m_flywheelSim.setRotorVelocity(mechVel.in(RotationsPerSecond) * ShooterConstants.kGearRatio);
 
         wheelAngle += Units.rotationsToDegrees(mechVel.in(RPM) * 0.02 / 60.0);
         wheelVisual.setAngle(wheelAngle);
@@ -143,7 +144,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     @Override
     public void setVelocity(double rpm) {
         targetVelocityRpm = rpm;
-        m_flywheelMotor.setControl(new VelocityVoltage(RPM.of(rpm).in(RotationsPerSecond)));
+        m_flywheelMotor.setControl(new VelocityVoltage(RPM.of(rpm * ShooterConstants.kGearRatio).in(RotationsPerSecond)).withEnableFOC(true));
     }
 
     @Override
@@ -200,7 +201,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
 
         if (currentOmega < 10.0) return; // Flywheel is basically stopped
 
-        // Energy required for ONE ball: E = 1/2 * m * v^2
+        // Energy required for ONE ball: KE = 1/2 * m * v^2
         double ballEnergyJ = 0.5 * ballMassKg * Math.pow(ballExitVelocityMps, 2);
         
         // Time one ball spends in contact with the wheel
@@ -210,8 +211,8 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         double singleBallTorque = (ballEnergyJ / singleBallContactTime) / currentOmega;
 
         // ADD to the current simulation state rather than overwriting it
-        // This allows "stacking" shots
-        this.pendingShotTorqueNm += (singleBallTorque * torqueRandomizer.nextDouble(1.4, 2.8)); // 1.4 for friction/compression losses
+        // This allows stacking shots since the shooter can shoot multiple at once
+        this.pendingShotTorqueNm += (singleBallTorque * torqueRandomizer.nextDouble(1.3, 1.5)); // 1.4 for friction/compression losses
         this.shotTimeRemainingSec += singleBallContactTime; 
     }
 

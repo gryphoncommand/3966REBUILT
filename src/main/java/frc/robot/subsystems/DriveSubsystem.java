@@ -354,12 +354,9 @@ public class DriveSubsystem extends SubsystemBase {
   public ChassisSpeeds getCurrentSpeedsFieldRelative(){
     boolean flipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
     if (Robot.isSimulation()){
-      flipped = true;
+      flipped = false;
     }
-    double xv = getCurrentSpeeds().vxMetersPerSecond * (flipped ? 1 : -1);
-    double yv = getCurrentSpeeds().vyMetersPerSecond * (flipped ? 1 : -1);
-    double theta = getCurrentSpeeds().omegaRadiansPerSecond * (flipped ? 1 : -1);
-    return ChassisSpeeds.fromRobotRelativeSpeeds(new ChassisSpeeds(xv, yv, theta), (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()));
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds().times(flipped ? -1 : 1), (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()));
   }
 
   public Command goToPose(Pose2d goalPose){

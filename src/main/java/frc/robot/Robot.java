@@ -90,6 +90,9 @@ public class Robot extends LoggedRobot  {
     CommandScheduler.getInstance().schedule(Commands.runOnce(() -> {
           FuelSim.getInstance().clearFuel();
           FuelSim.getInstance().spawnStartingFuel();
+          if (Robot.isSimulation()) {
+            FuelSim.getInstance().reserveFuelForRobot(m_robotContainer.getSimBallCount());
+          }
       })
       .withName("Reset Fuel")
       .ignoringDisable(true));
