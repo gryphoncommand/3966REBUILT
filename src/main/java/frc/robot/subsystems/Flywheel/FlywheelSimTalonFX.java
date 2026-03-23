@@ -129,6 +129,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         wheelVisual.setAngle(wheelAngle);
 
         SmartDashboard.putData("Shooter Mech", mech2d);
+        Logger.recordOutput("Flywheel/Flywheel Motor Velocity (RPM)", m_flywheelMotor.getVelocity().getValue().in(RPM));
         Logger.recordOutput("Flywheel/Flywheel Velocity (RPM)", getVelocity());
         Logger.recordOutput("Flywheel/Effective Desired Flywheel Speed", targetVelocityRpm);
         Logger.recordOutput("Flywheel/Desired Flywheel Speed", realTarget);

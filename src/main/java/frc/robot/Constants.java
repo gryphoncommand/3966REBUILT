@@ -142,10 +142,10 @@ public final class Constants {
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center,
     // pitched upward.
     private static final double camPitch1 = -Units.degreesToRadians(20);
-    private static final double camYaw1 = Units.degreesToRadians(90);
+    private static final double camYaw1 = Units.degreesToRadians(0);
     
     public static final Transform3d kRobotToCam1 =
-            new Transform3d(new Translation3d(Units.inchesToMeters(9.75), Units.inchesToMeters(9.75), Units.inchesToMeters(16.732283)), new Rotation3d(0, camPitch1, camYaw1));
+            new Transform3d(new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(16.732283)), new Rotation3d(0, camPitch1, camYaw1));
     public static final Transform3d kCamToRobot1 = kRobotToCam1.inverse();
 
     // some of these probably need to be flipped

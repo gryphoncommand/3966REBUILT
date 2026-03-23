@@ -1,5 +1,10 @@
 package frc.robot;
 
+
+import edu.wpi.first.wpilibj.RobotBase;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.VisionSystemSim;
+import org.photonvision.simulation.SimCameraProperties;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -11,6 +16,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -20,12 +26,19 @@ import frc.robot.Constants.VisionConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 
 public class Vision extends SubsystemBase {
+    
     private static final PhotonCamera camera1 = new PhotonCamera(VisionConstants.kCameraName1);
     private static final PhotonCamera camera2 = new PhotonCamera(VisionConstants.kCameraName2);
     // private static final PhotonCamera camera3 = new PhotonCamera(VisionConstants.kCameraName3);
+
+
+    private static VisionSystemSim visionSim;
+    private static PhotonCameraSim cameraSim1;
+    private Supplier<Pose2d> drivePoseSupplier;
 
 
     private static PhotonPipelineResult result1 = null;
@@ -39,8 +52,39 @@ public class Vision extends SubsystemBase {
     private static final PhotonPoseEstimator poseEstimator3 = new PhotonPoseEstimator(
         VisionConstants.kTagLayout, VisionConstants.kRobotToCam3);
 
+    public Vision(Supplier<Pose2d> drivePoseSupplier){
+        this.drivePoseSupplier = drivePoseSupplier;
+        if (!RobotBase.isReal()) {
+            visionSim = new VisionSystemSim("main");
+
+            // Camera properties (tune if needed)
+            SimCameraProperties props = new SimCameraProperties();
+            props.setCalibration(320, 240, Rotation2d.fromDegrees(91)); // resolution + FOV
+            props.setFPS(30);
+            props.setAvgLatencyMs(20);
+            props.setLatencyStdDevMs(5);
+
+            cameraSim1 = new PhotonCameraSim(camera1, props);
+
+            cameraSim1.enableDrawWireframe(true);
+
+            // Add camera to sim with robot-to-camera transform
+            visionSim.addCamera(cameraSim1, VisionConstants.kRobotToCam1);
+
+            // Add AprilTags
+            visionSim.addAprilTags(VisionConstants.kTagLayout);
+        }
+    }
+
     @Override
     public void periodic() {
+
+        if (!Robot.isReal()) {
+            Pose2d robotPose = drivePoseSupplier.get();
+
+            visionSim.update(robotPose);
+        }
+        
         var results1 = camera1.getAllUnreadResults();
         if (!results1.isEmpty()){
             result1 = results1.get(results1.size() - 1);
