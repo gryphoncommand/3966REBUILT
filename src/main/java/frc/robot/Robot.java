@@ -79,8 +79,8 @@ public class Robot extends LoggedRobot  {
     double time = DriverStation.getMatchTime();
     boolean wonAutoShift = (DriverStation.isAutonomous() || DriverStation.isDisabled()) ||
           (DriverStation.isTeleop() && time < 55) ||
-          (DriverStation.isTeleop() && time > 128) ||
-          (DriverStation.isTeleop() && time > 78 && time < 105) ||
+          (DriverStation.isTeleop() && time > 130) ||
+          (DriverStation.isTeleop() && time > 80 && time < 105) ||
           (time == -1);
     Logger.recordOutput("Basics/Hub Active (Won Auto)", wonAutoShift);
     Logger.recordOutput("Basics/Hub Active (Lost Auto)", !wonAutoShift);
