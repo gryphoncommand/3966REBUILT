@@ -1345,7 +1345,16 @@ public class FuelSim {
         fuel.y = exitY;
         fuel.z = exitZ;
         applyDispersalVelocity(fuel);
-        score++;
+        double time = DriverStation.getMatchTime();
+        if (
+          (DriverStation.isAutonomous() || DriverStation.isDisabled()) ||
+          (DriverStation.isTeleop() && time < 55) ||
+          (DriverStation.isTeleop() && time > 128) ||
+          (DriverStation.isTeleop() && time > 78 && time < 105) ||
+          (time == -1)
+        ){
+          score++;
+        }
       }
     }
 

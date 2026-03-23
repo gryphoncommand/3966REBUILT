@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1931,
-        "y": 8.313016666666666
+        "x": 1.8454166666666663,
+        "y": 8.698491666666666
       },
       "isLocked": false,
       "linkedName": "Depot Shot"
@@ -68,8 +68,8 @@
         "y": 5.98498975409836
       },
       "prevControl": {
-        "x": 1.936116666666667,
-        "y": 8.033358333333332
+        "x": 1.898325,
+        "y": 8.509533333333334
       },
       "nextControl": null,
       "isLocked": false,

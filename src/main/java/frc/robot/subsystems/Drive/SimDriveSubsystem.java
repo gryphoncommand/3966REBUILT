@@ -441,6 +441,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
    */
   public void setCurrentPose(Pose2d newPose) {
     poseEstimator.resetPose(newPose);
+    swerveDrive.getMapleSimDrive().get().setSimulationWorldPose(newPose);
 
     Rotation2d adjustedRotation = newPose.getRotation();
     if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
