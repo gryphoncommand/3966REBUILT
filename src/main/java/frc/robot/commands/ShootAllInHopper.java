@@ -26,7 +26,8 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.Robot;
-import frc.robot.subsystems.SimDriveSubsystem;
+import frc.robot.subsystems.Drive.DriveIO;
+import frc.robot.subsystems.Drive.SimDriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Indexer.Kicker;
@@ -36,7 +37,7 @@ import frc.robot.subsystems.Intake.IntakeDeployIO;
 
 public class ShootAllInHopper extends Command {
 
-    private final SimDriveSubsystem driveData;
+    private final DriveIO driveData;
     private final FlywheelIO flywheel;
     private final Spindexer spindexer;
     private final boolean stopFlywheelOnEnd;
@@ -63,7 +64,7 @@ public class ShootAllInHopper extends Command {
      * @param flywheel flywheel subsystem (used to check atTarget)
      * @param stopFlywheelOnEnd if true, zeroes the flywheel when the command ends
      */
-    public ShootAllInHopper(SimDriveSubsystem driveData, FlywheelIO flywheel, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign) {
+    public ShootAllInHopper(DriveIO driveData, FlywheelIO flywheel, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign) {
         this.driveData = driveData;
         this.flywheel = flywheel;
         this.stopFlywheelOnEnd = stopFlywheelOnEnd;
@@ -99,7 +100,7 @@ public class ShootAllInHopper extends Command {
     /**
      * Convenience constructor that leaves the flywheel running when command ends.
      */
-    public ShootAllInHopper(SimDriveSubsystem driveData, FlywheelIO flywheel, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
+    public ShootAllInHopper(DriveIO driveData, FlywheelIO flywheel, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
         this(driveData, flywheel, kicker, preIndexer, spindexer, intake, false, true);
     }
 
@@ -159,7 +160,7 @@ public class ShootAllInHopper extends Command {
                     }
                     if (now >= nextShotTimeSec[i]){
                         startedShooting = true;
-                        Pose2d ballPose2d = driveData.getRealPoseSim().transformBy(
+                        Pose2d ballPose2d = ((SimDriveSubsystem)driveData).getRealPoseSim().transformBy(
                             new Transform2d(
                                 ShooterConstants.kSimShooterXOffsetMeters,
                                 simShooterYOffsets[i],

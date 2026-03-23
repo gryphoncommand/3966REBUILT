@@ -25,7 +25,8 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.Robot;
-import frc.robot.subsystems.SimDriveSubsystem;
+import frc.robot.subsystems.Drive.DriveIO;
+import frc.robot.subsystems.Drive.SimDriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Indexer.Kicker;
@@ -35,7 +36,7 @@ import frc.robot.subsystems.Intake.IntakeDeployIO;
 
 public class Shoot extends Command {
 
-    private final SimDriveSubsystem driveData;
+    private final DriveIO driveData;
     private final FlywheelIO flywheel;
     private final Spindexer spindexer;
     private final boolean stopFlywheelOnEnd;
@@ -59,7 +60,7 @@ public class Shoot extends Command {
      * @param flywheel flywheel subsystem (used to check atTarget)
      * @param stopFlywheelOnEnd if true, zeroes the flywheel when the command ends
      */
-    public Shoot(SimDriveSubsystem driveData, FlywheelIO flywheel, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign, BooleanSupplier shouldAgitate) {
+    public Shoot(DriveIO driveData, FlywheelIO flywheel, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign, BooleanSupplier shouldAgitate) {
         this.driveData = driveData;
         this.flywheel = flywheel;
         this.stopFlywheelOnEnd = stopFlywheelOnEnd;
@@ -96,7 +97,7 @@ public class Shoot extends Command {
     /**
      * Convenience constructor that leaves the flywheel running when command ends.
      */
-    public Shoot(SimDriveSubsystem driveData, FlywheelIO flywheel, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
+    public Shoot(DriveIO driveData, FlywheelIO flywheel, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
         this(driveData, flywheel, kicker, preIndexer, spindexer, intake, false, true, ()->true);
     }
 
@@ -154,7 +155,7 @@ public class Shoot extends Command {
                         break;
                     }
                     if (now >= nextShotTimeSec[i]){
-                        Pose2d ballPose2d = driveData.getRealPoseSim().transformBy(
+                        Pose2d ballPose2d = ((SimDriveSubsystem)driveData).getRealPoseSim().transformBy(
                             new Transform2d(
                                 ShooterConstants.kSimShooterXOffsetMeters,
                                 simShooterYOffsets[i],

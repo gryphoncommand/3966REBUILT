@@ -28,7 +28,9 @@ import frc.robot.commands.Indexing.RunPreIndexer;
 import frc.robot.commands.Intake.IntakeDeploy;
 import frc.robot.commands.Intake.IntakeStow;
 import frc.robot.commands.Intake.RunIntakeRollers;
-import frc.robot.subsystems.SimDriveSubsystem;
+import frc.robot.subsystems.Drive.DriveIO;
+import frc.robot.subsystems.Drive.DriveSubsystem;
+import frc.robot.subsystems.Drive.SimDriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Flywheel.FlywheelSparkFlex;
@@ -76,7 +78,7 @@ import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
 public class RobotContainer {
 
   // Subsystems
-  private final SimDriveSubsystem m_drive = new SimDriveSubsystem();
+  private final DriveIO m_drive = Robot.isReal() ? new DriveSubsystem() : new SimDriveSubsystem();
   private final IntakeDeployIO m_intakeDeploy = Robot.isReal() ? new IntakeDeploySparkFlex() : new IntakeDeploySimTalonFX();
   private final FlywheelIO m_flywheel = Robot.isReal() ? new FlywheelSparkFlex() : new FlywheelSimTalonFX();
   private final Kicker m_kicker = new Kicker();
@@ -156,7 +158,7 @@ public class RobotContainer {
               m_drive.drive(
                 -MathUtil.applyDeadband(forward, OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(strafe, OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(turn, OIConstants.kDriveDeadband), false);
+                -MathUtil.applyDeadband(turn, OIConstants.kDriveDeadband), true);
             },
             m_drive)
             .withName("Basic Drive"));
@@ -305,7 +307,7 @@ public class RobotContainer {
       0.635, // from left to right
       0.737, // from front to back
       Units.inchesToMeters(6), // from floor to top of bumpers
-      m_drive::getRealPoseSim, // Supplier<Pose2d> of robot pose
+      ((SimDriveSubsystem)m_drive)::getRealPoseSim, // Supplier<Pose2d> of robot pose
       m_drive::getCurrentSpeedsFieldRelative // Supplier<ChassisSpeeds> of field-centric chassis speeds
     );
 

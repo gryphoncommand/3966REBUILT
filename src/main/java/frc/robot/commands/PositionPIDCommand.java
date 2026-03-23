@@ -21,11 +21,11 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.GryphonLib.MovementCalculations;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive.SimDriveSubsystem;
 
 public class PositionPIDCommand extends Command{
     
-    public DriveSubsystem drivetrain;
+    public SimDriveSubsystem drivetrain;
     public final Pose2d goalPose;
 
     private final Timer timer = new Timer();
@@ -39,13 +39,13 @@ public class PositionPIDCommand extends Command{
 
 
 
-    private PositionPIDCommand(DriveSubsystem drivetrain, Pose2d goalPose) {
+    private PositionPIDCommand(SimDriveSubsystem drivetrain, Pose2d goalPose) {
         this.drivetrain = drivetrain;
         this.goalPose = goalPose;
         addRequirements(drivetrain);
     }
 
-    public static Command generateCommand(DriveSubsystem swerve, Pose2d goalPose, Time timeout){
+    public static Command generateCommand(SimDriveSubsystem swerve, Pose2d goalPose, Time timeout){
         return new PositionPIDCommand(swerve, goalPose).withTimeout(timeout).finallyDo(() -> {
             swerve.driveRobotRelativeChassis(new ChassisSpeeds(0,0,0));
             swerve.setX();

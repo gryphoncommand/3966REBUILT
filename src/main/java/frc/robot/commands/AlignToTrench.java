@@ -14,11 +14,11 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive.DriveIO;
 
 public class AlignToTrench extends Command {
 
-    private final DriveSubsystem drive;
+    private final DriveIO drive;
     private final CommandXboxController controller;
     private double targetY;
 
@@ -27,7 +27,7 @@ public class AlignToTrench extends Command {
     private final PIDController yPID = new PIDController(2.5, 0, 0.3);
     private final PIDController thetaPID = new PIDController(4.0, 0, 0.4);
 
-    public AlignToTrench(DriveSubsystem drive, CommandXboxController controller) {
+    public AlignToTrench(DriveIO drive, CommandXboxController controller) {
         this.drive = drive;
         this.controller = controller;
 

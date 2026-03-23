@@ -1,15 +1,8 @@
-// Copyright (c) 2025-2026 Littleton Robotics
-// http://github.com/Mechanical-Advantage
-//
-// Use of this source code is governed by an MIT-style
-// license that can be found in the LICENSE file at
-// the root directory of this project.
-
 package frc;
 
 // https://github.com/hammerheads5000/FuelSim
 //
-// Copyright (c) 2026 LordOfFrogs
+// Copyright (c) 2026 LordOfFrogs & 6328 Littleton Robotics
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal

@@ -17,10 +17,10 @@ import frc.GryphonLib.PositionCalculations;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive.DriveIO;
 
 public class AlignToGoalAuto extends Command {
-    private final DriveSubsystem drive;
+    private final DriveIO drive;
     private final PIDController turnPID = AlignmentConstants.turnPID;
     private Pose2d goalPose;
     private double yawError;
@@ -29,7 +29,7 @@ public class AlignToGoalAuto extends Command {
     private boolean overridden;
     private Transform2d kRobotToShooter;
 
-    public AlignToGoalAuto(DriveSubsystem drive, Pose2d goalPose, boolean SOTM) {
+    public AlignToGoalAuto(DriveIO drive, Pose2d goalPose, boolean SOTM) {
         this.drive = drive;
         this.goalPose = goalPose;
         this.SOTM = SOTM;

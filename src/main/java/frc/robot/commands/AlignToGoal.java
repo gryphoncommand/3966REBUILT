@@ -16,10 +16,10 @@ import frc.GryphonLib.PositionCalculations;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.subsystems.SimDriveSubsystem;
+import frc.robot.subsystems.Drive.DriveIO;
 
 public class AlignToGoal extends Command {
-    private final SimDriveSubsystem drive;
+    private final DriveIO drive;
     private final PIDController turnPID = AlignmentConstants.turnPID;
     private final CommandXboxController controller;
     private Pose2d goalPose;
@@ -28,7 +28,7 @@ public class AlignToGoal extends Command {
     private boolean SOTM;
     private Transform2d kRobotToShooter;
 
-    public AlignToGoal(SimDriveSubsystem drive, CommandXboxController controller, Pose2d goalPose, boolean SOTM) {
+    public AlignToGoal(DriveIO drive, CommandXboxController controller, Pose2d goalPose, boolean SOTM) {
         this.drive = drive;
         this.controller = controller;
         this.goalPose = goalPose;
@@ -75,11 +75,11 @@ public class AlignToGoal extends Command {
         SmartDashboard.putNumber("Yaw Align Error", Units.radiansToDegrees(yawError));
 
         // PID output
-        double turn = turnPID.calculate(yawError);
+        double turn = turnPID.calculate(yawErsror);
         turn = MathUtil.clamp(turn, -1.0, 1.0);
 
         // Drive with driver’s translation + auto-turn
-        drive.drive(forward, strafe, -turn, false);
+        drive.drive(forward, strafe, -turn, true);
 
         boolean withinAngleTol = Math.abs(yawError) < AlignmentConstants.ANGLE_TOLERANCE_RAD;
         boolean slowEnoughRot = Math.abs(drive.getCurrentSpeeds().omegaRadiansPerSecond) < AlignmentConstants.ANG_VEL_TOLERANCE_RAD_PER_SEC;
