@@ -14,7 +14,6 @@ import frc.robot.subsystems.Drive.DriveIO;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Indexer.Kicker;
 import frc.robot.subsystems.Indexer.PreIndexer;
-import frc.robot.subsystems.Indexer.Spindexer;
 import frc.robot.subsystems.Intake.IntakeDeployIO;
 import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
 
@@ -24,7 +23,6 @@ public class AllSystemsTest {
     private final IntakeRollersTalonFX m_intakeRollers;
     private final Kicker m_kicker;
     private final PreIndexer m_preindexer;
-    private final Spindexer m_spindexer;
     private final FlywheelIO m_flywheel;
 
     public AllSystemsTest(
@@ -33,7 +31,6 @@ public class AllSystemsTest {
         IntakeRollersTalonFX intakeRollers,
         Kicker kicker,
         PreIndexer preindexer,
-        Spindexer spindexer,
         FlywheelIO flywheel
     ) {
         m_drive = drive;
@@ -41,13 +38,12 @@ public class AllSystemsTest {
         m_intakeRollers = intakeRollers;
         m_kicker = kicker;
         m_preindexer = preindexer;
-        m_spindexer = spindexer;
         m_flywheel = flywheel;
     }
 
 
     public SequentialCommandGroup getSystemsTest(){
-        FeedShooterFactory indexers = new FeedShooterFactory(m_kicker, m_preindexer, m_spindexer);
+        FeedShooterFactory indexers = new FeedShooterFactory(m_kicker, m_preindexer);
         SequentialCommandGroup test = new SequentialCommandGroup(
             new IntakeDeploy(m_intakeDeploy),
             new WaitCommand(2),
@@ -55,7 +51,7 @@ public class AllSystemsTest {
             new WaitCommand(2),
             new RunIntakeRollers(m_intakeRollers).withTimeout(1),
             new WaitCommand(1),
-            new RunCommand(()->indexers.start(false)).withTimeout(1).finallyDo(()->indexers.stop()),
+            new RunCommand(()->indexers.start()).withTimeout(1).finallyDo(()->indexers.stop()),
             new WaitCommand(1),
             new SetShooterToDefinedStateOnce(m_flywheel, ShooterConstants.kDefaultShooterState),
             new WaitCommand(1),

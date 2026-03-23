@@ -26,5 +26,7 @@ public interface FlywheelIO extends Subsystem {
 
   double getVoltage();
 
+  double getStatorCurrent();
+
   void stop();
 }

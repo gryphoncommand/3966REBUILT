@@ -142,7 +142,7 @@ public final class Constants {
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center,
     // pitched upward.
     private static final double camPitch1 = -Units.degreesToRadians(20);
-    private static final double camYaw1 = Units.degreesToRadians(0);
+    private static final double camYaw1 = Units.degreesToRadians(180);
     
     public static final Transform3d kRobotToCam1 =
             new Transform3d(new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(16.732283)), new Rotation3d(0, camPitch1, camYaw1));
@@ -182,7 +182,7 @@ public final class Constants {
     // Fixed-hood, 3-wide drum shooter configuration
     public static final int kDrumMotorCount = 2;
     public static final double kFixedHoodAngleDeg = 28.0;
-    public static final double kTargetFuelPerSecond = 15.0;
+    public static final double kTargetFuelPerSecond = 13.0;
     public static final int kSimShooterCount = 2;
     public static final double kSimTotalBps = kTargetFuelPerSecond;
     public static final double kSimPerShooterMeanIntervalSec = (double) kSimShooterCount / kSimTotalBps;
@@ -199,7 +199,7 @@ public final class Constants {
 
 
     public static double kDefaultFlywheelSpeed = 0.0;
-    public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d());
+    public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(Math.PI));
 
     public static ShooterState kShooterStowState = new ShooterState(3, kFixedHoodAngleDeg, 0, 1.2);
     public static ShooterState kDefaultShooterState = new ShooterState(3, kFixedHoodAngleDeg, 1300, 1.2);
@@ -219,8 +219,8 @@ public final class Constants {
       new ShooterState(3.820, kFixedHoodAngleDeg, 2180, 1.18),
       new ShooterState(4.150, kFixedHoodAngleDeg, 2240, 1.23),
       new ShooterState(4.414, kFixedHoodAngleDeg, 2290, 1.27),
-      new ShooterState(4.800, kFixedHoodAngleDeg, 2370, 1.33),
-      new ShooterState(5.250, kFixedHoodAngleDeg, 2450, 1.40)
+      new ShooterState(4.800, kFixedHoodAngleDeg, 2350, 1.33),
+      new ShooterState(5.250, kFixedHoodAngleDeg, 2630, 1.40)
     );
 
     public static List<ShooterState> RealPassingValues = List.of(

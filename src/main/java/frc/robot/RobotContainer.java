@@ -33,7 +33,7 @@ import frc.robot.subsystems.Drive.DriveSubsystem;
 import frc.robot.subsystems.Drive.SimDriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
-import frc.robot.subsystems.Flywheel.FlywheelSparkFlex;
+import frc.robot.subsystems.Flywheel.FlywheelTalonFX;
 
 import java.util.Set;
 
@@ -69,7 +69,6 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Indexer.Kicker;
 import frc.robot.subsystems.Indexer.PreIndexer;
-import frc.robot.subsystems.Indexer.Spindexer;
 import frc.robot.subsystems.Intake.IntakeDeployIO;
 import frc.robot.subsystems.Intake.IntakeDeploySimTalonFX;
 import frc.robot.subsystems.Intake.IntakeDeploySparkFlex;
@@ -80,10 +79,9 @@ public class RobotContainer {
   // Subsystems
   private final DriveIO m_drive = Robot.isReal() ? new DriveSubsystem() : new SimDriveSubsystem();
   private final IntakeDeployIO m_intakeDeploy = Robot.isReal() ? new IntakeDeploySparkFlex() : new IntakeDeploySimTalonFX();
-  private final FlywheelIO m_flywheel = Robot.isReal() ? new FlywheelSparkFlex() : new FlywheelSimTalonFX();
+  private final FlywheelIO m_flywheel = Robot.isReal() ? new FlywheelTalonFX() : new FlywheelSimTalonFX();
   private final Kicker m_kicker = new Kicker();
   private final PreIndexer m_preIndexer = new PreIndexer();
-  private final Spindexer m_spindexer = new Spindexer();
   private final IntakeRollersTalonFX m_intakeRollers = new IntakeRollersTalonFX();
 
   private Command runIntakeRollers = new RunIntakeRollers(m_intakeRollers);
@@ -108,7 +106,7 @@ public class RobotContainer {
     }
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
-    autoChooser.addOption("Systems Test", new AllSystemsTest(m_drive, m_intakeDeploy, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_flywheel).getSystemsTest());
+    autoChooser.addOption("Systems Test", new AllSystemsTest(m_drive, m_intakeDeploy, m_intakeRollers, m_kicker, m_preIndexer, m_flywheel).getSystemsTest());
     
 
     emergencyShotChooser.addOption("Default", ShooterConstants.kDefaultShooterState);
@@ -120,12 +118,12 @@ public class RobotContainer {
     SmartDashboard.putData("Shoot All", 
       new ParallelCommandGroup(
         new SetShooterToDefinedState(m_flywheel, ShooterConstants.kDefaultShooterState),
-        new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, false))
+        new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy, false, false))
       );
     
     
 
-    SmartDashboard.putData("Add Balls", new ConditionalCommand(new InstantCommand(), new InstantCommand(m_spindexer::addBall), Robot::isReal));
+    SmartDashboard.putData("Add Balls", new ConditionalCommand(new InstantCommand(), new InstantCommand(m_preIndexer::addBall), Robot::isReal));
     try {
       SmartDashboard.putData("Run Auto", new SequentialCommandGroup(
         AutoBuilder.pathfindToPoseFlipped(new Pose2d(new Translation2d(3.747, 7.419), new Rotation2d(Units.degreesToRadians(179.167))), AutoConstants.constraints),
@@ -136,7 +134,7 @@ public class RobotContainer {
               new AlignToGoalAuto(m_drive, AlignmentConstants.HubPose, true),
               new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow)
             ),
-            new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, true, true)
+            new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy, true, true)
           )
         )
       ));
@@ -215,7 +213,7 @@ public class RobotContainer {
 
     m_driverController.rightTrigger()
         .whileTrue(runIntakeRollers)
-        .whileTrue(new Shoot(m_drive, m_flywheel, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, true, m_driverController.leftTrigger().negate()::getAsBoolean).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        .whileTrue(new Shoot(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy, false, true, m_driverController.leftTrigger().negate()::getAsBoolean).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
     m_driverController.leftTrigger()
       .whileTrue(
@@ -245,7 +243,7 @@ public class RobotContainer {
           emergencyShotChooser.getSelected()
         ), Set.of(m_flywheel))
       )
-      .whileTrue(new Shoot(m_drive, m_flywheel, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, false, m_driverController.leftTrigger().negate()::getAsBoolean).withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
+      .whileTrue(new Shoot(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy, false, false, m_driverController.leftTrigger().negate()::getAsBoolean).withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
       .onFalse(new SetShooterToDefinedState(m_flywheel, ShooterConstants.kShooterStowState).withTimeout(0.1));
     m_driverController.y()
       .whileTrue(new RunCommand(()->m_intakeRollers.set(-0.3), m_intakeRollers))
@@ -256,7 +254,7 @@ public class RobotContainer {
     
     m_operatorController.rightTrigger()
         .whileTrue(new SetShooterToDefinedState(m_flywheel, ShooterConstants.kDefaultShooterState))
-        .whileTrue(new Shoot(m_drive, m_flywheel, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, false, ()->true).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        .whileTrue(new Shoot(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy, false, false, ()->true).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     m_operatorController.x().toggleOnTrue(new SetToDashboardSpeeds(m_flywheel));
     
 
@@ -313,20 +311,20 @@ public class RobotContainer {
 
     instance.registerIntake(
         -(0.635 + 2*(IntakeConstants.kIntakeLengthMeters*0.9))/2, -(0.635)/2, -(0.6)/2, (0.65)/2, // robot-centric coordinates for bounding box
-        () -> (SmartDashboard.getBoolean("Intake Deployed", true) && !m_spindexer.isFull()), // (optional) BooleanSupplier for whether the intake should be active at a given moment
-        new Runnable() {public void run() {m_spindexer.addBall();};}); // (optional) Runnable called whenever a fuel is intaked
+        () -> (SmartDashboard.getBoolean("Intake Deployed", true) && !m_preIndexer.isFull()), // (optional) BooleanSupplier for whether the intake should be active at a given moment
+        new Runnable() {public void run() {m_preIndexer.addBall();};}); // (optional) Runnable called whenever a fuel is intaked
 
     instance.start();
 
     // Performance tuning for sim
     instance.setLogEveryNTicks(5); // 25 Hz fuel pose logging
-    instance.setAdaptiveSubticks(2, 5, 40, 600);
-    instance.enableProfiling(50);
+    instance.setAdaptiveSubticks(1, 3, 40, 600);
+    instance.disableProfiling();
 
     SmartDashboard.putData("Reset Fuel", Commands.runOnce(() -> {
           FuelSim.getInstance().clearFuel();
           FuelSim.getInstance().spawnStartingFuel();
-          FuelSim.getInstance().reserveFuelForRobot((int) m_spindexer.getBalls());
+          FuelSim.getInstance().reserveFuelForRobot((int) m_preIndexer.getBalls());
       })
       .withName("Reset Fuel")
       .ignoringDisable(true));
@@ -343,7 +341,7 @@ public class RobotContainer {
   }
 
   private void configureNamedCommands(){
-    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy));
+    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy));
     NamedCommands.registerCommand("Speedup Flywheel", new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow));
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
@@ -352,7 +350,7 @@ public class RobotContainer {
       )
     );
     NamedCommands.registerCommand("Align to Shoot", new AlignToGoalAuto(m_drive, AlignmentConstants.HubPose, true));
-    NamedCommands.registerCommand("Outpost Intake", new InstantCommand(()->{for (int i = 0; i < 25; i++){m_spindexer.addBall();}}));
+    NamedCommands.registerCommand("Outpost Intake", new InstantCommand(()->{for (int i = 0; i < 25; i++){m_preIndexer.addBall();}}));
     NamedCommands.registerCommand("Deploy Intake", new IntakeDeploy(m_intakeDeploy));
     NamedCommands.registerCommand("Stow Intake", new IntakeStow(m_intakeDeploy));
     NamedCommands.registerCommand("Run Intake", new RunCommand(()->m_intakeRollers.setVelocity(IntakeConstants.kIntakeSpeedRPM), m_intakeRollers).finallyDo(()->m_intakeRollers.set(0)));
@@ -376,6 +374,6 @@ public class RobotContainer {
   }
 
   public int getSimBallCount() {
-    return (int) m_spindexer.getBalls();
+    return (int) m_preIndexer.getBalls();
   }
 }

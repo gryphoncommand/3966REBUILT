@@ -18,6 +18,7 @@ public class PreIndexer extends SubsystemBase {
 
     private double targetRPM = 0.0;
     private VelocityVoltage m_preIndexerRequest = new VelocityVoltage(300);
+    private int simBalls = 0;
 
     public PreIndexer(){
         preIndexerMotor.getConfigurator().apply(PreIndexerConfig.PreIndexerConfig);
@@ -49,5 +50,27 @@ public class PreIndexer extends SubsystemBase {
 
     public boolean atTarget(double threshold){
         return Math.abs(getVelocity().in(RPM) - targetRPM) < threshold;
+    }
+
+    public void addBall(){
+        simBalls += 1;
+        if (simBalls >= 41){
+            simBalls = 40;
+        }
+    }
+
+    public void removeBall(){
+        simBalls -= 1;
+        if (simBalls < 0){
+            simBalls = 0;
+        }
+    }
+
+    public double getBalls(){
+        return simBalls;
+    }
+
+    public boolean isFull(){
+      return simBalls >= 40;
     }
 }

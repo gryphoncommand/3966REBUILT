@@ -10,8 +10,6 @@ import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -31,18 +29,16 @@ import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Indexer.Kicker;
 import frc.robot.subsystems.Indexer.PreIndexer;
-import frc.robot.subsystems.Indexer.Spindexer;
 import frc.robot.subsystems.Intake.IntakeDeployIO;
 
 public class Shoot extends Command {
 
     private final DriveIO driveData;
     private final FlywheelIO flywheel;
-    private final Spindexer spindexer;
     private final boolean stopFlywheelOnEnd;
     private final IntakeDeployIO intake;
     private final Timer agitateTimer = new Timer();
-    private boolean spindexerDirection = false;
+    private final PreIndexer preIndexer;
     private FeedShooterFactory passthroughFactory;
     private boolean indexingStopped = true;
     private boolean neeedAlign = true;
@@ -60,33 +56,33 @@ public class Shoot extends Command {
      * @param flywheel flywheel subsystem (used to check atTarget)
      * @param stopFlywheelOnEnd if true, zeroes the flywheel when the command ends
      */
-    public Shoot(DriveIO driveData, FlywheelIO flywheel, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign, BooleanSupplier shouldAgitate) {
+    public Shoot(DriveIO driveData, FlywheelIO flywheel, Kicker kicker, PreIndexer preIndexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign, BooleanSupplier shouldAgitate) {
         this.driveData = driveData;
         this.flywheel = flywheel;
         this.stopFlywheelOnEnd = stopFlywheelOnEnd;
-        this.spindexer = spindexer;
         this.neeedAlign = neeedAlign;
         this.intake = intake;
         this.shouldAgitate = shouldAgitate;
+        this.preIndexer = preIndexer;
 
         if (stopFlywheelOnEnd){
             addRequirements(flywheel);
         }
 
-        passthroughFactory = new FeedShooterFactory(kicker, preIndexer, spindexer);
-        addRequirements(kicker, preIndexer, spindexer, intake);
+        passthroughFactory = new FeedShooterFactory(kicker, preIndexer);
+        addRequirements(kicker, preIndexer, intake);
     }
 
     private Translation3d launchVel(LinearVelocity vel, Angle angle) {
-        Pose3d robot = new Pose3d(driveData.getCurrentPose());
+        Pose2d robot = (driveData.getCurrentPose());
         ChassisSpeeds fieldSpeeds = driveData.getCurrentSpeedsFieldRelative();
 
         double horizontalVel = Math.cos(angle.in(Radians)) * vel.in(MetersPerSecond);
         double verticalVel = Math.sin(angle.in(Radians)) * vel.in(MetersPerSecond);
         double xVel =
-                horizontalVel * Math.cos(robot.getRotation().toRotation2d().getRadians());
+                horizontalVel * Math.cos(robot.transformBy(ShooterConstants.kRobotToShooter).getRotation().getRadians());
         double yVel =
-                horizontalVel * Math.sin(robot.getRotation().toRotation2d().getRadians());
+                horizontalVel * Math.sin(robot.transformBy(ShooterConstants.kRobotToShooter).getRotation().getRadians());
 
         xVel += fieldSpeeds.vxMetersPerSecond;
         yVel += fieldSpeeds.vyMetersPerSecond;
@@ -97,8 +93,8 @@ public class Shoot extends Command {
     /**
      * Convenience constructor that leaves the flywheel running when command ends.
      */
-    public Shoot(DriveIO driveData, FlywheelIO flywheel, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
-        this(driveData, flywheel, kicker, preIndexer, spindexer, intake, false, true, ()->true);
+    public Shoot(DriveIO driveData, FlywheelIO flywheel, Kicker kicker, PreIndexer preIndexer, IntakeDeployIO intake) {
+        this(driveData, flywheel, kicker, preIndexer, intake, false, true, ()->true);
     }
 
     @Override
@@ -142,7 +138,7 @@ public class Shoot extends Command {
         if (Robot.isSimulation()){ 
             double now = Timer.getFPGATimestamp();
 
-            if (flyReady && aligned && spindexer.getBalls() != 0) {
+            if (flyReady && aligned && preIndexer.getBalls() != 0) {
                 double kShooterEfficiency = 0.70;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
@@ -151,7 +147,7 @@ public class Shoot extends Command {
                 double ballSpeed = wheelRadPerSec * wheelRadius * kShooterEfficiency;
 
                 for (int i = 0; i < nextShotTimeSec.length; i++){
-                    if (spindexer.getBalls() == 0){
+                    if (preIndexer.getBalls() == 0){
                         break;
                     }
                     if (now >= nextShotTimeSec[i]){
@@ -159,7 +155,7 @@ public class Shoot extends Command {
                             new Transform2d(
                                 ShooterConstants.kSimShooterXOffsetMeters,
                                 simShooterYOffsets[i],
-                                new Rotation2d()
+                                (ShooterConstants.kRobotToShooter).getRotation()
                             )
                         );
                         Translation3d initialPosition = new Translation3d(ballPose2d.getX(), ballPose2d.getY(), Units.inchesToMeters(17.701451));
@@ -168,7 +164,7 @@ public class Shoot extends Command {
                             launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - ShooterConstants.kFixedHoodAngleDeg)));
                         if (spawned) {
                             nextShotTimeSec[i] = now + randomIntervalSec();
-                            spindexer.removeBall();
+                            preIndexer.removeBall();
                             ((FlywheelSimTalonFX)flywheel).simulateShot(wheelRadPerSec * wheelRadius);
                         }
                     }
@@ -178,7 +174,7 @@ public class Shoot extends Command {
 
         if (flyReady && indexingStopped && aligned) {
             Logger.recordOutput("Shoot Report", "Shooting");
-            passthroughFactory.start(spindexerDirection);
+            passthroughFactory.start();
             indexingStopped = false;
         } else if (!(aligned && flyReady)) {
             intake.setPosition(IntakeConstants.kIntakeDeployAngle);

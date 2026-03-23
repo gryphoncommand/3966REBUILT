@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Flywheel;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
@@ -29,7 +30,7 @@ import frc.robot.Configs;
 import frc.robot.Constants.ShooterConstants;
 
 public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
-    private final double Jkgm2 = 0.01;//0.004;
+    private final double Jkgm2 = 0.0051279246; //CAD
     private final FlywheelSim shooterSim =
         new FlywheelSim(
             LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60Foc(ShooterConstants.kDrumMotorCount), Jkgm2, ShooterConstants.kGearRatio),
@@ -120,7 +121,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
 
         // apply the new rotor position and velocity to the TalonFX;
         // note that this is rotor position/velocity (before gear ratio), but
-        // DCMotorSim returns mechanism position/velocity (after gear ratio)
+        // DCMotorSim returns mechanism position/veloci ty (after gear ratio)
         AngularVelocity mechVel = shooterSim.getAngularVelocity();
 
         m_flywheelSim.setRotorVelocity(mechVel.in(RotationsPerSecond) * ShooterConstants.kGearRatio);
@@ -215,6 +216,11 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         // This allows stacking shots since the shooter can shoot multiple at once
         this.pendingShotTorqueNm += (singleBallTorque * torqueRandomizer.nextDouble(1.3, 1.5)); // 1.4 for friction/compression losses
         this.shotTimeRemainingSec += singleBallContactTime; 
+    }
+
+    @Override
+    public double getStatorCurrent() {
+        return m_flywheelMotor.getStatorCurrent().getValue().in(Amps);
     }
 
     @Override
