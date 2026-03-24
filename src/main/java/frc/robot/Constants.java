@@ -246,7 +246,7 @@ public final class Constants {
     public static double kKickerSpeed = 9000;
     
 
-    public static double kActiveCurrentSpindexer = 20;
+    public static double kActiveCurrentKicker = 20;
     
   }
 

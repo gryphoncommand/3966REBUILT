@@ -39,6 +39,7 @@ public class ShootAllInHopper extends Command {
     private final boolean stopFlywheelOnEnd;
     private final IntakeDeployIO intake;
     private final PreIndexer preIndexer;
+    private final Kicker kicker;
     private FeedShooterFactory passthroughFactory;
     private Debouncer endTrigger = new Debouncer(1.5);
     private boolean startedShooting = false;
@@ -52,6 +53,7 @@ public class ShootAllInHopper extends Command {
     private int simEnd;
     private double[] nextShotTimeSec = new double[0];
     private double[] simShooterYOffsets = new double[0];
+    
 
     /**
      * Shoot command: runs the flywheel (assumed already set) and only feeds balls
@@ -67,6 +69,7 @@ public class ShootAllInHopper extends Command {
         this.neeedAlign = neeedAlign;
         this.intake = intake;
         this.preIndexer = preIndexer;
+        this.kicker = kicker;
 
         if (stopFlywheelOnEnd){
             addRequirements(flywheel);
@@ -207,7 +210,7 @@ public class ShootAllInHopper extends Command {
     public boolean isFinished() {
         if (Robot.isReal()) {
             if (startedShooting && shootingTimer.get() > 3){
-                return endTrigger.calculate(flywheel.getStatorCurrent() < IndexerConstants.kActiveCurrentSpindexer);
+                return endTrigger.calculate(kicker.getStatorCurrent() < IndexerConstants.kActiveCurrentKicker);
             }
             return false;
 		} else {
