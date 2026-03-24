@@ -19,7 +19,6 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.FuelSim;
-import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Indexing.FeedShooterFactory;
@@ -110,7 +109,7 @@ public class ShootAllInHopper extends Command {
         reachedSetpoint = false;
         startedShooting = false;
         if (Robot.isSimulation()){
-            simEnd = simEnder.nextInt(0, 6);
+            simEnd = simEnder.nextInt(1, 6);
             simShooterYOffsets = buildShooterYOffsets();
             nextShotTimeSec = new double[ShooterConstants.kSimShooterCount];
             double now = Timer.getFPGATimestamp();
@@ -207,7 +206,7 @@ public class ShootAllInHopper extends Command {
     public boolean isFinished() {
         if (Robot.isReal()) {
             if (startedShooting && shootingTimer.get() > 3){
-                return endTrigger.calculate(flywheel.getStatorCurrent() < IndexerConstants.kActiveCurrentSpindexer);
+                return endTrigger.calculate(flywheel.getStatorCurrent() < ShooterConstants.kActiveCurrentFlywheel);
             }
             return false;
 		} else {

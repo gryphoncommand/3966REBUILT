@@ -156,7 +156,7 @@ public class RobotContainer {
               m_drive.drive(
                 -MathUtil.applyDeadband(forward, OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(strafe, OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(turn, OIConstants.kDriveDeadband), false);
+                -MathUtil.applyDeadband(turn, OIConstants.kDriveDeadband), true);
             },
             m_drive)
             .withName("Basic Drive"));

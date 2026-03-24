@@ -141,11 +141,11 @@ public final class Constants {
     public static final String kCameraName3 = "ArduL";
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center,
     // pitched upward.
-    private static final double camPitch1 = -Units.degreesToRadians(20);
+    private static final double camPitch1 = -Units.degreesToRadians(15);
     private static final double camYaw1 = Units.degreesToRadians(180);
     
     public static final Transform3d kRobotToCam1 =
-            new Transform3d(new Translation3d(Units.inchesToMeters(10.25), Units.inchesToMeters(9.75), Units.inchesToMeters(16.732283)), new Rotation3d(0, camPitch1, camYaw1));
+            new Transform3d(new Translation3d(Units.inchesToMeters(5.252), Units.inchesToMeters(9.732), Units.inchesToMeters(20.118257)), new Rotation3d(0, camPitch1, camYaw1));
     public static final Transform3d kCamToRobot1 = kRobotToCam1.inverse();
 
     // some of these probably need to be flipped
@@ -193,10 +193,11 @@ public final class Constants {
     public static final double kViscousFriction = 0.002;   // Nm per rad/s
     public static final double kGearRatio = 2.0;
 
-    public static double kFlywheelRPMOffset = 250;
+    public static double kFlywheelRPMOffset = 300;
     public static double kShootDelay = 0.05;
     public static double kPhaseDelay = 0.02;
 
+    public static double kActiveCurrentFlywheel = 60;
 
     public static double kDefaultFlywheelSpeed = 0.0;
     public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(Math.PI));
@@ -234,27 +235,18 @@ public final class Constants {
   }
 
   public static class IndexerConstants {
-    public static int kSpindexerCanID = 13;
-    public static int kPreIndexerCanID = 15;
     public static int kKickerCanID = 16;
+    public static int kPreIndexerCanID = 15;
 
-    public static double kSpindexerGearRatio = 4;
     public static double kKickerGearRatio = 28/24;
 
     public static double kPreIndexerSpeed = 1600;
-    public static double kSpindexerSpeed = 7000;
     public static double kKickerSpeed = 9000;
-    
-
-    public static double kActiveCurrentSpindexer = 20;
-    
   }
 
   public static class IntakeConstants {
     public static int kRollerCanID = 12;
     public static double kIntakeSpeedRPM = 440;
-
-
 
     public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (14/36)
     public static double kShaftToIntakeDeployRatio = 36/16;
