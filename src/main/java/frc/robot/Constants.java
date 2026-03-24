@@ -192,7 +192,8 @@ public final class Constants {
     public static double kHoodMinAngleDeg = 22.6;
     public static double kHoodMOI = SingleJointedArmSim.estimateMOI(kHoodLengthMeters, Units.lbsToKilograms(1.5));
     public static double kDefaultFlywheelSpeed = 0.0;
-    public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(Math.PI/2));
+    public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(0));
+    public static double kShooterWidthMeters = Units.inchesToMeters(20);
 
     public static ShooterState kShooterStowState = new ShooterState(3, kHoodMinAngleDeg, 0, 1.2);
     public static ShooterState kDefaultShooterState = new ShooterState(3, 35, 1300, 1.2);

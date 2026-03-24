@@ -8,8 +8,6 @@ import java.util.Random;
 
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.MathShared;
-import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -93,9 +91,9 @@ public class ShootAllInHopper extends Command {
         double horizontalVel = Math.cos(angle.in(Radians)) * vel.in(MetersPerSecond);
         double verticalVel = Math.sin(angle.in(Radians)) * vel.in(MetersPerSecond);
         double xVel =
-                horizontalVel * Math.cos(robot.getRotation().toRotation2d().getRadians() + Math.PI / 2);
+                horizontalVel * Math.cos(robot.getRotation().toRotation2d().getRadians());
         double yVel =
-                horizontalVel * Math.sin(robot.getRotation().toRotation2d().getRadians() + Math.PI / 2);
+                horizontalVel * Math.sin(robot.getRotation().toRotation2d().getRadians());
 
         xVel += fieldSpeeds.vxMetersPerSecond;
         yVel += fieldSpeeds.vyMetersPerSecond;
@@ -156,8 +154,8 @@ public class ShootAllInHopper extends Command {
                 double wheelRadius = Units.inchesToMeters(2);
                 double ballSpeed = wheelRadPerSec * wheelRadius * kShooterEfficiency;
 
-                double offset = 25 * (Math.random() - 0.5);
-                Pose2d ballPose2d = driveData.getCurrentPose().transformBy(new Transform2d(ShooterConstants.kRobotToShooter.getX(), offset, new Rotation2d(Math.PI)));
+                double offset = ShooterConstants.kShooterWidthMeters * (Math.random() - 0.5);
+                Pose2d ballPose2d = driveData.getCurrentPose().transformBy(new Transform2d(ShooterConstants.kRobotToShooter.getX(), offset, new Rotation2d(0)));
                 Translation3d initialPosition = new Translation3d(ballPose2d.getX(), ballPose2d.getY(), Units.inchesToMeters(17.701451));
                 FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle())));
 

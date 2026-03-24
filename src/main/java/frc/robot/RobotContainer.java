@@ -347,6 +347,12 @@ public class RobotContainer {
       })
       .withName("Reset Fuel")
       .ignoringDisable(true));
+
+      SmartDashboard.putData("Clear Fuel", new InstantCommand(() -> {
+            FuelSim.getInstance().clearFuel();
+        })
+        .withName("Clear Fuel")
+        .ignoringDisable(true));;
     
       CommandScheduler.getInstance().schedule(Commands.runOnce(() -> {
           FuelSim.getInstance().clearFuel();

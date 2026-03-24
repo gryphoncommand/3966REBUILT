@@ -19,6 +19,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -48,6 +49,8 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     private Random torqueRandomizer = new Random();
 
     final VelocityVoltage m_flywheelVelocityVoltage = new VelocityVoltage(0);
+
+    private double currentTime = Timer.getTimestamp();
     
 
     public FlywheelSimTalonFX() {
@@ -147,7 +150,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         double ballMassKg = 0.226796;
         // Flywheel parameters
         double flywheelRadiusM = 0.0508;
-        double flywheelFuelFrictionN = 1; //TODO: fake ahh number; accounts for normal force and CoF
+        double flywheelFuelFrictionN = 1; //TODO: fake ahh number
 
         // Torque done on the wheel by friction
         double frictionTorqueNm = flywheelFuelFrictionN * flywheelRadiusM;
@@ -155,8 +158,9 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         // Convert to angular acceleration (rad/s^2)
         double alphaRadPerSec2 = frictionTorqueNm / Jkgm2;
 
-        // COnvert to change in angular velocity (rad/s)
-        double deltaOmegaRadPerSec = alphaRadPerSec2 * (1.0 / 50); // TODO: Time step also fake ahh; approximate contact time w/ fuel
+        // Convert to change in angular velocity (rad/s)
+        double deltaOmegaRadPerSec = alphaRadPerSec2 * (currentTime - Timer.getTimestamp());
+        currentTime = Timer.getTimestamp();
         
         // Current flywheel velocity (rad/s)
         double currentOmega = shooterSim.getAngularVelocity().in(RadiansPerSecond);

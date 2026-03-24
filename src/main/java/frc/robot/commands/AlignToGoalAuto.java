@@ -36,7 +36,7 @@ public class AlignToGoalAuto extends Command {
         this.goalPose = goalPose;
         this.SOTM = SOTM;
 
-        kRobotToShooter = Robot.isReal() ? ShooterConstants.kRobotToShooter : new Transform2d(ShooterConstants.kRobotToShooter.getX(), ShooterConstants.kRobotToShooter.getY(), new Rotation2d(Math.PI/2));
+        kRobotToShooter = Robot.isReal() ? ShooterConstants.kRobotToShooter : new Transform2d(ShooterConstants.kRobotToShooter.getX(), ShooterConstants.kRobotToShooter.getY(), new Rotation2d(0));
 
         if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)) {
             try {
