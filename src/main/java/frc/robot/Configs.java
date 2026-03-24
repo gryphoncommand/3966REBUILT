@@ -173,33 +173,9 @@ public final class Configs {
     }
 
     public static final class FlywheelConfig {
-        public static final SparkFlexConfig flywheelConfig = new SparkFlexConfig();
         public static final TalonFXConfiguration flywheelFXConfig = new TalonFXConfiguration();
 
         static {
-                flywheelConfig
-                        .idleMode(IdleMode.kCoast)
-                        .smartCurrentLimit(70)
-                        .inverted(false)
-                        .openLoopRampRate(0)
-                        .closedLoopRampRate(0);
-                flywheelConfig.encoder
-                    .positionConversionFactor(1)
-                    .velocityConversionFactor(1);
-                flywheelConfig.closedLoop
-                    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                    // These are example gains you may need to them for your own robot!
-                    .pid(0.00510241666/8, 0, 0.0)
-                    .iZone(100)
-                    .outputRange(-1, 1);
-                flywheelConfig.closedLoop.feedForward
-                    .kS(0.28043)
-                    .kV(0.001933)
-                    .kA(0.0005902*60);
-                flywheelConfig.closedLoop.maxMotion
-                    .maxAcceleration(8000)
-                    .allowedProfileError(40);
-
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
                 // PID + FF tuning
                 slot0ConfigsDrive.kS = 0.0;
@@ -263,31 +239,4 @@ public final class Configs {
                     
         }
     }
-
-    public static final class SpindexerConfig {
-        public static final SparkFlexConfig SpindexerConfig = new SparkFlexConfig();
-
-        static {
-                SpindexerConfig
-                        .idleMode(IdleMode.kBrake)
-                        .smartCurrentLimit(50)
-                        .inverted(false)
-                        .openLoopRampRate(0)
-                        .closedLoopRampRate(0);
-                SpindexerConfig.encoder
-                    .positionConversionFactor(IndexerConstants.kSpindexerGearRatio)
-                    .velocityConversionFactor(IndexerConstants.kSpindexerGearRatio/60);
-                SpindexerConfig.closedLoop
-                    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                    // These are example gains you may need to them for your own robot!
-                    .pid(0.0001, 0.0, 0.0)
-                    .iZone(100)
-                    .outputRange(-0.9, 0.9);
-                SpindexerConfig.closedLoop.feedForward
-                    .kV(0.0185)
-                    .kA(0);
-        }
-    }
-
-
 }
