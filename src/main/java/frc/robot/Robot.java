@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.littletonUtils.HubShiftUtil;
 import frc.FuelSim;
 
 /**
@@ -71,6 +72,8 @@ public class Robot extends LoggedRobot  {
     Logger.recordOutput("Basics/Match Time", DriverStation.getMatchTime());
     Logger.recordOutput("Basics/Recieving Alliance", DriverStation.getAlliance().isPresent());
     Logger.recordOutput("Basics/Current Alliance", DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get().toString() : "Neither");
+    Logger.recordOutput("Basics/Hub State", HubShiftUtil.getShiftedShiftInfo().active());
+    Logger.recordOutput("Basics/Remaining Time Until Shift", HubShiftUtil.getShiftedShiftInfo().remainingTime());
   }
 
   @Override
@@ -96,6 +99,7 @@ public class Robot extends LoggedRobot  {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    HubShiftUtil.initialize();
     CommandScheduler.getInstance().schedule(Commands.runOnce(() -> {
           FuelSim.getInstance().clearFuel();
           FuelSim.getInstance().spawnStartingFuel();

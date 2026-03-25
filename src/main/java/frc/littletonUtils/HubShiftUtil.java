@@ -93,7 +93,9 @@ public class HubShiftUtil {
   private static ShiftInfo getShiftInfo(
       boolean[] currentSchedule, double[] shiftStartTimes, double[] shiftEndTimes) {
     double timerValue = shiftTimer.get();
-    double currentTime = timerValue - shiftTimerOffset;
+    double currentTime = DriverStation.isAutonomous() ? autoEndTime - DriverStation.getMatchTime() : teleopDuration - DriverStation.getMatchTime();
+    @SuppressWarnings("unused")
+    double currentBotTime = timerValue - shiftTimerOffset;
     double stateTimeElapsed = currentTime;
     double stateTimeRemaining = 0.0;
     boolean active = false;
