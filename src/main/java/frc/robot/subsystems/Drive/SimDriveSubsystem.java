@@ -182,6 +182,8 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
       },
       this // Reference to this subsystem to set requirements
     );
+
+    swerveDrive.getGyro().setInverted(true);
   }
 
   public void driveRobotRelativeChassis(ChassisSpeeds speeds) {
@@ -191,9 +193,9 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
 
   public void driveFieldRelativeChassis(ChassisSpeeds fieldRelativeSpeeds){
     Rotation2d referenceRotation = getRotation();
-    ChassisSpeeds robotRelative =
-        ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, referenceRotation);
-    driveRobotRelativeChassis(robotRelative);
+    ChassisSpeeds robotRelative = ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, referenceRotation);
+    swerveDrive.setChassisSpeeds(robotRelative);
+    setDesiredStates(swerveDrive.kinematics.toSwerveModuleStates(robotRelative));
   }
 
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
@@ -202,7 +204,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
     double ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond;
     double rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
 
-    Rotation2d referenceRotation = new Rotation2d(swerveDrive.getGyroRotation3d().getZ());
+    Rotation2d referenceRotation = getRotation();
 
     var deliveredSpeeds =
         fieldRelative
@@ -298,7 +300,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
 
   public Rotation2d getRotation(){
     // return getCurrentPose().getRotation();
-    return Rotation2d.fromDegrees(-getRawYawDegrees() + gyroOffset);
+    return new Rotation2d(swerveDrive.getGyroRotation3d().getZ()).plus(Rotation2d.fromDegrees(gyroOffset));
   }
 
   public void stop(){
@@ -314,7 +316,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
     if (Robot.isSimulation()){
       flipped = false;
     }
-    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds().times(flipped ? -1 : 1), (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()));
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds().times(flipped ? -1 : 1), getRotation());
   }
 
   public Command goToPose(Pose2d goalPose){
@@ -467,7 +469,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
   }
 
   private double getRawYawDegrees() {
-    return Math.toDegrees(swerveDrive.getGyro().getRawRotation3d().getZ());
+    return Math.toDegrees(swerveDrive.getGyroRotation3d().getZ());
   }
 
   private void setDesiredStates(SwerveModuleState[] desired) {

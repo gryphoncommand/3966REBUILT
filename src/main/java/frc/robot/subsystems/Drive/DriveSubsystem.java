@@ -206,13 +206,21 @@ public class DriveSubsystem extends SubsystemBase implements DriveIO {
 
     m_gyro.calibrate();
   }
-
+  
   public void driveRobotRelativeChassis(ChassisSpeeds speeds) {
-    drive(speeds.vxMetersPerSecond/DriveConstants.kMaxSpeedMetersPerSecond, speeds.vyMetersPerSecond/DriveConstants.kMaxSpeedMetersPerSecond, speeds.omegaRadiansPerSecond/DriveConstants.kMaxAngularSpeed, false);
+    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+    swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+    
+    m_frontLeft.setDesiredState(swerveModuleStates[0]);
+    m_frontRight.setDesiredState(swerveModuleStates[1]);
+    m_rearLeft.setDesiredState(swerveModuleStates[2]);
+    m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
   public void driveFieldRelativeChassis(ChassisSpeeds fieldRelativeSpeeds){
-    drive(fieldRelativeSpeeds.vxMetersPerSecond/DriveConstants.kMaxSpeedMetersPerSecond, fieldRelativeSpeeds.vyMetersPerSecond/DriveConstants.kMaxSpeedMetersPerSecond, fieldRelativeSpeeds.omegaRadiansPerSecond/DriveConstants.kMaxAngularSpeed, true);
+    Rotation2d reference = Robot.isReal() ? getRotation() : getCurrentPose().getRotation().plus(new Rotation2d(DriverStation.getAlliance().get() == Alliance.Blue ? 0 : Math.PI));
+    driveRobotRelativeChassis(ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, reference));
   }
 
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
@@ -353,10 +361,10 @@ public class DriveSubsystem extends SubsystemBase implements DriveIO {
 
   public ChassisSpeeds getCurrentSpeedsFieldRelative(){
     boolean flipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
-    double xv = getCurrentSpeeds().vxMetersPerSecond * (flipped ? 1 : -1);
-    double yv = getCurrentSpeeds().vyMetersPerSecond * (flipped ? 1 : -1);
-    double theta = getCurrentSpeeds().omegaRadiansPerSecond * (flipped ? 1 : -1);
-    return ChassisSpeeds.fromRobotRelativeSpeeds(new ChassisSpeeds(xv, yv, theta), (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()));
+    if (Robot.isSimulation()){
+      flipped = false;
+    }
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds().times(flipped ? -1 : 1), (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()));
   }
 
   public Command goToPose(Pose2d goalPose){

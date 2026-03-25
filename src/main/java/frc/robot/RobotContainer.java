@@ -77,7 +77,7 @@ import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
 public class RobotContainer {
 
   // Subsystems
-  private final DriveIO m_drive = Robot.isReal() ? new DriveSubsystem() : new SimDriveSubsystem();
+  private final DriveIO m_drive = Robot.isReal() ? new DriveSubsystem() : new DriveSubsystem();
   private final IntakeDeployIO m_intakeDeploy = Robot.isReal() ? new IntakeDeploySparkFlex() : new IntakeDeploySimTalonFX();
   private final FlywheelIO m_flywheel = Robot.isReal() ? new FlywheelTalonFX() : new FlywheelSimTalonFX();
   private final Kicker m_kicker = new Kicker();
@@ -301,13 +301,25 @@ public class RobotContainer {
 
   private void configureFuelSim(){
     FuelSim instance = FuelSim.getInstance();
-    instance.registerRobot(
-      0.635, // from left to right
-      0.737, // from front to back
-      Units.inchesToMeters(6), // from floor to top of bumpers
-      ((SimDriveSubsystem)m_drive)::getRealPoseSim, // Supplier<Pose2d> of robot pose
-      m_drive::getCurrentSpeedsFieldRelative // Supplier<ChassisSpeeds> of field-centric chassis speeds
-    );
+    try {
+      instance.registerRobot(
+        0.635, // from left to right
+        0.737, // from front to back
+        Units.inchesToMeters(6), // from floor to top of bumpers
+        ((SimDriveSubsystem)m_drive)::getRealPoseSim, // Supplier<Pose2d> of robot pose
+        m_drive::getCurrentSpeedsFieldRelative // Supplier<ChassisSpeeds> of field-centric chassis speeds
+      );
+    } catch (Exception e){
+      instance.registerRobot(
+        0.635, // from left to right
+        0.737, // from front to back
+        Units.inchesToMeters(6), // from floor to top of bumpers
+        m_drive::getCurrentPose, // Supplier<Pose2d> of robot pose
+        m_drive::getCurrentSpeedsFieldRelative // Supplier<ChassisSpeeds> of field-centric chassis speeds
+      );
+    }
+    
+    
 
     instance.registerIntake(
         -(0.635 + 2*(IntakeConstants.kIntakeLengthMeters*0.9))/2, -(0.635)/2, -(0.6)/2, (0.65)/2, // robot-centric coordinates for bounding box

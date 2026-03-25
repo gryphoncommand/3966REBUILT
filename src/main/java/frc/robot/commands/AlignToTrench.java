@@ -42,10 +42,10 @@ public class AlignToTrench extends Command {
     @Override
     public void initialize() {
         Pose2d pose = drive.getCurrentPose();
-        xLimiter.reset(drive.getCurrentSpeedsFieldRelative().vxMetersPerSecond);
+        xLimiter.reset(drive.getCurrentSpeeds().vxMetersPerSecond);
         yPID.reset();
         thetaPID.reset();
-        Twist2d trenchTrans = drive.getCurrentSpeedsFieldRelative().toTwist2d(0.5);
+        Twist2d trenchTrans = drive.getCurrentSpeeds().toTwist2d(0.5);
         double continuedY = pose.exp(trenchTrans).getY();
 
         // --- Choose closest Y target ---
