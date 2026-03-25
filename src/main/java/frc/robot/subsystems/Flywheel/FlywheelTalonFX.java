@@ -38,7 +38,7 @@ public class FlywheelTalonFX extends SubsystemBase implements FlywheelIO {
         wheelVisual.setLineWeight(2);
         m_flywheelMotor = new TalonFX(ShooterConstants.kFlywheelCanID);
         m_flywheelMotor.getConfigurator().apply(Configs.FlywheelConfig.flywheelFXConfig);
-        m_flywheelMotor.getVelocity().setUpdateFrequency(100);
+        m_flywheelMotor.getVelocity().setUpdateFrequency(1000);
     }
 
     @Override
