@@ -77,7 +77,7 @@ import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
 public class RobotContainer {
 
   // Subsystems
-  private final DriveIO m_drive = Robot.isReal() ? new DriveSubsystem() : new DriveSubsystem();
+  private final DriveIO m_drive = Robot.isReal() ? new DriveSubsystem() : new SimDriveSubsystem();
   private final IntakeDeployIO m_intakeDeploy = Robot.isReal() ? new IntakeDeploySparkFlex() : new IntakeDeploySimTalonFX();
   private final FlywheelIO m_flywheel = Robot.isReal() ? new FlywheelTalonFX() : new FlywheelSimTalonFX();
   private final Kicker m_kicker = new Kicker();

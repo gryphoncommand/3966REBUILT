@@ -79,7 +79,12 @@ public class AlignToGoal extends Command {
         turn = MathUtil.clamp(turn, -1.0, 1.0);
 
         // Drive with driver’s translation + auto-turn
-        drive.drive(forward, strafe, -turn, true);
+        if (drive.getAligned() && (forward < 0.1 && strafe < 0.1)){
+            drive.setX();
+        } else {
+            drive.drive(forward, strafe, -turn, true);
+        }
+        
 
         boolean withinAngleTol = Math.abs(yawError) < AlignmentConstants.ANGLE_TOLERANCE_RAD;
         boolean slowEnoughRot = Math.abs(drive.getCurrentSpeeds().omegaRadiansPerSecond) < AlignmentConstants.ANG_VEL_TOLERANCE_RAD_PER_SEC;
