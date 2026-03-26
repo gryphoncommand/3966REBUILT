@@ -24,7 +24,7 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.Robot;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive.DriveIO;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Hood.HoodIO;
@@ -37,7 +37,7 @@ import frc.robot.subsystems.Turret.TurretIO;
 
 public class ShootAllInHopper extends Command {
 
-    private final DriveSubsystem driveData;
+    private final DriveIO driveData;
     private final HoodIO hood;
     private final FlywheelIO flywheel;
     private final TurretIO turret;
@@ -66,7 +66,7 @@ public class ShootAllInHopper extends Command {
      * @param feedRPM roller velocity to use when feeding
      * @param stopFlywheelOnEnd if true, zeroes the flywheel when the command ends
      */
-    public ShootAllInHopper(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, TurretIO turret, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign) {
+    public ShootAllInHopper(DriveIO driveData, HoodIO hood, FlywheelIO flywheel, TurretIO turret, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign) {
         this.driveData = driveData;
         this.hood = hood;
         this.flywheel = flywheel;
@@ -111,7 +111,7 @@ public class ShootAllInHopper extends Command {
     /**
      * Convenience constructor that leaves the flywheel running when command ends.
      */
-    public ShootAllInHopper(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, TurretIO turret, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
+    public ShootAllInHopper(DriveIO driveData, HoodIO hood, FlywheelIO flywheel, TurretIO turret, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
         this(driveData, hood, flywheel, turret, rollers, kicker, preIndexer, spindexer, intake, false, true);
     }
 

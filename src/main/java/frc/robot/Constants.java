@@ -212,8 +212,8 @@ public final class Constants {
       new ShooterState(3.820, 38.0, 1960, 1.14),
       new ShooterState(4.150, 39.5, 1975, 1.22),
       new ShooterState(4.414, 41.0, 2056, 1.30),
-      new ShooterState(4.800, 42.5, 2150, 1.40),
-      new ShooterState(5.250, 44.0, 2250, 1.52)
+      new ShooterState(4.800, 42.5, 2250, 1.40),
+      new ShooterState(5.250, 44.0, 2450, 1.52)
     );
 
     public static List<ShooterState> RealShootingValuesHigh = List.of(

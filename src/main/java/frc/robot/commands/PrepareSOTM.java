@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Hood.HoodIO;
 import frc.robot.Robot;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive.DriveIO;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.GryphonLib.ShooterState;
 import frc.GryphonLib.ChassisAccelerations;
@@ -24,7 +24,7 @@ public class PrepareSOTM extends Command {
 
     private final HoodIO hood;
     private final FlywheelIO flywheel;
-    private final DriveSubsystem driveData;
+    private final DriveIO driveData;
     private final List<ShooterState> table;
     private final Pose2d goalPose;
     private Pose2d effectiveGoalPose;
@@ -39,7 +39,7 @@ public class PrepareSOTM extends Command {
     public PrepareSOTM(
             HoodIO hood,
             FlywheelIO flywheel,
-            DriveSubsystem driveData,
+            DriveIO driveData,
             Pose2d goalPose,
             List<ShooterState> table) {
 

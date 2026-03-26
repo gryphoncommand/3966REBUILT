@@ -18,10 +18,10 @@ import frc.robot.Robot;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive.DriveIO;
 
 public class AlignToGoal extends Command {
-    private final DriveSubsystem drive;
+    private final DriveIO drive;
     private final PIDController turnPID = AlignmentConstants.turnPID;
     private final CommandXboxController controller;
     private Pose2d goalPose;
@@ -30,7 +30,7 @@ public class AlignToGoal extends Command {
     private boolean SOTM;
     private Transform2d kRobotToShooter;
 
-    public AlignToGoal(DriveSubsystem drive, CommandXboxController controller, Pose2d goalPose, boolean SOTM) {
+    public AlignToGoal(DriveIO drive, CommandXboxController controller, Pose2d goalPose, boolean SOTM) {
         this.drive = drive;
         this.controller = controller;
         this.goalPose = goalPose;

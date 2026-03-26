@@ -10,16 +10,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.GryphonLib.PositionCalculations;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.TurretConstants;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive.DriveIO;
 import frc.robot.subsystems.Turret.TurretIO;
 
 public class AimTurretToGoal extends Command {
-    private final DriveSubsystem drive;
+    private final DriveIO drive;
     private final TurretIO turret;
     private Pose2d goalPose;
     private final boolean useSOTMGoal;
 
-    public AimTurretToGoal(DriveSubsystem drive, TurretIO turret, Pose2d goalPose, boolean useSOTMGoal) {
+    public AimTurretToGoal(DriveIO drive, TurretIO turret, Pose2d goalPose, boolean useSOTMGoal) {
         this.drive = drive;
         this.turret = turret;
         this.goalPose = goalPose;
@@ -38,7 +38,7 @@ public class AimTurretToGoal extends Command {
             }
         }
 
-        Pose2d shooterPose = drive.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter).exp(drive.getCurrentSpeedsFieldRelative().toTwist2d(0.02));
+        Pose2d shooterPose = drive.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter).exp(drive.getCurrentSpeeds().toTwist2d(0.15));
         double yawErrorRad = PositionCalculations.getYawChangeToPose(shooterPose, goalPose);
 
         double desiredAngleDeg = Units.radiansToDegrees(yawErrorRad);

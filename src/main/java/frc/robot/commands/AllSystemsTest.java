@@ -10,7 +10,7 @@ import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.commands.Intake.IntakeDeploy;
 import frc.robot.commands.Intake.IntakeStow;
 import frc.robot.commands.Intake.RunIntakeRollers;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive.DriveIO;
 import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Hood.HoodIO;
@@ -21,7 +21,7 @@ import frc.robot.subsystems.Intake.IntakeDeployIO;
 import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
 
 public class AllSystemsTest {
-    private final DriveSubsystem m_drive;
+    private final DriveIO m_drive;
     private final IntakeDeployIO m_intakeDeploy;
     private final IntakeRollersTalonFX m_intakeRollers;
     private final Kicker m_kicker;
@@ -32,7 +32,7 @@ public class AllSystemsTest {
     private final HoodIO m_hood;
 
     public AllSystemsTest(
-        DriveSubsystem drive,
+        DriveIO drive,
         IntakeDeployIO intakeDeploy,
         IntakeRollersTalonFX intakeRollers,
         Kicker kicker,

@@ -8,17 +8,17 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive.DriveIO;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Hood.HoodIO;
 import frc.robot.subsystems.Turret.TurretIO;
 
 public class PassCommand extends Command {
     private ParallelCommandGroup passGroup;
-    private DriveSubsystem drive;
+    private DriveIO drive;
     private boolean depot;
 
-    public PassCommand(DriveSubsystem drive, CommandXboxController driverController, HoodIO hood, FlywheelIO flywheel, TurretIO turret){
+    public PassCommand(DriveIO drive, CommandXboxController driverController, HoodIO hood, FlywheelIO flywheel, TurretIO turret){
         this.drive = drive;
         addRequirements(hood, flywheel);
         depot = Math.abs(drive.getCurrentPose().getY() - AlignmentConstants.PassingPoseDepot.getY()) < Math.abs(drive.getCurrentPose().getY() - AlignmentConstants.PassingPoseOutpost.getY());

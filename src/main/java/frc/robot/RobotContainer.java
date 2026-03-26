@@ -34,7 +34,6 @@ import frc.robot.commands.Indexing.RunPreIndexer;
 import frc.robot.commands.Intake.IntakeDeploy;
 import frc.robot.commands.Intake.IntakeStow;
 import frc.robot.commands.Intake.RunIntakeRollers;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Climber.ClimberIO;
 import frc.robot.subsystems.Climber.ClimberSimTalonFX;
 import frc.robot.subsystems.Climber.ClimberTalonFX;
@@ -75,6 +74,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Hood.*;
+import frc.robot.subsystems.Drive.*;
 import frc.robot.subsystems.Indexer.Kicker;
 import frc.robot.subsystems.Indexer.PreIndexer;
 import frc.robot.subsystems.Indexer.Spindexer;
@@ -89,14 +89,14 @@ import frc.robot.subsystems.Turret.TurretTalonFX;
 public class RobotContainer {
 
   // Subsystems
-  private final DriveSubsystem m_drive = new DriveSubsystem();
+  private final DriveIO m_drive = Robot.isReal() ? new DriveSubsystem() : new SimDriveSubsystem();
   private final IntakeDeployIO m_intakeDeploy = Robot.isReal() ? new IntakeDeploySparkFlex() : new IntakeDeploySimTalonFX();
   private final FlywheelIO m_flywheel = Robot.isReal() ? new FlywheelSparkFlex() : new FlywheelSimTalonFX();
   private final Kicker m_kicker = new Kicker();
   private final PreIndexer m_preIndexer = new PreIndexer();
   private final Spindexer m_spindexer = new Spindexer();
   private final HoodIO m_hood = Robot.isReal() ? new HoodTalonFX() : new HoodSimTalonFX();
-  private final TurretIO m_turret = Robot.isReal() ? new TurretTalonFX() : new TurretSimTalonFX(m_drive::getCurrentPose);
+  private final TurretIO m_turret = Robot.isReal() ? new TurretTalonFX() : new TurretSimTalonFX(((SimDriveSubsystem)m_drive)::getRealPoseSim);
   private final IntakeRollersTalonFX m_intakeRollers = new IntakeRollersTalonFX();
   private final ClimberIO m_climber = Robot.isReal() ? new ClimberTalonFX() : new ClimberSimTalonFX();
 
@@ -112,7 +112,6 @@ public class RobotContainer {
   private final SendableChooser<ShooterState> emergencyShotChooser = new SendableChooser<>();
 
   public RobotContainer() {
-    new Vision();
     configureLogger();
     configureDefaultCommands();
     configureButtonBindings();
@@ -164,9 +163,10 @@ public class RobotContainer {
               double strafe = m_driverController.getLeftX();
               double turn = m_driverController.getRightX();
 
-              if (m_driverController.rightTrigger().getAsBoolean()){
-                forward /= 3;
-                strafe /= 3;
+              if (m_driverController.rightBumper().getAsBoolean()){
+                forward /= 2;
+                strafe /= 2;
+                turn /= 2;
               }
 
               m_drive.drive(
@@ -226,7 +226,10 @@ public class RobotContainer {
     //   })
     // );
 
-    m_driverController.rightBumper();
+    m_driverController.rightBumper().whileTrue(
+      new PrepareSOTM(m_hood, m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow).alongWith(
+      new AimTurretToGoal(m_drive, m_turret, AlignmentConstants.HubPose, true))
+    );
 
     m_driverController.rightTrigger()
         .whileTrue(runIntakeRollers)
@@ -324,13 +327,25 @@ public class RobotContainer {
 
   private void configureFuelSim(){
     FuelSim instance = FuelSim.getInstance();
-    instance.registerRobot(
-      0.635, // from left to right
-      0.737, // from front to back
-      Units.inchesToMeters(6), // from floor to top of bumpers
-      m_drive::getCurrentPose, // Supplier<Pose2d> of robot pose
-      m_drive::getCurrentSpeedsFieldRelative // Supplier<ChassisSpeeds> of field-centric chassis speeds
-    );
+    try {
+      instance.registerRobot(
+        0.635, // from left to right
+        0.737, // from front to back
+        Units.inchesToMeters(6), // from floor to top of bumpers
+        ((SimDriveSubsystem)m_drive)::getRealPoseSim, // Supplier<Pose2d> of robot pose
+        m_drive::getCurrentSpeedsFieldRelative // Supplier<ChassisSpeeds> of field-centric chassis speeds
+      );
+    } catch (Exception e){
+      instance.registerRobot(
+        0.635, // from left to right
+        0.737, // from front to back
+        Units.inchesToMeters(6), // from floor to top of bumpers
+        m_drive::getCurrentPose, // Supplier<Pose2d> of robot pose
+        m_drive::getCurrentSpeedsFieldRelative // Supplier<ChassisSpeeds> of field-centric chassis speeds
+      );
+    }
+    
+    
 
     instance.registerIntake(
         -(0.635 + 2*(IntakeConstants.kIntakeLengthMeters*0.9))/2, -(0.635)/2, -(0.6)/2, (0.65)/2, // robot-centric coordinates for bounding box
@@ -339,21 +354,28 @@ public class RobotContainer {
 
     instance.start();
 
+    // Performance tuning for sim
+    instance.setLogEveryNTicks(5); // 25 Hz fuel pose logging
+    instance.setAdaptiveSubticks(1, 3, 40, 600);
+    instance.disableProfiling();
+
     SmartDashboard.putData("Reset Fuel", Commands.runOnce(() -> {
           FuelSim.getInstance().clearFuel();
           FuelSim.getInstance().spawnStartingFuel();
+          FuelSim.getInstance().reserveFuelForRobot((int) m_spindexer.getBalls());
       })
       .withName("Reset Fuel")
       .ignoringDisable(true));
     
       CommandScheduler.getInstance().schedule(Commands.runOnce(() -> {
           FuelSim.getInstance().clearFuel();
-          // FuelSim.getInstance().spawnStartingFuel();
+          FuelSim.getInstance().spawnStartingFuel();
       })
       .withName("Reset Fuel")
       .ignoringDisable(true));
 
     instance.enableAirResistance();
+    CommandScheduler.getInstance().schedule(new AlignToGoal(m_drive, m_driverController, AlignmentConstants.HubPose, true).withTimeout(0.1));
   }
 
   private void configureNamedCommands(){

@@ -22,7 +22,8 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.Robot;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive.DriveIO;
+import frc.robot.subsystems.Drive.SimDriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Hood.HoodIO;
@@ -35,7 +36,7 @@ import frc.robot.subsystems.Turret.TurretIO;
 
 public class Shoot extends Command {
 
-    private final DriveSubsystem driveData;
+    private final DriveIO driveData;
     private final HoodIO hood;
     private final FlywheelIO flywheel;
     private final TurretIO turret;
@@ -62,7 +63,7 @@ public class Shoot extends Command {
      * @param feedRPM roller velocity to use when feeding
      * @param stopFlywheelOnEnd if true, zeroes the flywheel when the command ends
      */
-    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, TurretIO turret, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign, BooleanSupplier shouldAgitate) {
+    public Shoot(DriveIO driveData, HoodIO hood, FlywheelIO flywheel, TurretIO turret, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake, boolean stopFlywheelOnEnd, boolean neeedAlign, BooleanSupplier shouldAgitate) {
         this.driveData = driveData;
         this.hood = hood;
         this.flywheel = flywheel;
@@ -108,7 +109,7 @@ public class Shoot extends Command {
     /**
      * Convenience constructor that leaves the flywheel running when command ends.
      */
-    public Shoot(DriveSubsystem driveData, HoodIO hood, FlywheelIO flywheel, TurretIO turret, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
+    public Shoot(DriveIO driveData, HoodIO hood, FlywheelIO flywheel, TurretIO turret, IntakeRollersTalonFX rollers, Kicker kicker, PreIndexer preIndexer, Spindexer spindexer, IntakeDeployIO intake) {
         this(driveData, hood, flywheel, turret, rollers, kicker, preIndexer, spindexer, intake, false, true, ()->true);
     }
 
@@ -147,14 +148,14 @@ public class Shoot extends Command {
             double now = Timer.getFPGATimestamp();
 
             if (hoodReady && flyReady && aligned && now - lastShotTime > 0.2 && spindexer.getBalls() != 0) {
-                double kShooterEfficiency = 0.73;
+                double kShooterEfficiency = 0.7;
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
                 double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;
                 double wheelRadius = Units.inchesToMeters(2);
                 double ballSpeed = wheelRadPerSec * wheelRadius * kShooterEfficiency;
 
-                Pose2d ballPose2d = driveData.getCurrentPose().transformBy(ShooterConstants.kRobotToShooter);
+                Pose2d ballPose2d = ((SimDriveSubsystem)driveData).getRealPoseSim().transformBy(ShooterConstants.kRobotToShooter);
                 Translation3d initialPosition = new Translation3d(ballPose2d.getX(), ballPose2d.getY(), Units.inchesToMeters(17.701451));
                 FuelSim.getInstance().spawnFuel(initialPosition, launchVel(MetersPerSecond.of(ballSpeed), Degrees.of(90 - hood.getAngle()), getTurretYaw()));
 

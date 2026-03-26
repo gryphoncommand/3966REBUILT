@@ -14,14 +14,14 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.GryphonLib.MovementCalculations;
 import frc.littletonUtils.AllianceFlipUtil;
 import frc.robot.Constants.ClimberConstants;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive.DriveIO;
 import frc.robot.subsystems.Climber.ClimberIO;
 
 public class AutoClimbCommand extends Command {
 
     private final Command sequence;
 
-    public AutoClimbCommand(DriveSubsystem drive, ClimberIO climber) {
+    public AutoClimbCommand(DriveIO drive, ClimberIO climber) {
 
         addRequirements(drive, climber.returnSubsystem());
 
@@ -93,7 +93,7 @@ public class AutoClimbCommand extends Command {
      * Returns the nearest climb pose, flipped automatically
      * for red alliance using AllianceFlipUtil.
      */
-    private Pose2d getNearestPreClimbPose(DriveSubsystem drive) {
+    private Pose2d getNearestPreClimbPose(DriveIO drive) {
 
         Pose2d current = drive.getCurrentPose();
 
@@ -113,7 +113,7 @@ public class AutoClimbCommand extends Command {
     }
 
 
-    private Pose2d getNearestClimbPose(DriveSubsystem drive) {
+    private Pose2d getNearestClimbPose(DriveIO drive) {
 
         Pose2d current = drive.getCurrentPose();
 
