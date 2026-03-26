@@ -164,6 +164,11 @@ public class RobotContainer {
               double strafe = m_driverController.getLeftX();
               double turn = m_driverController.getRightX();
 
+              if (m_driverController.rightTrigger().getAsBoolean()){
+                forward /= 3;
+                strafe /= 3;
+              }
+
               m_drive.drive(
                 -MathUtil.applyDeadband(forward, OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(strafe, OIConstants.kDriveDeadband),
