@@ -182,7 +182,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
       },
       this // Reference to this subsystem to set requirements
     );
-
+    swerveDrive.headingCorrection = true;
     swerveDrive.getGyro().setInverted(true);
   }
 
@@ -204,12 +204,10 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
     double ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond;
     double rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
 
-    Rotation2d referenceRotation = getRotation();
-
     var deliveredSpeeds =
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                xSpeedDelivered, ySpeedDelivered, rotDelivered, referenceRotation)
+                xSpeedDelivered, ySpeedDelivered, rotDelivered, getRotation())
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered);
 
     swerveDrive.drive(deliveredSpeeds, false, new Translation2d());
@@ -300,7 +298,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
 
   public Rotation2d getRotation(){
     // return getCurrentPose().getRotation();
-    return new Rotation2d(swerveDrive.getGyroRotation3d().getZ()).plus(Rotation2d.fromDegrees(gyroOffset));
+    return new Rotation2d(swerveDrive.imuReadingCache.getValue().getZ()).plus(Rotation2d.fromDegrees(gyroOffset));
   }
 
   public void stop(){
@@ -380,7 +378,8 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
   public void periodic() {
     field2d.getObject("Shooter Pose").setPose(getCurrentPose().transformBy(ShooterConstants.kRobotToShooter));
     SmartDashboard.putNumber("Distance To Hub (m)", PhotonUtils.getDistanceToPose(getCurrentPose(), AlignmentConstants.HubPose));
-    SmartDashboard.putBoolean("Aligned to Goal", aligned);
+    Logger.recordOutput("Drive/Chassis Speeds", getCurrentSpeeds());
+    Logger.recordOutput("Drive/Desired Chassis Speeds", DriveConstants.kDriveKinematics.toChassisSpeeds(getDesiredStates()));
     if (Vision.getResult1() != null){
       Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1(), getCurrentPose());
       if (visionBotPose1.isPresent()){
@@ -469,7 +468,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
   }
 
   private double getRawYawDegrees() {
-    return Math.toDegrees(swerveDrive.getGyroRotation3d().getZ());
+    return new Rotation2d(swerveDrive.getGyroRotation3d().getZ()).getDegrees();
   }
 
   private void setDesiredStates(SwerveModuleState[] desired) {

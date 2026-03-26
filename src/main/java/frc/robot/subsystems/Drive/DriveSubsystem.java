@@ -428,7 +428,8 @@ public class DriveSubsystem extends SubsystemBase implements DriveIO {
   public void periodic() {
     field2d.getObject("Shooter Pose").setPose(getCurrentPose().transformBy(ShooterConstants.kRobotToShooter));
     SmartDashboard.putNumber("Distance To Hub (m)", PhotonUtils.getDistanceToPose(getCurrentPose(), AlignmentConstants.HubPose));
-    SmartDashboard.putBoolean("Aligned to Goal", aligned);
+    Logger.recordOutput("Drive/Chassis Speeds", getCurrentSpeeds());
+    Logger.recordOutput("Drive/Desired Chassis Speeds", DriveConstants.kDriveKinematics.toChassisSpeeds(getDesiredStates()));
     if (Vision.getResult1() != null){
       Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1(), getCurrentPose());
       if (visionBotPose1.isPresent()){
