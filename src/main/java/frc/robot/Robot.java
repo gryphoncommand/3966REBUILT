@@ -12,12 +12,14 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.FuelSim;
+import frc.littletonUtils.HubShiftUtil;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -67,6 +69,11 @@ public class Robot extends LoggedRobot  {
     if (RobotController.getBatteryVoltage() < 7.5){
       Logger.recordOutput("Battery/Browned Out", true);
     }
+    Logger.recordOutput("Basics/Match Time", DriverStation.getMatchTime());
+    Logger.recordOutput("Basics/Recieving Alliance", DriverStation.getAlliance().isPresent());
+    Logger.recordOutput("Basics/Current Alliance", DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get().toString() : "Neither");
+    Logger.recordOutput("Basics/Hub State", HubShiftUtil.getShiftedShiftInfo().active());
+    Logger.recordOutput("Basics/Remaining Time Until Shift", HubShiftUtil.getShiftedShiftInfo().remainingTime());
   }
 
   @Override
