@@ -38,6 +38,7 @@ public class Vision extends SubsystemBase {
 
     private static VisionSystemSim visionSim;
     private static PhotonCameraSim cameraSim1;
+    private static PhotonCameraSim cameraSim2;
     private Supplier<Pose2d> drivePoseSupplier;
 
 
@@ -65,11 +66,15 @@ public class Vision extends SubsystemBase {
             props.setLatencyStdDevMs(5);
 
             cameraSim1 = new PhotonCameraSim(camera1, props);
+            cameraSim2 = new PhotonCameraSim(camera2, props);
+
 
             cameraSim1.enableDrawWireframe(true);
 
             // Add camera to sim with robot-to-camera transform
             visionSim.addCamera(cameraSim1, VisionConstants.kRobotToCam1);
+            visionSim.addCamera(cameraSim2, VisionConstants.kRobotToCam2);
+
 
             // Add AprilTags
             visionSim.addAprilTags(VisionConstants.kTagLayout);
@@ -141,9 +146,9 @@ public class Vision extends SubsystemBase {
         if (result1 != null && result1.hasTargets()) {
             allTargets.addAll(result1.getTargets());
         }
-        // if (result2 != null && result2.hasTargets()) {
-        //     allTargets.addAll(result2.getTargets());
-        // }
+        if (result2 != null && result2.hasTargets()) {
+            allTargets.addAll(result2.getTargets());
+        }
         // if (result3 != null && result3.hasTargets()) {
         //     allTargets.addAll(result3.getTargets());
         // }

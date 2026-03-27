@@ -3,120 +3,122 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.2923395149786017,
-        "y": 5.98498975409836
+        "x": 2.596220053238686,
+        "y": 5.978571428571429
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8454166666666663,
-        "y": 8.698491666666666
+        "x": 3.2739416666666665,
+        "y": 7.330433333333333
       },
       "isLocked": false,
-      "linkedName": "Depot Shot"
+      "linkedName": "Corner 3"
     },
     {
       "anchor": {
-        "x": 7.529591836734694,
-        "y": 6.147577639751553
+        "x": 3.7631677018633534,
+        "y": 7.419148181011535
       },
       "prevControl": {
-        "x": 7.657775000000001,
-        "y": 7.542066666666667
+        "x": 3.513573314028063,
+        "y": 7.40491295845877
       },
       "nextControl": {
-        "x": 7.494155089467587,
-        "y": 5.762065580642313
+        "x": 7.496343393658521,
+        "y": 7.632063973158063
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.300233333333333,
-        "y": 2.9390416666666668
+        "x": 8.22465,
+        "y": 6.272266666666667
       },
       "prevControl": {
-        "x": 8.742876682512197,
-        "y": 2.1066797165803233
+        "x": 8.22465,
+        "y": 6.983054473063474
       },
       "nextControl": {
-        "x": 6.8194170068027224,
-        "y": 5.723620193729664
+        "x": 8.22465,
+        "y": 6.022266666666667
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.22925,
-        "y": 7.315316666666666
+        "x": 8.22465,
+        "y": 4.087908333333333
       },
       "prevControl": {
-        "x": 6.49292143442331,
-        "y": 7.302133094945501
+        "x": 8.295065704186376,
+        "y": 3.8480299712330033
       },
       "nextControl": {
-        "x": 5.907333407275956,
-        "y": 7.331412496302868
+        "x": 7.516124992605738,
+        "y": 6.501571879621414
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.2923395149786017,
-        "y": 5.98498975409836
+        "x": 6.070525,
+        "y": 7.519391666666667
       },
       "prevControl": {
-        "x": 1.898325,
-        "y": 8.509533333333334
+        "x": 7.81692251552795,
+        "y": 7.358433370304644
+      },
+      "nextControl": {
+        "x": 5.371063182446226,
+        "y": 7.5838581936301495
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.596220053238686,
+        "y": 5.978571428571429
+      },
+      "prevControl": {
+        "x": 2.5785750000000003,
+        "y": 7.806608333333333
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot Shot"
+      "linkedName": "Corner 3"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.3386454183266932,
+      "waypointRelativePos": 1,
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 1.2148594377510005,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 2.0,
       "rotationDegrees": 120.89160998588841
     },
     {
-      "waypointRelativePos": 2.115308151093445,
-      "rotationDegrees": 93.1258971951402
+      "waypointRelativePos": 3.115308151093445,
+      "rotationDegrees": 121.09381239772881
     },
     {
-      "waypointRelativePos": 2.8,
+      "waypointRelativePos": 3.8,
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 3.5816733067729083,
+      "waypointRelativePos": 4.5281124497992185,
       "rotationDegrees": 180.0
-    },
-    {
-      "waypointRelativePos": 4,
-      "rotationDegrees": 0.0
     }
   ],
-  "constraintZones": [
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.8207547169811333,
-      "maxWaypointRelativePos": 2.047169811320755,
-      "constraints": {
-        "maxVelocity": 1.5,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    }
-  ],
+  "constraintZones": [],
   "pointTowardsZones": [
     {
       "fieldPosition": {
@@ -124,8 +126,8 @@
         "y": 4.0
       },
       "rotationOffset": 90.0,
-      "minWaypointRelativePos": 4.0,
-      "maxWaypointRelativePos": 4.5,
+      "minWaypointRelativePos": 5.0,
+      "maxWaypointRelativePos": 5.5,
       "name": "Point Towards Zone"
     }
   ],
@@ -140,13 +142,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 137.2783732249244
+    "rotation": 136.6602823689828
   },
   "reversed": false,
-  "folder": "Depot",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 137.2783732249244
+    "rotation": 136.6602823689828
   },
   "useDefaultConstraints": true
 }

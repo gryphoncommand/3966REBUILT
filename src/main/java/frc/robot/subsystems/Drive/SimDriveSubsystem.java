@@ -401,6 +401,9 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
     } 
     
     // Update pose estimator with drivetrain sensors
+    if (DriverStation.isDisabled()){
+      setX();
+    }
     poseEstimator.addDriveData(
       Timer.getTimestamp(),
       getCurrentSpeeds().toTwist2d(Timer.getTimestamp() - currentTimestamp)

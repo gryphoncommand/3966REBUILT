@@ -395,8 +395,8 @@ def main():
     print(f"  Distances:      {[round(d,2) for d in distances]} m")
     print("=" * 60)
 
-    # rows = generate_fixed_hood(distances, hood_deg=28, air_resistance=args.air)
-    rows = generate(distances, args.air, args.arc)
+    rows = generate_fixed_hood(distances, hood_deg=28, air_resistance=args.air)
+    # rows = generate(distances, args.air, args.arc)
 
     if not rows:
         print("\nNo valid shots generated. Try adjusting --dmin / --dmax / --arc.")

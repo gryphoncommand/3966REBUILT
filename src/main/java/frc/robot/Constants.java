@@ -182,7 +182,7 @@ public final class Constants {
     // Fixed-hood, 3-wide drum shooter configuration
     public static final int kDrumMotorCount = 2;
     public static final double kFixedHoodAngleDeg = 28.0;
-    public static final double kTargetFuelPerSecond = 13.0;
+    public static final double kTargetFuelPerSecond = 14.0;
     public static final int kSimShooterCount = 2;
     public static final double kSimTotalBps = kTargetFuelPerSecond;
     public static final double kSimPerShooterMeanIntervalSec = (double) kSimShooterCount / kSimTotalBps;
