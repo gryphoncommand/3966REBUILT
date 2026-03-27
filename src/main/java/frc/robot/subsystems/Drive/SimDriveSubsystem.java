@@ -471,7 +471,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
   }
 
   private double getRawYawDegrees() {
-    return new Rotation2d(swerveDrive.getGyroRotation3d().getZ()).getDegrees();
+    return new Rotation2d(swerveDrive.imuReadingCache.getValue().getZ()).getDegrees();
   }
 
   private void setDesiredStates(SwerveModuleState[] desired) {
