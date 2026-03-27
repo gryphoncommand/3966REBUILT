@@ -245,14 +245,16 @@ public class RobotContainer {
       .whileTrue(runIntakeRollers)
       .whileTrue(new RunPreIndexer(m_preIndexer));
       
-    m_driverController.leftBumper().whileTrue(new IntakeStow(m_intakeDeploy));
-    m_driverController.x()
+    m_driverController.x().whileTrue(new IntakeStow(m_intakeDeploy));
+    m_driverController.leftBumper()
     .whileTrue(
       new RepeatCommand(new DeferredCommand(()->
         new PassCommand(m_drive, m_driverController, m_hood, m_flywheel, m_turret)
         , Set.of(m_hood, m_flywheel, m_turret)
       ))
     )
+    .whileTrue(runIntakeRollers)
+    .whileTrue(new Shoot(m_drive, m_hood, m_flywheel, m_turret, m_intakeRollers, m_kicker, m_preIndexer, m_spindexer, m_intakeDeploy, false, true, m_driverController.leftTrigger().negate()::getAsBoolean).withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
     .onFalse(new RunCommand(()->m_flywheel.stop(), m_flywheel))
     .onFalse(new HomeHood(m_hood));
 

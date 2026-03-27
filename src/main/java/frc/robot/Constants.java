@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+
 import java.util.List;
 
 import com.pathplanner.lib.path.PathConstraints;
@@ -25,6 +27,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -177,6 +180,8 @@ public final class Constants {
     public static int kFollowerWheelCanID = 10;
     public static int kHoodCANID = 11;
 
+    public static Distance kHubHeight = Inches.of(72);
+
     //TODO: test
     public static boolean accountForAccel = false;
 
@@ -201,19 +206,15 @@ public final class Constants {
     public static ShooterState kTrenchShotState = new ShooterState(3.168, 35.0, 1900, 1.10);
 
 
-    public static List<ShooterState> RealShootingValuesLow = List.of(
-      new ShooterState(1.500, 21.0, 1750, 0.95),
-      new ShooterState(2.095, 24.0, 1775, 0.95),
-      new ShooterState(2.300, 26.5, 1775, 1.00),
-      new ShooterState(2.493, 29.0, 1750, 1.05),
-      new ShooterState(2.850, 32.5, 1800, 1.08),
-      new ShooterState(3.240, 35.0, 1825, 1.10), // Tuned
-      new ShooterState(3.500, 36.5, 1906, 1.07), // Tuned
-      new ShooterState(3.820, 38.0, 1960, 1.14),
-      new ShooterState(4.150, 39.5, 1975, 1.22),
-      new ShooterState(4.414, 41.0, 2056, 1.30),
-      new ShooterState(4.800, 42.5, 2250, 1.40),
-      new ShooterState(5.250, 44.0, 2450, 1.52)
+    public static List<ShooterState> RealShootingValuesLow= List.of(
+      new ShooterState(1.500000, 22.60, 2478.3, 0.58),
+      new ShooterState(2.000000, 22.60, 2644.2, 0.77),
+      new ShooterState(2.500000, 22.60, 2870.1, 0.92),
+      new ShooterState(3.000000, 22.98, 3084.0, 1.03),
+      new ShooterState(3.500000, 22.60, 3328.1, 1.16),
+      new ShooterState(4.000000, 23.36, 3516.8, 1.24),
+      new ShooterState(4.500000, 23.36, 3729.0, 1.34),
+      new ShooterState(5.000000, 24.87, 3855.1, 1.38)
     );
 
     public static List<ShooterState> RealShootingValuesHigh = List.of(
@@ -232,12 +233,24 @@ public final class Constants {
     );
 
     public static List<ShooterState> RealPassingValues = List.of(
-      new ShooterState(1.5, kHoodMaxAngleDeg, 2200, 1.0),
-      new ShooterState(2.5, 53, 2200, 1.1),
-      new ShooterState(3.5, 51, 2300, 1.2),
-      new ShooterState(4.5, 49, 2350, 1.3),
-      new ShooterState(6.0, 47, 2400, 1.4),
-      new ShooterState(8.0, 45, 2650, 1.4)
+      new ShooterState(1.500000, 52.50, 1263.9, 0.54),
+      new ShooterState(2.000000, 52.50, 1580.5, 0.61),
+      new ShooterState(2.500000, 51.74, 1858.3, 0.68),
+      new ShooterState(3.000000, 52.50, 2108.7, 0.73),
+      new ShooterState(3.500000, 52.50, 2336.2, 0.79),
+      new ShooterState(4.000000, 49.09, 2532.2, 0.89),
+      new ShooterState(4.500000, 50.61, 2731.4, 0.92),
+      new ShooterState(5.000000, 52.12, 2929.0, 0.94),
+      new ShooterState(5.500000, 52.12, 3110.9, 0.99),
+      new ShooterState(6.000000, 52.50, 3296.6, 1.02),
+      new ShooterState(6.500000, 52.12, 3458.0, 1.07),
+      new ShooterState(7.000000, 52.50, 3624.5, 1.10),
+      new ShooterState(7.500000, 52.12, 3785.7, 1.15),
+      new ShooterState(8.000000, 52.12, 3939.8, 1.19),
+      new ShooterState(8.500000, 52.50, 4098.3, 1.22),
+      new ShooterState(9.000000, 52.50, 4254.7, 1.25),
+      new ShooterState(9.500000, 52.12, 4397.0, 1.30),
+      new ShooterState(10.000000, 52.12, 4545.5, 1.33)
     );
   }
 

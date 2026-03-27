@@ -148,7 +148,7 @@ public class Shoot extends Command {
             double now = Timer.getFPGATimestamp();
 
             if (hoodReady && flyReady && aligned && now - lastShotTime > 0.2 && spindexer.getBalls() != 0) {
-                double kShooterEfficiency = 0.7;
+                double kShooterEfficiency = 0.7 * 5/8; // Friction, backspin
 
                 double wheelRPM = flywheel.getVelocity(); // RPM
                 double wheelRadPerSec = wheelRPM * 2 * Math.PI / 60;
