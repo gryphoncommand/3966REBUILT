@@ -55,6 +55,8 @@ public final class Constants {
     public static final double kMaxAccelerationMetersPerSecondSquared = 40.0;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
+    public static final boolean fieldOriented = false;
+
     // Chassis configuration
     public static final double kTrackWidth = Units.inchesToMeters(21.5);
     // Distance between centers of right and left wheels on robot

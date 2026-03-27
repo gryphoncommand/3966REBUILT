@@ -401,10 +401,15 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
     } 
     
     // Update pose estimator with drivetrain sensors
-    poseEstimator.addDriveData(
-      Timer.getTimestamp(),
-      getCurrentSpeeds().toTwist2d(Timer.getTimestamp() - currentTimestamp)
-    );
+    if (DriverStation.isEnabled()){
+      poseEstimator.addDriveData(
+        Timer.getTimestamp(),
+        getCurrentSpeeds().toTwist2d(Timer.getTimestamp() - currentTimestamp)
+      );
+    } else {
+      setX();
+    }
+    
 
     field2d.setRobotPose(poseEstimator.getLatestPose());
     publisher.set(getStates());
