@@ -65,8 +65,8 @@ public class AlignToGoal extends Command {
         }
 
         // Driver translation inputs
-        double forward = -MathUtil.applyDeadband(controller.getLeftY(), OIConstants.kDriveDeadband)/4;
-        double strafe  = -MathUtil.applyDeadband(controller.getLeftX(), OIConstants.kDriveDeadband)/4;
+        double forward = -MathUtil.applyDeadband(controller.getLeftY(), OIConstants.kDriveDeadband);
+        double strafe  = -MathUtil.applyDeadband(controller.getLeftX(), OIConstants.kDriveDeadband);
 
         // Compute yaw error from shooter pose instead of robot center
         yawError = PositionCalculations.getYawChangeToPose(
@@ -81,7 +81,7 @@ public class AlignToGoal extends Command {
 
         // Drive with driver’s translation + auto-turn
         if (turnPID.atSetpoint() && (Math.abs(forward) < 0.1 && Math.abs(strafe) < 0.1)){
-            drive.setX(); 
+            drive.setX();
         } else {
             drive.drive(forward, strafe, -turn, true);
         }
