@@ -298,7 +298,7 @@ def generate_fixed_hood(
 #  Output 
 
 def emit_java(rows: list[dict], arc: str) -> None:
-    var = "RealShootingValuesLow" if arc == 'low' else "RealShootingValuesHigh"
+    var = "GenShootingValuesLow" if arc == 'low' else "GenShootingValuesHigh"
     print()
     print(f"public static List<ShooterState> {var} = List.of(")
     for i, r in enumerate(rows):
