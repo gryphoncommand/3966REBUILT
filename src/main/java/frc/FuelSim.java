@@ -52,7 +52,7 @@ public class FuelSim {
   // Room temperature dry air density: https://en.wikipedia.org/wiki/Density_of_air#Dry_air
   protected static final double AIR_DENSITY = 1.2041; // kg/m^3
   protected static final double FIELD_COR =
-      Math.sqrt(22 / 51.5); // coefficient of restitution with the field
+      0.3; // coefficient of restitution with the field
   protected static final double FUEL_COR = 0.001; // coefficient of restitution with another fuel
   protected static final double NET_COR = 0.2; // coefficient of restitution with the net
   protected static final double ROBOT_COR = 0.1; // coefficient of restitution with a robot
@@ -68,7 +68,7 @@ public class FuelSim {
   protected static final double TRENCH_BAR_HEIGHT = 0.102;
   protected static final double TRENCH_BAR_WIDTH = 0.152;
   protected static final double FRICTION =
-      0.8; // proportion of horizontal vel to lose per sec while on ground
+      0.5/0.02; // proportion of horizontal vel to lose per sec while on ground
   protected static final double FUEL_MASS = 0.448 * 0.45392; // kgs
   protected static final double FUEL_CROSS_AREA = Math.PI * FUEL_RADIUS * FUEL_RADIUS;
   // Drag coefficient of smooth sphere:
