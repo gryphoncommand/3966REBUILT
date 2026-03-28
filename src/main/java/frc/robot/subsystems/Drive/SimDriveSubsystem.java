@@ -244,7 +244,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
 
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
-    gyroOffset = getRawYawDegrees(); // Set current yaw as zero
+    gyroOffset = Units.radiansToDegrees(swerveDrive.imuReadingCache.getValue().getZ()); // Set current yaw as zero
     Pose2d currentPose = poseEstimator.getLatestPose();
     poseEstimator.resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), DriverStation.getAlliance().get() == Alliance.Blue ? new Rotation2d() : new Rotation2d(Math.PI)));
   }

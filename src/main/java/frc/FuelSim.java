@@ -600,8 +600,9 @@ public class FuelSim {
   public int reserveFuelForRobot(int count) {
     int reserved = 0;
     for (int i = fuels.size() - 1; i >= 0 && reserved < count; i--) {
-      Fuel fuel = fuels.get(i);
+      Fuel fuel = new Fuel(new Translation3d());
       if (fuel.active) {
+        addFuel(fuel);
         deactivateFuel(fuel);
         reserved++;
       }
@@ -648,6 +649,12 @@ public class FuelSim {
                 new Translation3d(
                     FIELD_LENGTH - 0.076 - 0.152 * j, 2.09 - 0.076 - 0.152 * i, FUEL_RADIUS)));
       }
+    }
+
+    for (int i = 0; i < 8; i++){
+      Fuel fuel = new Fuel(new Translation3d());
+      addFuel(fuel);
+      deactivateFuel(fuel);
     }
 
     // DEBUG: Log XZ lines

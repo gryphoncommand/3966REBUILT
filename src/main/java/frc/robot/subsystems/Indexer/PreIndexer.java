@@ -18,7 +18,7 @@ public class PreIndexer extends SubsystemBase {
 
     private double targetRPM = 0.0;
     private VelocityVoltage m_preIndexerRequest = new VelocityVoltage(300);
-    private int simBalls = 0;
+    private int simBalls = 8;
 
     public PreIndexer(){
         preIndexerMotor.getConfigurator().apply(PreIndexerConfig.PreIndexerConfig);
