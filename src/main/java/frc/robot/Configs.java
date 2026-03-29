@@ -15,6 +15,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.ShooterConstants;
 
 public final class Configs {
     public static final class MAXSwerveModule {
@@ -178,10 +179,10 @@ public final class Configs {
         static {
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
                 // PID + FF tuning
-                slot0ConfigsDrive.kS = 0.0;
-                slot0ConfigsDrive.kV = 0.001933*65;
-                slot0ConfigsDrive.kA = 0.0005902*65;
-                slot0ConfigsDrive.kP = 0.0510241666*1;
+                slot0ConfigsDrive.kS = 0.0055482;
+                slot0ConfigsDrive.kV = 0.25241;
+                slot0ConfigsDrive.kA = 0.0086691;
+                slot0ConfigsDrive.kP = 0.044562;
                 slot0ConfigsDrive.kI = 0.0;
                 slot0ConfigsDrive.kD = 0.0;
 
@@ -189,6 +190,8 @@ public final class Configs {
                 
                 // Motor behavior
                 flywheelFXConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+                flywheelFXConfig.Feedback.SensorToMechanismRatio = ShooterConstants.kGearRatio;
         }
     }
 

@@ -28,7 +28,7 @@ public class PrepareSOTM extends Command {
     private Pose2d effectiveGoalPose;
     private LoggedTunableNumber kShootDelay = new LoggedTunableNumber("SOTM/Shooter Shoot Delay", ShooterConstants.kShootDelay);
     private LoggedTunableNumber kPhaseDelay = new LoggedTunableNumber("SOTM/Shooter Phase Delay", ShooterConstants.kPhaseDelay);
-    private LoggedTunableNumber kRPMChange = new LoggedTunableNumber("SOTM/Static Flywheel RPM Change", 0);
+    private LoggedTunableNumber kRPMChange = new LoggedTunableNumber("SOTM/Static Flywheel RPM Change", 90);
     private LoggedTunableNumber kTOFChange = new LoggedTunableNumber("SOTM/Static TOF Change", 0);
     private LoggedTunableNumber kFlywheelSetpointOffset = new LoggedTunableNumber("SOTM/Flywheel Recharge Compensation", ShooterConstants.kFlywheelRPMOffset);
 

@@ -80,7 +80,7 @@ public class ShootAllInHopper extends Command {
     }
 
     private Translation3d launchVel(LinearVelocity vel, Angle angle) {
-        Pose2d robot = (driveData.getCurrentPose());
+        Pose2d robot = ((SimDriveSubsystem)driveData).getRealPoseSim();
         ChassisSpeeds fieldSpeeds = driveData.getCurrentSpeedsFieldRelative();
 
         double horizontalVel = Math.cos(angle.in(Radians)) * vel.in(MetersPerSecond);

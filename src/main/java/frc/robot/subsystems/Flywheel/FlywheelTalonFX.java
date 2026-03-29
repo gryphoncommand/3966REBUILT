@@ -44,7 +44,7 @@ public class FlywheelTalonFX extends SubsystemBase implements FlywheelIO {
     @Override
     public void periodic() {
         SmartDashboard.putData("Shooter Mech", mech2d);
-        Logger.recordOutput("Flywheel/Flywheel Motor Velocity (RPM)", m_flywheelMotor.getVelocity().getValue().in(RPM));
+        Logger.recordOutput("Flywheel/Flywheel Motor Velocity (RPM)", m_flywheelMotor.getVelocity().getValue().in(RPM)/ShooterConstants.kGearRatio);
         Logger.recordOutput("Flywheel/Flywheel Velocity (RPM)", getVelocity());
         Logger.recordOutput("Flywheel/Effective Desired Flywheel Speed", targetVelocityRpm);
         Logger.recordOutput("Flywheel/Desired Flywheel Speed", realTarget);
@@ -60,7 +60,7 @@ public class FlywheelTalonFX extends SubsystemBase implements FlywheelIO {
     @Override
     public void setVelocity(double rpm) {
         targetVelocityRpm = rpm;
-        double rotorRps = RPM.of(rpm * ShooterConstants.kGearRatio).in(RotationsPerSecond);
+        double rotorRps = RPM.of(rpm).in(RotationsPerSecond);
         m_flywheelMotor.setControl(new VelocityVoltage(rotorRps).withEnableFOC(true));
     }
 
@@ -82,7 +82,7 @@ public class FlywheelTalonFX extends SubsystemBase implements FlywheelIO {
     @Override
     public double getPosition() {
         // Return mechanism rotations (wheel rotations)
-        return m_flywheelMotor.getPosition().getValue().in(Rotations) / ShooterConstants.kGearRatio;
+        return m_flywheelMotor.getPosition().getValue().in(Rotations);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class FlywheelTalonFX extends SubsystemBase implements FlywheelIO {
     @Override
     public double getVelocity() {
         // motor velocity is rotor rpm; convert to mechanism rpm
-        return m_flywheelMotor.getVelocity().getValue().in(RPM) / ShooterConstants.kGearRatio;
+        return m_flywheelMotor.getVelocity().getValue().in(RPM);
     }
 
     @Override

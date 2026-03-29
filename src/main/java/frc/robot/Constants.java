@@ -129,6 +129,10 @@ public final class Constants {
         public static final PathConstraints constraints = new PathConstraints(
           3, 3,
           Units.degreesToRadians(360), Units.degreesToRadians(180));
+        
+        public static final PathConstraints defenseConstraints = new PathConstraints(
+          5, 8,
+          Units.degreesToRadians(720), Units.degreesToRadians(1080));
   }
 
   public static final class KrakenMotorConstants {
@@ -264,8 +268,8 @@ public final class Constants {
   }
 
   public static class IndexerConstants {
-    public static int kKickerCanID = 16;
-    public static int kPreIndexerCanID = 15;
+    public static int kKickerCanID = 14;
+    public static int kPreIndexerCanID = 12;
 
     public static double kKickerGearRatio = 28/24;
 
@@ -278,7 +282,7 @@ public final class Constants {
   }
 
   public static class IntakeConstants {
-    public static int kRollerCanID = 12;
+    public static int kRollerCanID = 11;
     public static double kIntakeSpeedRPM = 440;
 
     public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (14/36)
@@ -288,7 +292,7 @@ public final class Constants {
     public static double kIntakeAgitateAngle = 0.25;
 
     
-    public static int kDeployCanID = 14;
+    public static int kDeployCanID = 13;
     public static double kIntakeLengthMeters = Units.inchesToMeters(14.678);
   }
 

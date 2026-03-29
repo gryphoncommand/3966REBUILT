@@ -8,7 +8,6 @@ import frc.FuelSim;
 import frc.GryphonLib.ShooterState;
 import frc.GryphonLib.AllianceFlipUtil;
 import frc.robot.Constants.AlignmentConstants;
-import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
@@ -42,7 +41,6 @@ import org.photonvision.PhotonUtils;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -57,14 +55,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Indexer.Kicker;
@@ -103,6 +98,7 @@ public class RobotContainer {
     configureNamedCommands();
     if (Robot.isSimulation()){
       configureFuelSim();
+      configureAIOpponents();
     }
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
@@ -120,27 +116,6 @@ public class RobotContainer {
         new SetShooterToDefinedState(m_flywheel, ShooterConstants.kDefaultShooterState),
         new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy, false, false))
       );
-    
-    
-
-    SmartDashboard.putData("Add Balls", new ConditionalCommand(new InstantCommand(), new InstantCommand(m_preIndexer::addBall), Robot::isReal));
-    try {
-      SmartDashboard.putData("Run Auto", new SequentialCommandGroup(
-        AutoBuilder.pathfindToPoseFlipped(new Pose2d(new Translation2d(3.747, 7.419), new Rotation2d(Units.degreesToRadians(179.167))), AutoConstants.constraints),
-        new ParallelCommandGroup(
-          AutoBuilder.followPath(PathPlannerPath.fromPathFile("Depot shot to climb")),
-            new ParallelRaceGroup(
-            new ParallelCommandGroup(
-              new AlignToGoalAuto(m_drive, AlignmentConstants.HubPose, true),
-              new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow)
-            ),
-            new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy, true, true)
-          )
-        )
-      ));
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
     SmartDashboard.putData("Align To Goal", new AlignToGoal(m_drive, m_driverController, Constants.AlignmentConstants.BlueHubPose, false));
     SmartDashboard.putData("Return to Start", m_drive.goToPose(new Pose2d(new Translation2d(3.747, 7.419), new Rotation2d(Units.degreesToRadians(179.167)))));
   }
@@ -378,6 +353,15 @@ public class RobotContainer {
         new Pose3d()
       }
     );
+  }
+
+  private void configureAIOpponents(){
+    try {
+      Logger.recordOutput("Drive/AI Status", "Started Creating AI 0");
+      new DefenseBotInSimulation(3, ((SimDriveSubsystem)m_drive)::getRealPoseSim);
+  } catch (Exception e){
+      Logger.recordOutput("Drive/AI Status", "Failed Creating AI 0, " + e.getMessage());
+    }
   }
     
   /** Returns the autonomous command. */

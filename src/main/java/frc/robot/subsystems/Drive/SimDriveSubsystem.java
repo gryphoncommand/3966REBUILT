@@ -5,6 +5,7 @@
 package frc.robot.subsystems.Drive;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.io.File;
@@ -92,6 +93,8 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
       DriverStation.reportError("Failed to load YAGSL swerve config.", e.getStackTrace());
       throw new RuntimeException(e);
     }
+
+    swerveDrive.getMapleSimDrive().get().config.withBumperSize(Meters.of(DriveConstants.kTrackWidth + Units.inchesToMeters(2.5)), Meters.of(DriveConstants.kWheelBase + Units.inchesToMeters(2.5)));
     swerveDrive.setChassisDiscretization(false, false, 0.02);
     swerveDrive.setAngularVelocityCompensation(false, false, 0.0);
     swerveDrive.setHeadingCorrection(true);

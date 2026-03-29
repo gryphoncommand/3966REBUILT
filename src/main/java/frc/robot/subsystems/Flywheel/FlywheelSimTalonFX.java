@@ -120,17 +120,18 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         shooterSim.setAngularVelocity(omega - (deltaOmegaB + deltaOmegaT));
 
         // apply the new rotor position and velocity to the TalonFX;
-        // note that this is rotor position/velocity (before gear ratio), but
-        // DCMotorSim returns mechanism position/veloci ty (after gear ratio)
         AngularVelocity mechVel = shooterSim.getAngularVelocity();
 
-        m_flywheelSim.setRotorVelocity(mechVel.in(RotationsPerSecond) * ShooterConstants.kGearRatio);
+        // Convert mechanism to rotor
+        double rotorRPS = mechVel.in(RotationsPerSecond) * ShooterConstants.kGearRatio;
+
+        m_flywheelSim.setRotorVelocity(rotorRPS);
 
         wheelAngle += Units.rotationsToDegrees(mechVel.in(RPM) * 0.02 / 60.0);
         wheelVisual.setAngle(wheelAngle);
 
         SmartDashboard.putData("Shooter Mech", mech2d);
-        Logger.recordOutput("Flywheel/Flywheel Motor Velocity (RPM)", m_flywheelMotor.getVelocity().getValue().in(RPM));
+        Logger.recordOutput("Flywheel/Flywheel Motor Velocity (RPM)", m_flywheelMotor.getVelocity().getValue().in(RPM)/ShooterConstants.kGearRatio);
         Logger.recordOutput("Flywheel/Flywheel Velocity (RPM)", getVelocity());
         Logger.recordOutput("Flywheel/Effective Desired Flywheel Speed", targetVelocityRpm);
         Logger.recordOutput("Flywheel/Desired Flywheel Speed", realTarget);
@@ -146,7 +147,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     @Override
     public void setVelocity(double rpm) {
         targetVelocityRpm = rpm;
-        m_flywheelMotor.setControl(new VelocityVoltage(RPM.of(rpm * ShooterConstants.kGearRatio).in(RotationsPerSecond)).withEnableFOC(true));
+        m_flywheelMotor.setControl(new VelocityVoltage(RPM.of(rpm).in(RotationsPerSecond)).withEnableFOC(true));
     }
 
     @Override
