@@ -272,7 +272,7 @@ public final class Constants {
 
     public static ShooterState kShooterStowState = new ShooterState(3, kFixedHoodAngleDeg, 0, 1.2);
     public static ShooterState kDefaultShooterState = new ShooterState(3, kFixedHoodAngleDeg, 1300, 1.2);
-    public static ShooterState kJuggleShooterState = new ShooterState(3, kFixedHoodAngleDeg, 600, 1.2);
+    public static ShooterState kJuggleShooterState = new ShooterState(3, kFixedHoodAngleDeg, 700, 1.2);
     public static ShooterState kCornerShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 5.2);
     public static ShooterState kTowerShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 3.15);
     public static ShooterState kTrenchShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 2.3);
@@ -288,7 +288,7 @@ public final class Constants {
     public static double kKickerGearRatio = 84.0/24.0; // 84/24
 
     
-    public static double kPreIndexerSpeed = 900;
+    public static double kPreIndexerSpeed = 950;
     public static double kKickerSpeed = 9000;
     
 

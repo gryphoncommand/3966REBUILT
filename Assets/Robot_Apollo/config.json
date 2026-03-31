@@ -1,0 +1,30 @@
+{
+    "name": "Apollo",
+    "rotations": [
+        {
+            "axis": "x", 
+            "degrees": 90 
+        }
+    ],
+    "position": [
+        0, 
+        0, 
+        0
+    ],
+    "cameras": [],
+    "components": [
+        {
+            "zeroedRotations": [
+                {
+                    "axis": "x", 
+                    "degrees": 90
+                }
+            ],
+            "zeroedPosition": [
+                0.29,
+                0,
+                -0.33
+            ]
+        }
+    ]
+}
