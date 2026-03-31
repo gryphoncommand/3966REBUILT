@@ -73,10 +73,11 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         double appliedLoadTorque = 0;
         if (shotTimeRemainingSec > 0) {
             // We apply the torque stored in pendingShotTorqueNm
-            appliedLoadTorque = pendingShotTorqueNm;
+            appliedLoadTorque = pendingShotTorqueNm/(shotTimeRemainingSec/dt);
             
             // Reduce the remaining time
             shotTimeRemainingSec -= dt;
+            pendingShotTorqueNm -= pendingShotTorqueNm/(shotTimeRemainingSec/dt);
             
             // If time is up, clear the torque buffer
             if (shotTimeRemainingSec <= 0) {
@@ -209,7 +210,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
         double ballEnergyJ = 0.5 * ballMassKg * Math.pow(ballExitVelocityMps, 2);
         
         // Time one ball spends in contact with the wheel
-        double singleBallContactTime = 0.05; 
+        double singleBallContactTime = 0.05;
 
         // Torque for one ball: T = (Energy / Time) / Velocity
         double singleBallTorque = (ballEnergyJ / singleBallContactTime) / currentOmega;

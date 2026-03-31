@@ -48,18 +48,18 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class FuelSim {
-  protected static final double PERIOD = 0.02; // sec
+  protected static final double PERIOD = 0.02;
+  protected static final int subticks = 3;
   protected static final Translation3d GRAVITY = new Translation3d(0, 0, -9.81); // m/s^2
   // Room temperature dry air density: https://en.wikipedia.org/wiki/Density_of_air#Dry_air
   protected static final double AIR_DENSITY = 1.2041; // kg/m^3
-  protected static final double FIELD_COR =
-      0.3; // coefficient of restitution with the field
-  protected static final double FUEL_COR = 0.001; // coefficient of restitution with another fuel
+  protected static final double FIELD_COR = 0.3; // coefficient of restitution with the field
+  protected static final double FUEL_COR = 0.9; // coefficient of restitution with another fuel
   protected static final double NET_COR = 0.2; // coefficient of restitution with the net
   protected static final double ROBOT_COR = 0.1; // coefficient of restitution with a robot
   protected static final double FUEL_RADIUS = 0.075;
-  protected static final double FUEL_DIAMETER = FUEL_RADIUS * 2.0;
   protected static final double FUEL_RADIUS_SQ = FUEL_RADIUS * FUEL_RADIUS;
+  protected static final double FUEL_DIAMETER = 2 * FUEL_RADIUS;
   protected static final double FUEL_DIAMETER_SQ = FUEL_DIAMETER * FUEL_DIAMETER;
   protected static final double FIELD_LENGTH = 16.51;
   protected static final double FIELD_WIDTH = 8.04;
@@ -68,8 +68,7 @@ public class FuelSim {
   protected static final double TRENCH_HEIGHT = 0.565;
   protected static final double TRENCH_BAR_HEIGHT = 0.102;
   protected static final double TRENCH_BAR_WIDTH = 0.152;
-  protected static final double FRICTION =
-      0.5/0.02; // proportion of horizontal vel to lose per sec while on ground
+  protected static final double FRICTION = 3.0; // proportion of horizontal vel to lose per sec while on ground
   protected static final double FUEL_MASS = 0.448 * 0.45392; // kgs
   protected static final double FUEL_CROSS_AREA = Math.PI * FUEL_RADIUS * FUEL_RADIUS;
   // Drag coefficient of smooth sphere:
@@ -279,10 +278,11 @@ public class FuelSim {
           double speedSq = vx * vx + vy * vy + vz * vz;
           if (speedSq > 1e-12) {
             double speed = Math.sqrt(speedSq);
-            double dragAccel = DRAG_FORCE_FACTOR * speed / FUEL_MASS;
-            ax -= dragAccel * vx;
-            ay -= dragAccel * vy;
-            az -= dragAccel * vz;
+            double dragAccel = DRAG_FORCE_FACTOR * speedSq / FUEL_MASS;
+
+            ax -= dragAccel * (vx / speed);
+            ay -= dragAccel * (vy / speed);
+            az -= dragAccel * (vz / speed);
           }
         }
 
@@ -291,11 +291,11 @@ public class FuelSim {
         vz += az * dt;
       }
 
-      if (Math.abs(vz) < 0.05 && z <= FUEL_RADIUS + 0.03) {
-        vz = 0.0;
-        double frictionScale = 1.0 - FRICTION * dt;
-        vx *= frictionScale;
-        vy *= frictionScale;
+      if (z <= FUEL_RADIUS + 0.05) {
+        vx = vx * (1 - FRICTION * PERIOD / subticks);
+        vy = vy * (1 - FRICTION * PERIOD / subticks);
+
+        // pos = new Translation3d(pos.getX(), pos.getY(), FUEL_RADIUS);
       }
 
       handleFieldCollisions(dt);
@@ -518,13 +518,6 @@ public class FuelSim {
   protected double robotLength; // size along the robot's x axis
   protected double bumperHeight;
   protected ArrayList<SimIntake> intakes = new ArrayList<>();
-  protected int subticks = 5;
-  private boolean adaptiveSubticksEnabled = false;
-  private boolean adaptiveConfigExplicit = false;
-  private int adaptiveMinSubticks = 2;
-  private int adaptiveMaxSubticks = 5;
-  private int adaptiveFuelLow = 40;
-  private int adaptiveFuelHigh = 140;
   private int logEveryNTicks = 1;
   private int logTickCounter = 0;
   private boolean profilingEnabled = false;
@@ -711,35 +704,6 @@ public class FuelSim {
     simulateAirResistance = true;
   }
 
-  /**
-   * Sets the number of physics iterations per loop (0.02s)
-   *
-   * @param subticks
-   */
-  public void setSubticks(int subticks) {
-    this.subticks = Math.max(1, subticks);
-    if (!adaptiveConfigExplicit) {
-      adaptiveMaxSubticks = this.subticks;
-    } else if (adaptiveMaxSubticks > this.subticks) {
-      adaptiveMaxSubticks = this.subticks;
-    }
-  }
-
-  /** Enable adaptive subticks based on fuel count. */
-  public void setAdaptiveSubticks(int minSubticks, int maxSubticks, int lowFuelCount, int highFuelCount) {
-    adaptiveConfigExplicit = true;
-    adaptiveMinSubticks = Math.max(1, minSubticks);
-    adaptiveMaxSubticks = Math.max(adaptiveMinSubticks, maxSubticks);
-    adaptiveFuelLow = Math.max(0, lowFuelCount);
-    adaptiveFuelHigh = Math.max(adaptiveFuelLow + 1, highFuelCount);
-    adaptiveSubticksEnabled = true;
-  }
-
-  /** Enable/disable adaptive subticks. */
-  public void setAdaptiveSubticksEnabled(boolean enabled) {
-    adaptiveSubticksEnabled = enabled;
-  }
-
   /** Set how often fuel poses are logged (in sim ticks). */
   public void setLogEveryNTicks(int ticks) {
     logEveryNTicks = Math.max(1, ticks);
@@ -809,34 +773,9 @@ public class FuelSim {
   
   }
 
-  private int getEffectiveSubticks(int fuelCount) {
-    if (!adaptiveSubticksEnabled) {
-      return subticks;
-    }
-
-    int maxSubticks = Math.min(adaptiveMaxSubticks, subticks);
-    int minSubticks = Math.min(adaptiveMinSubticks, maxSubticks);
-    if (fuelCount <= adaptiveFuelLow) {
-      return maxSubticks;
-    }
-    if (fuelCount >= adaptiveFuelHigh) {
-      return minSubticks;
-    }
-    double t =
-        (fuelCount - adaptiveFuelLow) / (double) (adaptiveFuelHigh - adaptiveFuelLow);
-    int value = (int) Math.round(maxSubticks - t * (maxSubticks - minSubticks));
-    if (value < minSubticks) {
-      return minSubticks;
-    }
-    if (value > maxSubticks) {
-      return maxSubticks;
-    }
-    return value;
-  }
-
   /** Run the simulation forward 1 time step (0.02s) */
   public void stepSim() {
-    int effectiveSubticks = getEffectiveSubticks(activeFuelCount);
+    int effectiveSubticks = subticks;
     double dt = PERIOD / effectiveSubticks;
     boolean doProfile = profilingEnabled && (++profileTickCounter >= profileEveryNTicks);
     if (doProfile) {

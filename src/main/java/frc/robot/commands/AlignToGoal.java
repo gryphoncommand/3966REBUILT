@@ -68,6 +68,11 @@ public class AlignToGoal extends Command {
         double forward = -MathUtil.applyDeadband(controller.getLeftY(), OIConstants.kDriveDeadband);
         double strafe  = -MathUtil.applyDeadband(controller.getLeftX(), OIConstants.kDriveDeadband);
 
+        if (SOTM){
+            forward *= 0.25;
+            strafe *= 0.25;
+        }
+
         // Compute yaw error from shooter pose instead of robot center
         yawError = PositionCalculations.getYawChangeToPose(
             drive.getCurrentPose().transformBy(kRobotToShooter),

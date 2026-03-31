@@ -158,9 +158,9 @@ public final class Configs {
                 slot0ConfigsDrive.kS = 0;
                 slot0ConfigsDrive.kV = 0;
                 slot0ConfigsDrive.kA = 0;
-                slot0ConfigsDrive.kP = 10;
+                slot0ConfigsDrive.kP = 40;
                 slot0ConfigsDrive.kI = 0; 
-                slot0ConfigsDrive.kD = 3;
+                slot0ConfigsDrive.kD = 2;
 
                 deploySimConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 

@@ -185,7 +185,7 @@ public class Shoot extends Command {
 
         if (flyReady && aligned){
             if (shouldAgitate.getAsBoolean()){
-                if (intake.atTarget(0.02) && agitateTimer.get() > 0.2){
+                if (intake.atTarget(Units.degreesToRotations(3)) && agitateTimer.get() > 0.1){
                     if (agitateAngle){
                         intake.setPosition(IntakeConstants.kIntakeAgitateAngle);
                     } else {

@@ -28,6 +28,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.GryphonLib.AllianceFlipUtil;
+import frc.GryphonLib.ShooterInterpolator;
 import frc.GryphonLib.ShooterState;
 
 /**
@@ -187,15 +188,15 @@ public final class Constants {
     // Fixed-hood, 3-wide drum shooter configuration
     public static final int kDrumMotorCount = 2;
     public static final double kFixedHoodAngleDeg = 28.0;
-    public static final double kTargetFuelPerSecond = 6.0;
+    public static final double kTargetFuelPerSecond = 15.0;
     public static final int kSimShooterCount = 2;
     public static final double kSimTotalBps = kTargetFuelPerSecond;
     public static final double kSimPerShooterMeanIntervalSec = (double) kSimShooterCount / kSimTotalBps;
     public static final double kSimShotIntervalJitterFrac = 0.8;
     public static final double kSimShooterXOffsetMeters = 0.37;
     public static final double kSimShooterYSpacingMeters = 0.20;
-    public static final double kCoulombFrictionNm = 0.02;   // constant friction torque
-    public static final double kViscousFriction = 0.002;   // Nm per rad/s
+    public static final double kCoulombFrictionNm = 0.4;   // constant friction torque
+    public static final double kViscousFriction = 0.00005;   // Nm per rad/s
     public static final double kGearRatio = 1.1;
 
     public static double kFlywheelRPMOffset = 300;
@@ -206,12 +207,6 @@ public final class Constants {
 
     public static double kDefaultFlywheelSpeed = 0.0;
     public static Transform2d kRobotToShooter = new Transform2d(0.260, 0.0, new Rotation2d(Math.PI));
-
-    public static ShooterState kShooterStowState = new ShooterState(3, kFixedHoodAngleDeg, 0, 1.2);
-    public static ShooterState kDefaultShooterState = new ShooterState(3, kFixedHoodAngleDeg, 1300, 1.2);
-    public static ShooterState kCornerShotState = new ShooterState(5.1, kFixedHoodAngleDeg, 2800, 1.2);
-    public static ShooterState kTowerShotState = new ShooterState(3.415, kFixedHoodAngleDeg, 2750, 1.2);
-    public static ShooterState kTrenchShotState = new ShooterState(3.168, kFixedHoodAngleDeg, 2030, 1.10);
 
 
     public static List<ShooterState> RealShootingValuesLow = List.of(
@@ -273,6 +268,15 @@ public final class Constants {
       new ShooterState(9.750000, 28.00, 4590.5, 1.90),
       new ShooterState(10.000000, 28.00, 4652.1, 1.93)
     );
+
+
+    public static ShooterState kShooterStowState = new ShooterState(3, kFixedHoodAngleDeg, 0, 1.2);
+    public static ShooterState kDefaultShooterState = new ShooterState(3, kFixedHoodAngleDeg, 1300, 1.2);
+    public static ShooterState kJuggleShooterState = new ShooterState(3, kFixedHoodAngleDeg, 600, 1.2);
+    public static ShooterState kCornerShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 5.2);
+    public static ShooterState kTowerShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 3.15);
+    public static ShooterState kTrenchShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 2.3);
+    public static ShooterState kBumpTowerShot = ShooterInterpolator.interpolate(RealShootingValuesLow, 3.195);
   }
 
   public static class IndexerConstants {
@@ -297,11 +301,11 @@ public final class Constants {
     public static double kIntakeSpeedRPM = 440;
 
     // Ts gear ratio calculations do NOT work because integer division, but it works out for now so its all good i guess Should be fixed in offseason.
-    public static double kIntakeDeployGearRatio = 560/117; // 20 * (32/50) * (1/36)
-    public static double kShaftToIntakeDeployRatio = 36/16;
-    public static double kIntakeDeployAngle = 0.0425;
-    public static double kIntakeStowAngle = 0.75;
-    public static double kIntakeAgitateAngle = 0.25;
+    public static double kIntakeDeployGearRatio = 20*(50.0/32.0)*(36.0/16.0); // 20 then (32/50) then (16/36)
+    public static double kShaftToIntakeDeployRatio = 36.0/16.0;
+    public static double kIntakeDeployAngle = Units.degreesToRotations(2.7*kShaftToIntakeDeployRatio);
+    public static double kIntakeStowAngle = Units.degreesToRotations(125*kShaftToIntakeDeployRatio);
+    public static double kIntakeAgitateAngle = Units.degreesToRotations(15*kShaftToIntakeDeployRatio);
 
     
     public static int kDeployCanID = 13;

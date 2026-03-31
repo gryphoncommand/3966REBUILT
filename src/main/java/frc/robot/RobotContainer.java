@@ -110,9 +110,11 @@ public class RobotContainer {
     
 
     emergencyShotChooser.addOption("Default", ShooterConstants.kDefaultShooterState);
-    emergencyShotChooser.addOption("Tower", ShooterConstants.kTowerShotState);
     emergencyShotChooser.setDefaultOption("Trench", ShooterConstants.kTrenchShotState);
+    emergencyShotChooser.addOption("Tower", ShooterConstants.kTowerShotState);
     emergencyShotChooser.addOption("Corner", ShooterConstants.kCornerShotState);
+    emergencyShotChooser.addOption("Juggle", ShooterConstants.kJuggleShooterState);
+
     SmartDashboard.putData("Auto Chooser", autoChooser);
     SmartDashboard.putData("Shot Chooser", emergencyShotChooser);
     SmartDashboard.putData("Shoot All", 
@@ -316,7 +318,6 @@ public class RobotContainer {
 
     // Performance tuning for sim
     instance.setLogEveryNTicks(5); // 25 Hz fuel pose logging
-    instance.setAdaptiveSubticks(1, 3, 40, 600);
     instance.disableProfiling();
 
     SmartDashboard.putData("Reset Fuel", Commands.runOnce(() -> {

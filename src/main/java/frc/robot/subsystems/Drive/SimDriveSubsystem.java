@@ -45,7 +45,6 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Robot;
 import frc.robot.Vision;
 import frc.GryphonLib.ChassisAccelerations;
 import frc.GryphonLib.MovementCalculations;
@@ -314,9 +313,6 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
 
   public ChassisSpeeds getCurrentSpeedsFieldRelative(){
     boolean flipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
-    if (Robot.isSimulation()){
-      flipped = false;
-    }
     return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds().times(flipped ? -1 : 1), getRotation());
   }
 
