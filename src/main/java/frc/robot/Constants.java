@@ -284,15 +284,15 @@ public final class Constants {
     public static int kPreIndexerCanID = 12;
 
 
-    public static double kPreIndexerGearRatio = 0.25;
-    public static double kKickerGearRatio = 3.5; // 84/24
+    public static double kPreIndexerGearRatio = 1.0/4.0;
+    public static double kKickerGearRatio = 84.0/24.0; // 84/24
 
     
-    public static double kPreIndexerSpeed = 800;
+    public static double kPreIndexerSpeed = 900;
     public static double kKickerSpeed = 9000;
     
 
-    public static double kActiveCurrentKicker = 20;
+    public static double kActiveCurrentRollerFloor = 20;
     
   }
 

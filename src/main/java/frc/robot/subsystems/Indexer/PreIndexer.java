@@ -37,6 +37,7 @@ public class PreIndexer extends SubsystemBase {
         Logger.recordOutput("Indexing/PreIndexer RPM", encoder.getVelocity());
         Logger.recordOutput("Indexing/Desired PreIndexer RPM", targetRPM);
         Logger.recordOutput("Indexing/PreIndexer Applied Output", preIndexerMotor.getAppliedOutput());
+        Logger.recordOutput("Indexing/PreIndexer Stator Current", preIndexerMotor.getOutputCurrent());
     }
 
     public void set(double speed) {
@@ -70,6 +71,10 @@ public class PreIndexer extends SubsystemBase {
 
     public boolean atTarget(double threshold) {
         return Math.abs(encoder.getVelocity() - targetRPM) < threshold;
+    }
+
+    public double getStatorCurrent(){
+        return preIndexerMotor.getOutputCurrent();
     }
 
     public void addBall() {
