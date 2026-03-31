@@ -366,7 +366,7 @@ public class RobotContainer {
     );
   }
 
-  private void configureAIOpponents(){
+  public static void configureAIOpponents(){
     try {
       Logger.recordOutput("Drive/AI Status", "Started Creating AI 0");
       new OffensiveBotInSim(3, Alliance.Red, true);
