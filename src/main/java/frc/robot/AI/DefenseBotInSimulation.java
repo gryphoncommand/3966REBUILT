@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.AI;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -20,13 +20,16 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.littletonUtils.HubShiftUtil;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.AutoConstants;
-
 import swervelib.simulation.ironmaple.simulation.SimulatedArena;
 import swervelib.simulation.ironmaple.simulation.drivesims.COTS;
 import swervelib.simulation.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -35,22 +38,31 @@ import swervelib.simulation.ironmaple.simulation.motorsims.SimulatedBattery;
 import swervelib.simulation.ironmaple.simulation.motorsims.SimulatedMotorController;
 
 public class DefenseBotInSimulation extends SubsystemBase {
-
+    // =========================================
+    // Shared hardware / simulation state
+    // =========================================
     private final SwerveDriveSimulation driveSimulation;
     private final SimulatedMotorController.GenericMotorController[] driveControllers;
     private final SimulatedMotorController.GenericMotorController[] steerControllers;
     private final Supplier<Pose2d> goalPose;
     private final int id;
+    private final Alliance alliance;
     private Pose2d targetPose;
 
+    // ---- Defense state ----
     private double pinTimer = 0.0;
     private boolean backingOff = false;
     private Timer lastSeparationTime = new Timer();
 
-    private final double pinDistance = 0.9; // meters (72 inches)
-    private final double maxPinDuration = 5.0; // seconds
-    private final double backoffSpeed = 3.0; // m/s
-    private final double periodicDt = 0.02; // simulation tick
+    private final double pinDistance = 0.9;
+    private final double maxPinDuration = 5.0;
+    private final double backoffSpeed = 3.0;
+    private final double periodicDt = 0.02;
+
+    private boolean wasDefending = false;
+
+    // One active PathfindingCommand per mode.
+    private Command defensePathCommand = null;
 
     private final PPHolonomicDriveController pathController =
         new PPHolonomicDriveController(
@@ -59,29 +71,27 @@ public class DefenseBotInSimulation extends SubsystemBase {
         );
 
     @SuppressWarnings("unchecked")
-    private final DriveTrainSimulationConfig enemyConfig = 
-    new DriveTrainSimulationConfig(
-        Pounds.of(80),
-        Meters.of(0.76),
-        Meters.of(0.76),
-        Meters.of(0.52),
-        Meters.of(0.52),
-        COTS.ofGenericGyro(),
-        COTS.ofMAXSwerve(DCMotor.getKrakenX60(1), DCMotor.getNeo550(1), COTS.WHEELS.BLUE_NITRILE_TREAD.cof * 0.8, 3));
-    
-    private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(enemyConfig.moduleTranslations);
+    private final DriveTrainSimulationConfig enemyConfig =
+        new DriveTrainSimulationConfig(
+            Pounds.of(80),
+            Meters.of(0.76),
+            Meters.of(0.76),
+            Meters.of(0.52),
+            Meters.of(0.52),
+            COTS.ofGenericGyro(),
+            COTS.ofMAXSwerve(DCMotor.getKrakenX60(1), DCMotor.getNeo550(1),
+                COTS.WHEELS.BLUE_NITRILE_TREAD.cof * 0.8, 3));
 
-    private Command pathCommand = null;
+    private final SwerveDriveKinematics kinematics =
+        new SwerveDriveKinematics(enemyConfig.moduleTranslations);
 
-    public DefenseBotInSimulation(int id, Supplier<Pose2d> goalPose) {
+    public DefenseBotInSimulation(int id, Supplier<Pose2d> goalPose, Alliance alliance) {
         this.id = id;
         this.goalPose = goalPose;
+        this.alliance = alliance;
 
         SimulatedBattery.disableBatterySim();
-        driveSimulation = new SwerveDriveSimulation(
-            enemyConfig,
-            ROBOT_QUEENING_POSITIONS[id]
-        );
+        driveSimulation = new SwerveDriveSimulation(enemyConfig, ROBOT_QUEENING_POSITIONS[id]);
         driveSimulation.setSimulationWorldPose(ROBOT_QUEENING_POSITIONS[id]);
         SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
 
@@ -93,44 +103,70 @@ public class DefenseBotInSimulation extends SubsystemBase {
         }
 
         Logger.recordOutput("Drive/AI Status", "Created AI " + id);
+
+        // FuelSim.getInstance().registerRobot(
+        //     0.76, // from left to right
+        //     0.76, // from front to back
+        //     Units.inchesToMeters(6), // from floor to top of bumpers
+        //     driveSimulation::getSimulatedDriveTrainPose, // Supplier<Pose2d> of robot pose
+        //     driveSimulation::getDriveTrainSimulatedChassisSpeedsFieldRelative // Supplier<ChassisSpeeds> of field-centric chassis speeds
+        // );
     }
 
     @Override
     public void periodic() {
         Pose2d currentPose = driveSimulation.getSimulatedDriveTrainPose();
-        Pose2d playerPose = goalPose.get();
-        double distance = currentPose.getTranslation()
-                .getDistance(playerPose.getTranslation());
-
         Logger.recordOutput("Drive/AI/" + id + "/Pose", currentPose);
+        boolean defending = false;
+
+        if (DriverStation.getAlliance().isPresent() && alliance.equals(DriverStation.getAlliance().get())){
+            defending = !HubShiftUtil.getShiftedShiftInfo().active();
+        } else {
+            defending = !HubShiftUtil.isOpposingHubActive();
+        }
+        Logger.recordOutput("Drive/AI/" + id + "/Defending", defending);
+
+        if (DriverStation.isDisabled()){
+            setSpeeds(new ChassisSpeeds());
+        }
+
+        // Clean up opposite-mode state on any transition
+        if (defending != wasDefending) {
+            cancelDefensePathCommand();
+            pinTimer = 0.0;
+            backingOff = false;
+            lastSeparationTime.stop();
+            lastSeparationTime.reset();
+        }
+        wasDefending = defending;
+
+        runDefenseMode(currentPose);
+    }
+
+    // =========================================
+    // Defense mode (original behaviour)
+    // =========================================
+    private void runDefenseMode(Pose2d currentPose) {
+        Pose2d playerPose = goalPose.get();
+        double distance = currentPose.getTranslation().getDistance(playerPose.getTranslation());
+
         Logger.recordOutput("Drive/AI/" + id + "/Dist", distance);
 
-
-        // =========================================
-        // Smart pinning avoidance logic
-        // =========================================
         if (distance < pinDistance) {
             pinTimer += periodicDt;
-            if (lastSeparationTime.isRunning()){
-                lastSeparationTime.restart();
-            }
+            if (lastSeparationTime.isRunning()) lastSeparationTime.restart();
         } else {
-            pinTimer = 0.0; // reset if robot is far enough
+            pinTimer = 0.0;
         }
 
         boolean approachingPinLimit = pinTimer >= maxPinDuration - 0.5;
 
-        // =========================================
-        // Aggressive interception (but respecting pinning rules)
-        // =========================================
         if (distance < 2 || backingOff) {
-            if (pathCommand != null && pathCommand.isScheduled()) {
-                pathCommand.cancel();
-            }
+            cancelDefensePathCommand();
 
             if (approachingPinLimit || backingOff) {
-                // Back off to avoid pinning penalty
-                driveBackOff(currentPose, playerPose, driveSimulation.getDriveTrainSimulatedChassisSpeedsFieldRelative());
+                driveBackOff(currentPose, playerPose,
+                    driveSimulation.getDriveTrainSimulatedChassisSpeedsFieldRelative());
                 backingOff = true;
                 if (distance > 2 || lastSeparationTime.get() > 4.0) {
                     backingOff = false;
@@ -146,165 +182,122 @@ public class DefenseBotInSimulation extends SubsystemBase {
                 driveAggressive(playerPose, currentPose);
                 Logger.recordOutput("Drive/AI/" + id + "/Mode", "AGGRESSIVE");
             }
-
-            
-        }
-        // =========================================
-        // Far-range: dynamic pathfinding with navgrid
-        // =========================================
-        else {
+        } else {
             backingOff = false;
             pinTimer = 0;
             Logger.recordOutput("Drive/AI/" + id + "/Mode", "PATHPLANNER");
 
-            // Cancel old path if outdated
-            if (pathCommand != null && pathCommand.isScheduled()) {
+            if (defensePathCommand != null && defensePathCommand.isScheduled()) {
                 double endDist = targetPose.getTranslation().getDistance(playerPose.getTranslation());
-                if (endDist > 1.0) pathCommand.cancel();
+                if (endDist > 1.0) cancelDefensePathCommand();
             }
 
-            // Generate a new dynamic path toward the player
-            if (pathCommand == null || !pathCommand.isScheduled()) {
+            if (defensePathCommand == null || !defensePathCommand.isScheduled()) {
                 try {
                     targetPose = playerPose;
-                    pathCommand = new PathfindingCommand(
+                    defensePathCommand = new PathfindingCommand(
                         playerPose,
                         AutoConstants.defenseConstraints,
                         driveSimulation::getSimulatedDriveTrainPose,
                         driveSimulation::getDriveTrainSimulatedChassisSpeedsRobotRelative,
-                        (speeds, feedforwards) ->
-                            driveSimulation.setRobotSpeeds(
-                                ChassisSpeeds.fromRobotRelativeSpeeds(
-                                    speeds,
-                                    driveSimulation.getSimulatedDriveTrainPose().getRotation()
-                                )
-                            ),
+                        (speeds, feedforwards) -> setSpeeds(speeds),
                         pathController,
                         RobotConfig.fromGUISettings(),
                         this
-                    );
-                    CommandScheduler.getInstance().schedule(pathCommand);
-                    
+                    ).andThen(new InstantCommand(()->setSpeeds(new ChassisSpeeds()), this));
+                    CommandScheduler.getInstance().schedule(defensePathCommand);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
     }
+    private void cancelDefensePathCommand() {
+        if (defensePathCommand != null && defensePathCommand.isScheduled())
+            defensePathCommand.cancel();
+        defensePathCommand = null;
+    }
 
+    // =========================================
+    // Low-level drive helpers (unchanged)
+    // =========================================
     private void driveAggressive(Pose2d playerPose, Pose2d currentPose) {
-
         Translation2d playerPos = playerPose.getTranslation();
         Translation2d robotPos = currentPose.getTranslation();
 
-        // Direction from player to hub
-        Translation2d toHub = AlignmentConstants.HubPose.getTranslation()
-                .minus(playerPos);
-
+        Translation2d toHub = AlignmentConstants.HubPose.getTranslation().minus(playerPos);
         double hubNorm = toHub.getNorm();
         if (hubNorm < 0.05) return;
 
         Translation2d hubDir = toHub.div(hubNorm);
+        Translation2d perpLeft  = new Translation2d(-hubDir.getY(),  hubDir.getX());
+        Translation2d perpRight = new Translation2d( hubDir.getY(), -hubDir.getX());
 
-        // Get perpendicular directions (left/right)
-        Translation2d perpLeft = new Translation2d(-hubDir.getY(), hubDir.getX());
-        Translation2d perpRight = new Translation2d(hubDir.getY(), -hubDir.getX());
-
-        // Pick the side that is closer to the robot (smarter positioning)
-        double distLeft = robotPos.getDistance(playerPos.plus(perpLeft));
+        double distLeft  = robotPos.getDistance(playerPos.plus(perpLeft));
         double distRight = robotPos.getDistance(playerPos.plus(perpRight));
-
         Translation2d chosenPerp = (distLeft < distRight) ? perpLeft : perpRight;
 
-        // Target point = slightly offset from player in perpendicular direction
-        double pushOffset = 0.05; // meters (tune this)
-        Translation2d targetPoint = playerPos.plus(chosenPerp.times(pushOffset));
-
-        // Direction to that target
+        Translation2d targetPoint = playerPos.plus(chosenPerp.times(0.05));
         Translation2d toTarget = targetPoint.minus(robotPos);
         double norm = toTarget.getNorm();
 
         if (norm < 0.05) {
-            for (int i = 0; i < 4; i++)
-                driveControllers[i].requestVoltage(Volts.of(0));
+            for (int i = 0; i < 4; i++) driveControllers[i].requestVoltage(Volts.of(0));
             return;
         }
 
         double maxSpeed = 3.0;
         Translation2d velocity = toTarget.div(norm).times(maxSpeed);
 
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-            velocity.getX(),
-            velocity.getY(),
-            0.0,
-            currentPose.getRotation()
-        );
+        setVelocity(velocity);
+    }
 
+    private void setVelocity(Translation2d velocity){
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+            velocity.getX(), velocity.getY(), 0.0, driveSimulation.getSimulatedDriveTrainPose().getRotation());
+        setSpeeds(speeds);
+    }
+
+    private void setSpeeds(ChassisSpeeds speeds){
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, 3.5);
 
         double maxVoltage = 12.0;
         double freeSpeedMPS = driveSimulation.maxLinearVelocity().in(MetersPerSecond);
 
         for (int i = 0; i < 4; i++) {
-            double voltageOut = (states[i].speedMetersPerSecond / freeSpeedMPS) * maxVoltage;
-
-            driveControllers[i].requestVoltage(Volts.of(voltageOut).times(0.95));
-
-            steerControllers[i].requestVoltage(
-                Volts.of(steerPID(
-                    states[i].angle.getRadians(),
-                    driveSimulation.getModules()[i].getSteerAbsoluteFacing().getRadians()
-                ))
-            );
+            driveControllers[i].requestVoltage(
+                Volts.of((states[i].speedMetersPerSecond / freeSpeedMPS) * maxVoltage).times(0.95));
+            steerControllers[i].requestVoltage(Volts.of(steerPID(
+                states[i].angle.getRadians(),
+                driveSimulation.getModules()[i].getSteerAbsoluteFacing().getRadians())));
         }
     }
 
-    // Simple P controller for steer — tune kP as needed
     private double steerPID(double targetRad, double currentRad) {
         double error = MathUtil.angleModulus(targetRad - currentRad);
         return MathUtil.clamp(error * 10.0, -12.0, 12.0);
-}
+    }
 
     private void driveBackOff(Pose2d currentPose, Pose2d targetPose, ChassisSpeeds currentSpeeds) {
-            Translation2d away = currentPose.getTranslation()
-                    .minus(targetPose.getTranslation());
+        Translation2d away = currentPose.getTranslation().minus(targetPose.getTranslation());
+        double distance = away.getNorm();
+        Translation2d velocity = distance > 0.05
+            ? away.div(distance).times(backoffSpeed)
+            : new Translation2d(0, 0);
 
-            double distance = away.getNorm();
-            Translation2d velocity = distance > 0.05
-                    ? away.div(distance).times(backoffSpeed)
-                    : new Translation2d(0, 0);
-
-            ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                    velocity.getX(),
-                    velocity.getY(),
-                    0.0,
-                    currentPose.getRotation()
-            );
-
-            SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
-            SwerveDriveKinematics.desaturateWheelSpeeds(states, backoffSpeed);
-
-            double maxVoltage = 12.0;
-            double freeSpeedMPS = driveSimulation.maxLinearVelocity().in(MetersPerSecond);
-
-            for (int i = 0; i < 4; i++) {
-                double voltageOut = (states[i].speedMetersPerSecond / freeSpeedMPS) * maxVoltage;
-                driveControllers[i].requestVoltage(Volts.of(voltageOut));
-                steerControllers[i].requestVoltage(
-                    Volts.of(steerPID(
-                        states[i].angle.getRadians(),
-                        driveSimulation.getModules()[i].getSteerAbsoluteFacing().getRadians()
-                    ))
-                );
-            }
-        }
+        setVelocity(velocity);
+    }
 
     public static final Pose2d[] ROBOT_QUEENING_POSITIONS = new Pose2d[] {
-        new Pose2d(3, 2, new Rotation2d()),
-        new Pose2d(5, 2, new Rotation2d()),
-        new Pose2d(6, 2, new Rotation2d()),
-        new Pose2d(8, 3, new Rotation2d()),
+        new Pose2d(3,  2, new Rotation2d()),
+        new Pose2d(5,  2, new Rotation2d()),
+        new Pose2d(6,  2, new Rotation2d()),
+        new Pose2d(12.2, 0.6444996, new Rotation2d()),
         new Pose2d(10, 4, new Rotation2d())
     };
+
+    public Pose2d getCurrentPose(){
+        return driveSimulation.getSimulatedDriveTrainPose();
+    }
 }

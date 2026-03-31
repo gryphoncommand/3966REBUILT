@@ -8,8 +8,11 @@ import static edu.wpi.first.units.Units.Volts;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -26,6 +29,9 @@ import frc.robot.Constants.ShooterConstants;
  */
 public class FlywheelTalonFX extends SubsystemBase implements FlywheelIO {
     private final TalonFX m_flywheelMotor;
+    private final TalonFX m_followerMotor1;
+    // private final TalonFX m_followerMotor2;
+    // private final TalonFX m_followerMotor3;
 
     private double targetVelocityRpm = 0;
     private double realTarget = 0;
@@ -37,7 +43,12 @@ public class FlywheelTalonFX extends SubsystemBase implements FlywheelIO {
     public FlywheelTalonFX() {
         wheelVisual.setLineWeight(2);
         m_flywheelMotor = new TalonFX(ShooterConstants.kFlywheelCanID);
+        m_followerMotor1 = new TalonFX(ShooterConstants.kFollowerWheelCanID);
+
         m_flywheelMotor.getConfigurator().apply(Configs.FlywheelConfig.flywheelFXConfig);
+
+        m_followerMotor1.setControl(new Follower(ShooterConstants.kFlywheelCanID, MotorAlignmentValue.Opposed));
+       
         m_flywheelMotor.getVelocity().setUpdateFrequency(1000);
     }
 
@@ -54,7 +65,7 @@ public class FlywheelTalonFX extends SubsystemBase implements FlywheelIO {
 
     @Override
     public void set(double speed) {
-        m_flywheelMotor.set(speed);
+        m_flywheelMotor.setControl(new DutyCycleOut(speed));
     }
 
     @Override

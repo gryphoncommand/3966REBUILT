@@ -7,6 +7,7 @@ package frc.robot;
 import frc.FuelSim;
 import frc.GryphonLib.ShooterState;
 import frc.GryphonLib.AllianceFlipUtil;
+import frc.robot.AI.OffensiveBotInSim;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
@@ -19,14 +20,15 @@ import frc.robot.commands.AllSystemsTest;
 import frc.robot.commands.FlywheelSysID;
 import frc.robot.commands.PassCommand;
 import frc.robot.commands.PrepareSOTM;
+import frc.robot.commands.RollerFloorSysID;
 import frc.robot.commands.SetShooterToDefinedState;
 import frc.robot.commands.SetToDashboardSpeeds;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootAllInHopper;
-import frc.robot.commands.Indexing.RunPreIndexer;
 import frc.robot.commands.Intake.IntakeDeploy;
 import frc.robot.commands.Intake.IntakeStow;
 import frc.robot.commands.Intake.RunIntakeRollers;
+import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.Drive.DriveIO;
 import frc.robot.subsystems.Drive.DriveSubsystem;
 import frc.robot.subsystems.Drive.SimDriveSubsystem;
@@ -91,6 +93,7 @@ public class RobotContainer {
   private final SendableChooser<ShooterState> emergencyShotChooser = new SendableChooser<>();
 
   public RobotContainer() {
+    new Blinkin();
     configureLogger();
     configureDefaultCommands();
     configureButtonBindings();
@@ -98,10 +101,11 @@ public class RobotContainer {
     configureNamedCommands();
     if (Robot.isSimulation()){
       configureFuelSim();
-      configureAIOpponents();
+      // configureAIOpponents();
     }
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
+    autoChooser.addOption("Roller Floor SysID", new RollerFloorSysID(m_preIndexer).doAllSysID());
     autoChooser.addOption("Systems Test", new AllSystemsTest(m_drive, m_intakeDeploy, m_intakeRollers, m_kicker, m_preIndexer, m_flywheel).getSystemsTest());
     
 
@@ -137,7 +141,7 @@ public class RobotContainer {
             .withName("Basic Drive"));
     m_preIndexer.setDefaultCommand(
       new RunCommand(()->{
-        if (m_driverController.leftTrigger().getAsBoolean() || m_driverController.rightTrigger().getAsBoolean()){
+        if (m_driverController.rightTrigger().getAsBoolean()){
           m_preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed);
         } else {
           m_preIndexer.setVelocity(0);
@@ -198,9 +202,8 @@ public class RobotContainer {
             () -> m_intakeDeploy.getPosition() > 20
         )
       )
-      .whileTrue(runIntakeRollers)
-      .whileTrue(new RunPreIndexer(m_preIndexer));
-      
+      .whileTrue(runIntakeRollers);
+
     m_driverController.leftBumper().whileTrue(new IntakeStow(m_intakeDeploy));
     m_driverController.x()
     .whileTrue(
@@ -221,11 +224,19 @@ public class RobotContainer {
       .whileTrue(new Shoot(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy, false, false, m_driverController.leftTrigger().negate()::getAsBoolean).withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
       .onFalse(new SetShooterToDefinedState(m_flywheel, ShooterConstants.kShooterStowState).withTimeout(0.1));
     m_driverController.y()
-      .whileTrue(new RunCommand(()->m_intakeRollers.set(-0.3), m_intakeRollers))
-      .onFalse(new RunCommand(()->m_intakeRollers.set(0.0), m_intakeRollers));
+      .whileTrue(new RunCommand(()->m_intakeRollers.set(-0.8), m_intakeRollers))
+      .whileTrue(new RunCommand(()->m_preIndexer.set(-0.8), m_preIndexer))
+      .onFalse(new RunCommand(()->m_intakeRollers.set(0.0), m_intakeRollers))
+      .onFalse(new RunCommand(()->m_preIndexer.set(0.0), m_preIndexer));
     m_driverController.povRight().whileTrue(new RunCommand(()->{
       m_drive.setX();
     }, m_drive));
+
+    m_driverController.povLeft().onTrue(
+      new DeferredCommand(
+        ()->new InstantCommand(()->Logger.recordOutput("Current Shooter State", "new ShooterState(" +  String.valueOf(PhotonUtils.getDistanceToPose(m_drive.getCurrentPose().plus(ShooterConstants.kRobotToShooter), AlignmentConstants.HubPose)) + ", " + String.valueOf(ShooterConstants.kFixedHoodAngleDeg) + ", " + String.valueOf(m_flywheel.getVelocity()) + ", measuredShotTime)")),
+        Set.of()
+    ));
     
     m_operatorController.rightTrigger()
         .whileTrue(new SetShooterToDefinedState(m_flywheel, ShooterConstants.kDefaultShooterState))
@@ -358,7 +369,7 @@ public class RobotContainer {
   private void configureAIOpponents(){
     try {
       Logger.recordOutput("Drive/AI Status", "Started Creating AI 0");
-      new DefenseBotInSimulation(3, ((SimDriveSubsystem)m_drive)::getRealPoseSim);
+      new OffensiveBotInSim(3, Alliance.Red, true);
   } catch (Exception e){
       Logger.recordOutput("Drive/AI Status", "Failed Creating AI 0, " + e.getMessage());
     }

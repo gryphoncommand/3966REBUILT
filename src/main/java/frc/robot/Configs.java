@@ -179,10 +179,10 @@ public final class Configs {
         static {
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
                 // PID + FF tuning
-                slot0ConfigsDrive.kS = 0.0055482;
-                slot0ConfigsDrive.kV = 0.25241;
-                slot0ConfigsDrive.kA = 0.0086691;
-                slot0ConfigsDrive.kP = 0.044562;
+                slot0ConfigsDrive.kS = 0.43199;
+                slot0ConfigsDrive.kV = 0.132;
+                slot0ConfigsDrive.kA = 0.02354;
+                slot0ConfigsDrive.kP = 0.14169;
                 slot0ConfigsDrive.kI = 0.0;
                 slot0ConfigsDrive.kD = 0.0;
 
@@ -191,28 +191,34 @@ public final class Configs {
                 // Motor behavior
                 flywheelFXConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
+                flywheelFXConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
                 flywheelFXConfig.Feedback.SensorToMechanismRatio = ShooterConstants.kGearRatio;
         }
     }
 
        public static final class PreIndexerConfig {
-        public static final TalonFXConfiguration PreIndexerConfig = new TalonFXConfiguration();
+        public static final SparkFlexConfig preIndexerConfig = new SparkFlexConfig();
 
         static {
-            var slot0Configs = PreIndexerConfig.Slot0;
-            // PID + FF tuning
-            slot0Configs.kS = 0.0;
-            slot0Configs.kV = 0.12;
-            slot0Configs.kA = 0.0;
-            slot0Configs.kP = 0.0;
-            slot0Configs.kI = 0.0;
-            slot0Configs.kD = 0.0;
-
-            PreIndexerConfig.CurrentLimits.withSupplyCurrentLimit(Amps.of(20));
-            PreIndexerConfig.CurrentLimits.withSupplyCurrentLimitEnable(true);
-            
-            // Motor behavior
-            PreIndexerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+                preIndexerConfig
+                        .idleMode(IdleMode.kBrake)
+                        .smartCurrentLimit(70)
+                        .inverted(false)
+                        .openLoopRampRate(0)
+                        .closedLoopRampRate(0);
+                preIndexerConfig.encoder
+                    .positionConversionFactor(IndexerConstants.kPreIndexerGearRatio)
+                    .velocityConversionFactor(IndexerConstants.kPreIndexerGearRatio);
+                preIndexerConfig.closedLoop
+                    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                    // These are example gains you may need to them for your own robot!
+                    .pid(0.0, 0.0, 0.0)
+                    .iZone(100)
+                    .outputRange(-1, 1);
+                preIndexerConfig.closedLoop.feedForward
+                    .kV(0.008)
+                    .kA(0);  
         }
     }
 
@@ -220,6 +226,8 @@ public final class Configs {
         public static final SparkFlexConfig kickerConfig = new SparkFlexConfig();
 
         static {
+                kickerConfig
+                        .inverted(true);
                 kickerConfig
                         .idleMode(IdleMode.kBrake)
                         .smartCurrentLimit(70)
@@ -237,9 +245,7 @@ public final class Configs {
                     .outputRange(-1, 1);
                 kickerConfig.closedLoop.feedForward
                     .kV(0.016)
-                    .kA(0);
-
-                    
+                    .kA(0);  
         }
     }
 }

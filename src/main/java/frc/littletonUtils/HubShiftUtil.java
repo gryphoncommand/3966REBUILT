@@ -197,4 +197,18 @@ public class HubShiftUtil {
     return getShiftInfo(shiftSchedule, shiftedShiftStartTimes, shiftedShiftEndTimes);
     // }
   }
+
+  public static boolean isOpposingHubActive() {
+    ShiftInfo info = getShiftedShiftInfo();
+
+    switch (info.currentShift()) {
+      case AUTO:
+      case TRANSITION:
+      case ENDGAME:
+        return true;
+
+      default:
+        return !info.active();
+    }
+  }
 }

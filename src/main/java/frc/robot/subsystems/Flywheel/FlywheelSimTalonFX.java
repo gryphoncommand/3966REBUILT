@@ -13,6 +13,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.VecBuilder;
@@ -59,7 +60,7 @@ public class FlywheelSimTalonFX extends SubsystemBase implements FlywheelIO {
     public FlywheelSimTalonFX() {
         wheelVisual.setLineWeight(2);
         m_flywheelMotor = new TalonFX(ShooterConstants.kFlywheelCanID);
-        m_flywheelMotor.getConfigurator().apply(Configs.FlywheelConfig.flywheelFXConfig);
+        m_flywheelMotor.getConfigurator().apply(Configs.FlywheelConfig.flywheelFXConfig.withMotorOutput(Configs.FlywheelConfig.flywheelFXConfig.MotorOutput.withInverted(InvertedValue.CounterClockwise_Positive)));
         m_flywheelSim = m_flywheelMotor.getSimState();
         m_flywheelMotor.getVelocity().setUpdateFrequency(1000);
     }

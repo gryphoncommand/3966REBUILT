@@ -38,6 +38,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.littletonUtils.HubShiftUtil;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -433,7 +434,7 @@ public class FuelSim {
     b.addImpulse(-nx * impulse, -ny * impulse, -nz * impulse);
   }
 
-  protected static final double CELL_SIZE = 0.25;
+  protected static final double CELL_SIZE = 0.05;
   protected static final double INV_CELL_SIZE = 1.0 / CELL_SIZE;
   protected static final int GRID_COLS = (int) Math.ceil(FIELD_LENGTH / CELL_SIZE);
   protected static final int GRID_ROWS = (int) Math.ceil(FIELD_WIDTH / CELL_SIZE);
@@ -656,15 +657,6 @@ public class FuelSim {
       addFuel(fuel);
       deactivateFuel(fuel);
     }
-
-    // DEBUG: Log XZ lines
-    // Translation3d[][] lines = new Translation3d[FIELD_XZ_LINE_STARTS.length][2];
-    // for (int i = 0; i < FIELD_XZ_LINE_STARTS.length; i++) {
-    //     lines[i][0] = FIELD_XZ_LINE_STARTS[i];
-    //     lines[i][1] = FIELD_XZ_LINE_ENDS[i];
-    // }
-
-    // Logger.recordOutput("Fuel Simulation/Lines (debug)", lines);
   }
 
   /** Adds array of `Translation3d`'s to NetworkTables at tableKey + "/Fuels" */
@@ -812,11 +804,9 @@ public class FuelSim {
   public void updateSim() {
     if (!running) return;
     stepSim();
-    if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red){
-      Logger.recordOutput("Basics/Scored Fuel", Hub.RED_HUB.getScore());
-    } else {
-      Logger.recordOutput("Basics/Scored Fuel", Hub.BLUE_HUB.getScore());
-    }
+    Logger.recordOutput("Basics/Red Scored Fuel", Hub.RED_HUB.getScore());
+    Logger.recordOutput("Basics/Blue Scored Fuel", Hub.BLUE_HUB.getScore());
+  
   }
 
   private int getEffectiveSubticks(int fuelCount) {
@@ -985,6 +975,61 @@ public class FuelSim {
     yVel += fieldSpeeds.vyMetersPerSecond;
 
     spawnFuel(launchPose.getTranslation(), new Translation3d(xVel, yVel, verticalVel));
+  }
+
+  /**
+   * Collects (removes from the simulation) the nearest active fuel within {@code radius} meters of
+   * {@code position}. Returns {@code true} if a fuel was found and collected, {@code false} if none
+   * was in range. The collected fuel is returned to the inactive pool so it can be re-spawned later
+   * (e.g. via {@link #shootFuelIntoRedHub()}).
+   */
+  public boolean collectFuelAt(Translation2d position, double radius) {
+    double radiusSq = radius * radius;
+    double px = position.getX();
+    double py = position.getY();
+    Fuel nearest = null;
+    double nearestDistSq = Double.MAX_VALUE;
+
+    for (int i = 0, size = fuels.size(); i < size; i++) {
+      Fuel fuel = fuels.get(i);
+      if (!fuel.active) continue;
+      double dx = fuel.x - px;
+      double dy = fuel.y - py;
+      double distSq = dx * dx + dy * dy;
+      if (distSq < radiusSq && distSq < nearestDistSq) {
+        nearest = fuel;
+        nearestDistSq = distSq;
+      }
+    }
+
+    if (nearest != null) {
+      deactivateFuel(nearest);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Shoots one fuel from the inactive pool directly into the red hub's scoring zone. The fuel is
+   * spawned just above the entry height with enough downward velocity to cross the threshold in the
+   * first physics sub-step, guaranteeing a score. Returns {@code true} if a fuel was available.
+   *
+   * <p>Red hub center: ({@code FIELD_LENGTH - 4.61}, {@code FIELD_WIDTH / 2}) ≈ (11.90, 4.02)
+   * Entry height: 1.83 m, entry radius: 0.56 m.
+   */
+  public boolean shootFuelIntoRedHub() {
+    // Small random spread within 0.2 m of hub center to look natural
+    double angle = Math.random() * Math.PI * 2.0;
+    double r = Math.random() * 0.2;
+    double cx = FIELD_LENGTH - 4.61;
+    double cy = FIELD_WIDTH / 2.0;
+    Translation3d pos = new Translation3d(
+        cx + r * Math.cos(angle),
+        cy + r * Math.sin(angle),
+        Hub.ENTRY_HEIGHT + 0.1   // just above the scoring threshold
+    );
+    // vz of -30 m/s clears the threshold in the first sub-tick (dt ≈ 0.004 s)
+    return spawnFuelIfAvailable(pos, new Translation3d(0, 0, -30));
   }
 
   protected void handleRobotCollision(
@@ -1156,13 +1201,6 @@ public class FuelSim {
   /**
    * Registers an intake with the fuel simulator. This intake will remove fuel from the field based
    * on the `ableToIntake` parameter.
-   *
-   * @param xMin Minimum x position for the bounding box
-   * @param xMax Maximum x position for the bounding box
-   * @param yMin Minimum y position for the bounding box
-   * @param yMax Maximum y position for the bounding box
-   * @param ableToIntake Should a return a boolean whether the intake is active
-   * @param intakeCallback Function to call when a fuel is intaked
    */
   public void registerIntake(
       double xMin,
@@ -1174,60 +1212,20 @@ public class FuelSim {
     intakes.add(new SimIntake(xMin, xMax, yMin, yMax, ableToIntake, intakeCallback));
   }
 
-  /**
-   * Registers an intake with the fuel simulator. This intake will remove fuel from the field based
-   * on the `ableToIntake` parameter.
-   *
-   * @param xMin Minimum x position for the bounding box
-   * @param xMax Maximum x position for the bounding box
-   * @param yMin Minimum y position for the bounding box
-   * @param yMax Maximum y position for the bounding box
-   * @param ableToIntake Should a return a boolean whether the intake is active
-   */
   public void registerIntake(
       double xMin, double xMax, double yMin, double yMax, BooleanSupplier ableToIntake) {
     registerIntake(xMin, xMax, yMin, yMax, ableToIntake, () -> {});
   }
 
-  /**
-   * Registers an intake with the fuel simulator. This intake will always remove fuel from the
-   * field.
-   *
-   * @param xMin Minimum x position for the bounding box
-   * @param xMax Maximum x position for the bounding box
-   * @param yMin Minimum y position for the bounding box
-   * @param yMax Maximum y position for the bounding box
-   * @param intakeCallback Function to call when a fuel is intaked
-   */
   public void registerIntake(
       double xMin, double xMax, double yMin, double yMax, Runnable intakeCallback) {
     registerIntake(xMin, xMax, yMin, yMax, () -> true, intakeCallback);
   }
 
-  /**
-   * Registers an intake with the fuel simulator. This intake will always remove fuel from the
-   * field.
-   *
-   * @param xMin Minimum x position for the bounding box
-   * @param xMax Maximum x position for the bounding box
-   * @param yMin Minimum y position for the bounding box
-   * @param yMax Maximum y position for the bounding box
-   */
   public void registerIntake(double xMin, double xMax, double yMin, double yMax) {
     registerIntake(xMin, xMax, yMin, yMax, () -> true, () -> {});
   }
 
-  /**
-   * Registers an intake with the fuel simulator. This intake will remove fuel from the field based
-   * on the `ableToIntake` parameter.
-   *
-   * @param xMin Minimum x position for the bounding box
-   * @param xMax Maximum x position for the bounding box
-   * @param yMin Minimum y position for the bounding box
-   * @param yMax Maximum y position for the bounding box
-   * @param ableToIntake Should a return a boolean whether the intake is active
-   * @param intakeCallback Function to call when a fuel is intaked
-   */
   public void registerIntake(
       Distance xMin,
       Distance xMax,
@@ -1244,47 +1242,18 @@ public class FuelSim {
         intakeCallback);
   }
 
-  /**
-   * Registers an intake with the fuel simulator. This intake will remove fuel from the field based
-   * on the `ableToIntake` parameter.
-   *
-   * @param xMin Minimum x position for the bounding box
-   * @param xMax Maximum x position for the bounding box
-   * @param yMin Minimum y position for the bounding box
-   * @param yMax Maximum y position for the bounding box
-   * @param ableToIntake Should a return a boolean whether the intake is active
-   */
   public void registerIntake(
       Distance xMin, Distance xMax, Distance yMin, Distance yMax, BooleanSupplier ableToIntake) {
     registerIntake(
         xMin.in(Meters), xMax.in(Meters), yMin.in(Meters), yMax.in(Meters), ableToIntake);
   }
 
-  /**
-   * Registers an intake with the fuel simulator. This intake will always remove fuel from the
-   * field.
-   *
-   * @param xMin Minimum x position for the bounding box
-   * @param xMax Maximum x position for the bounding box
-   * @param yMin Minimum y position for the bounding box
-   * @param yMax Maximum y position for the bounding box
-   * @param intakeCallback Function to call when a fuel is intaked
-   */
   public void registerIntake(
       Distance xMin, Distance xMax, Distance yMin, Distance yMax, Runnable intakeCallback) {
     registerIntake(
         xMin.in(Meters), xMax.in(Meters), yMin.in(Meters), yMax.in(Meters), intakeCallback);
   }
 
-  /**
-   * Registers an intake with the fuel simulator. This intake will always remove fuel from the
-   * field.
-   *
-   * @param xMin Minimum x position for the bounding box
-   * @param xMax Maximum x position for the bounding box
-   * @param yMin Minimum y position for the bounding box
-   * @param yMax Maximum y position for the bounding box
-   */
   public void registerIntake(Distance xMin, Distance xMax, Distance yMin, Distance yMax) {
     registerIntake(xMin.in(Meters), xMax.in(Meters), yMin.in(Meters), yMax.in(Meters));
   }
@@ -1352,14 +1321,9 @@ public class FuelSim {
         fuel.y = exitY;
         fuel.z = exitZ;
         applyDispersalVelocity(fuel);
-        double time = DriverStation.getMatchTime();
-        if (
-          (DriverStation.isAutonomous() || DriverStation.isDisabled()) ||
-          (DriverStation.isTeleop() && time < 55) ||
-          (DriverStation.isTeleop() && time > 128) ||
-          (DriverStation.isTeleop() && time > 78 && time < 105) ||
-          (time == -1)
-        ){
+        Alliance hubAlly = this.equals(Hub.RED_HUB) ? Alliance.Red : Alliance.Blue;
+        Alliance DSAlly = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? Alliance.Red : Alliance.Blue;
+        if (hubAlly.equals(DSAlly) ? HubShiftUtil.getShiftedShiftInfo().active() : HubShiftUtil.isOpposingHubActive()){
           score++;
         }
       }
@@ -1391,8 +1355,6 @@ public class FuelSim {
 
     /**
      * Get the current count of fuel scored in this hub
-     *
-     * @return
      */
     public int getScore() {
       return score;
@@ -1455,7 +1417,7 @@ public class FuelSim {
     }
   }
 
-    /**
+  /**
    * Returns a singleton instance of FuelSim
    */
   public static FuelSim getInstance() {

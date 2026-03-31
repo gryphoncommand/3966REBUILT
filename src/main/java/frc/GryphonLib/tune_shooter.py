@@ -13,7 +13,7 @@ ENTRY_RADIUS   = 0.56 # m  (FuelSim Hub.ENTRY_RADIUS)
 
 LAUNCH_HEIGHT  = 17.701451 * 0.0254 # Height in meters off the ground
 WHEEL_RADIUS   = 2.0 * 0.0254 # Flywheel radius in meters
-EFFICIENCY     = 0.7 # Coefficient of shooter efficiency
+EFFICIENCY     = 0.45 # Coefficient of shooter efficiency
 
 # Ball comes out at 90 - hood angle, so these are the limits on launch angle from horizontal
 HOOD_MIN_DEG   = 22.6

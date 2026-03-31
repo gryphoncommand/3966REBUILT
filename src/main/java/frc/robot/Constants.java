@@ -178,7 +178,8 @@ public final class Constants {
   public static class ShooterConstants {
     public static int kFlywheelCanID = 9;
     public static int kFollowerWheelCanID = 10;
-    public static int kThirdWheelCanID = 18;
+    public static int kThirdWheelCanID = 15;
+    public static int kFourthWheelCanID = 16;
 
     //TODO: test
     public static boolean accountForAccel = false;
@@ -195,7 +196,7 @@ public final class Constants {
     public static final double kSimShooterYSpacingMeters = 0.20;
     public static final double kCoulombFrictionNm = 0.02;   // constant friction torque
     public static final double kViscousFriction = 0.002;   // Nm per rad/s
-    public static final double kGearRatio = 2.0;
+    public static final double kGearRatio = 1.1;
 
     public static double kFlywheelRPMOffset = 300;
     public static double kShootDelay = 0.05;
@@ -208,27 +209,31 @@ public final class Constants {
 
     public static ShooterState kShooterStowState = new ShooterState(3, kFixedHoodAngleDeg, 0, 1.2);
     public static ShooterState kDefaultShooterState = new ShooterState(3, kFixedHoodAngleDeg, 1300, 1.2);
-    public static ShooterState kCornerShotState = new ShooterState(5.1, kFixedHoodAngleDeg, 3225, 1.2);
+    public static ShooterState kCornerShotState = new ShooterState(5.1, kFixedHoodAngleDeg, 2800, 1.2);
     public static ShooterState kTowerShotState = new ShooterState(3.415, kFixedHoodAngleDeg, 2750, 1.2);
-    public static ShooterState kTrenchShotState = new ShooterState(3.168, kFixedHoodAngleDeg, 1850, 1.10);
+    public static ShooterState kTrenchShotState = new ShooterState(3.168, kFixedHoodAngleDeg, 2030, 1.10);
 
 
     public static List<ShooterState> RealShootingValuesLow = List.of(
-      new ShooterState(1.500000, kFixedHoodAngleDeg, 1689.7, 0.71),
-      new ShooterState(1.750000, kFixedHoodAngleDeg, 1661.4, 0.67),
-      new ShooterState(2.000000, kFixedHoodAngleDeg, 1682.1, 0.70),
-      new ShooterState(2.250000, kFixedHoodAngleDeg, 1721.8, 0.75),
-      new ShooterState(2.500000, kFixedHoodAngleDeg, 1770.0, 0.81),
-      new ShooterState(2.750000, kFixedHoodAngleDeg, 1822.2, 0.86),
-      new ShooterState(3.000000, kFixedHoodAngleDeg, 1876.1, 0.92),
-      new ShooterState(3.250000, kFixedHoodAngleDeg, 1930.6, 0.96),
-      new ShooterState(3.500000, kFixedHoodAngleDeg, 1984.9, 1.01),
-      new ShooterState(3.750000, kFixedHoodAngleDeg, 2038.8, 1.05),
-      new ShooterState(4.000000, kFixedHoodAngleDeg, 2092.1, 1.09),
-      new ShooterState(4.250000, kFixedHoodAngleDeg, 2144.5, 1.13),
-      new ShooterState(4.500000, kFixedHoodAngleDeg, 2196.2, 1.17),
-      new ShooterState(4.750000, kFixedHoodAngleDeg, 2246.9, 1.21),
-      new ShooterState(5.000000, kFixedHoodAngleDeg, 2296.8, 1.25)
+      new ShooterState(1.500000, 28.00, 2628.4, 0.71),
+      new ShooterState(1.750000, 28.00, 2584.4, 0.66),
+      new ShooterState(2.000000, 28.00, 2616.6, 0.70),
+      new ShooterState(2.250000, 28.00, 2678.4, 0.75),
+      new ShooterState(2.500000, 28.00, 2753.4, 0.80),
+      new ShooterState(2.750000, 28.00, 2834.6, 0.86),
+      new ShooterState(3.000000, 28.00, 2918.4, 0.91),
+      new ShooterState(3.250000, 28.00, 3003.1, 0.96),
+      new ShooterState(3.500000, 28.00, 3087.6, 1.01),
+      new ShooterState(3.750000, 28.00, 3171.5, 1.05),
+      new ShooterState(4.000000, 28.00, 3254.3, 1.09),
+      new ShooterState(4.250000, 28.00, 3335.9, 1.13),
+      new ShooterState(4.500000, 28.00, 3416.3, 1.17),
+      new ShooterState(4.750000, 28.00, 3495.2, 1.21),
+      new ShooterState(5.000000, 28.00, 3572.9, 1.25),
+      new ShooterState(5.250000, 28.00, 3649.2, 1.28),
+      new ShooterState(5.500000, 28.00, 3724.2, 1.32),
+      new ShooterState(5.750000, 28.00, 3798.0, 1.35),
+      new ShooterState(6.000000, 28.00, 3870.5, 1.38)
     );
 
     public static List<ShooterState> RealPassingValues = List.of(
@@ -271,9 +276,12 @@ public final class Constants {
     public static int kKickerCanID = 14;
     public static int kPreIndexerCanID = 12;
 
-    public static double kKickerGearRatio = 28/24;
 
-    public static double kPreIndexerSpeed = 1600;
+    public static double kPreIndexerGearRatio = 0.25;
+    public static double kKickerGearRatio = 3.5; // 84/24
+
+    
+    public static double kPreIndexerSpeed = 800;
     public static double kKickerSpeed = 9000;
     
 

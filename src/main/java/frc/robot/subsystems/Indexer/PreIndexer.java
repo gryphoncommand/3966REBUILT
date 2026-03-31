@@ -4,73 +4,93 @@ import static edu.wpi.first.units.Units.RPM;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Configs.PreIndexerConfig;
+import frc.robot.Configs;
 import frc.robot.Constants.IndexerConstants;
 
 public class PreIndexer extends SubsystemBase {
-    // Should run whenever spindexer or intake rollers are running
-    private TalonFX preIndexerMotor = new TalonFX(IndexerConstants.kPreIndexerCanID);
+
+    private SparkFlex preIndexerMotor =
+        new SparkFlex(IndexerConstants.kPreIndexerCanID, MotorType.kBrushless);
+
+    private RelativeEncoder encoder = preIndexerMotor.getEncoder();
+    private SparkClosedLoopController pid = preIndexerMotor.getClosedLoopController();
 
     private double targetRPM = 0.0;
-    private VelocityVoltage m_preIndexerRequest = new VelocityVoltage(300);
     private int simBalls = 8;
 
-    public PreIndexer(){
-        preIndexerMotor.getConfigurator().apply(PreIndexerConfig.PreIndexerConfig);
+    public PreIndexer() {
+        preIndexerMotor.configure(Configs.PreIndexerConfig.preIndexerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Indexing/PreIndexer RPM", preIndexerMotor.getVelocity().getValue().in(RPM));
+        Logger.recordOutput("Indexing/PreIndexer RPM", encoder.getVelocity());
         Logger.recordOutput("Indexing/Desired PreIndexer RPM", targetRPM);
+        Logger.recordOutput("Indexing/PreIndexer Applied Output", preIndexerMotor.getAppliedOutput());
     }
 
     public void set(double speed) {
         preIndexerMotor.set(speed);
     }
 
-    public void setVelocity(double rpm){
-        m_preIndexerRequest.withVelocity(rpm/60);
+    public void setVelocity(double rpm) {
         targetRPM = rpm;
-        preIndexerMotor.setControl(m_preIndexerRequest);
+        pid.setSetpoint(rpm, ControlType.kVelocity);
     }
 
-    public AngularVelocity getVelocity(){
-        return preIndexerMotor.getVelocity().getValue();
+    public AngularVelocity getVelocity() {
+        return RPM.of(encoder.getVelocity());
     }
 
-    public double getTargetRPM(){
+    public double getTargetRPM() {
         return targetRPM;
     }
 
-    public boolean atTarget(double threshold){
-        return Math.abs(getVelocity().in(RPM) - targetRPM) < threshold;
+    public double getPosition(){
+        return encoder.getPosition();
     }
 
-    public void addBall(){
+    public void setVoltage(double volts){
+        preIndexerMotor.setVoltage(volts);
+    }
+
+    public double getVoltage() {
+        return preIndexerMotor.getAppliedOutput() * preIndexerMotor.getBusVoltage();
+    }
+
+    public boolean atTarget(double threshold) {
+        return Math.abs(encoder.getVelocity() - targetRPM) < threshold;
+    }
+
+    public void addBall() {
         simBalls += 1;
-        if (simBalls >= 41){
+        if (simBalls >= 41) {
             simBalls = 40;
         }
     }
 
-    public void removeBall(){
+    public void removeBall() {
         simBalls -= 1;
-        if (simBalls < 0){
+        if (simBalls < 0) {
             simBalls = 0;
         }
     }
 
-    public double getBalls(){
+    public double getBalls() {
         return simBalls;
     }
 
-    public boolean isFull(){
-      return simBalls >= 40;
+    public boolean isFull() {
+        return simBalls >= 40;
     }
 }

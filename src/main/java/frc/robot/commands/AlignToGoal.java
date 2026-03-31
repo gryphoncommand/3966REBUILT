@@ -53,7 +53,7 @@ public class AlignToGoal extends Command {
     public void initialize() {
         turnPID.reset();
         turnPID.setSetpoint(0.0);
-        turnPID.setTolerance(Math.PI/36);
+        turnPID.setTolerance(Units.degreesToRadians(1));
     }
 
     @Override
