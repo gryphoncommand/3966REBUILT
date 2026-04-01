@@ -120,7 +120,7 @@ public class RobotContainer {
     SmartDashboard.putData("Shoot All", 
       new ParallelCommandGroup(
         new SetShooterToDefinedState(m_flywheel, ShooterConstants.kDefaultShooterState),
-        new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy, false, false))
+        new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy, false, false)).withTimeout(5.5)
       );
     SmartDashboard.putData("Align To Goal", new AlignToGoal(m_drive, m_driverController, Constants.AlignmentConstants.BlueHubPose, false));
     SmartDashboard.putData("Return to Start", m_drive.goToPose(new Pose2d(new Translation2d(3.747, 7.419), new Rotation2d(Units.degreesToRadians(179.167)))));
@@ -340,7 +340,7 @@ public class RobotContainer {
   }
 
   private void configureNamedCommands(){
-    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy));
+    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy).withTimeout(5.5));
     NamedCommands.registerCommand("Speedup Flywheel", new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow));
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
