@@ -59,6 +59,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
+import swervelib.simulation.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
@@ -191,6 +192,10 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
   public void driveRobotRelativeChassis(ChassisSpeeds speeds) {
     swerveDrive.setChassisSpeeds(speeds);
     setDesiredStates(swerveDrive.kinematics.toSwerveModuleStates(speeds));
+  }
+
+  public AbstractDriveTrainSimulation getDriveTrainSimulation(){
+    return swerveDrive.getMapleSimDrive().get();
   }
 
   public void driveFieldRelativeChassis(ChassisSpeeds fieldRelativeSpeeds){

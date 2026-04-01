@@ -53,7 +53,7 @@
   "folder": "Outpost",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -139.32506043473848
+    "rotation": -128.36678257427678
   },
   "useDefaultConstraints": false
 }

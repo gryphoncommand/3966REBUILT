@@ -1,6 +1,5 @@
 package frc.robot.commands.Intake;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.IntakeConstants;
@@ -22,7 +21,7 @@ public class IntakeDeploy extends Command {
 
     @Override
     public boolean isFinished() {
-        return intake.atTarget(Units.degreesToRotations(60));
+        return intake.atTarget(30);
     }
 
     @Override

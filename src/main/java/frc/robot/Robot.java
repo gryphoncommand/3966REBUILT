@@ -73,6 +73,7 @@ public class Robot extends LoggedRobot  {
     Logger.recordOutput("Basics/Recieving Alliance", DriverStation.getAlliance().isPresent());
     Logger.recordOutput("Basics/Current Alliance", DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get().toString() : "Neither");
     Logger.recordOutput("Basics/Hub State", HubShiftUtil.getShiftedShiftInfo().active());
+    Logger.recordOutput("Basics/OpposingHub State", HubShiftUtil.isOpposingHubActive());
     Logger.recordOutput("Basics/Remaining Time Until Shift", HubShiftUtil.getShiftedShiftInfo().remainingTime());
   }
 

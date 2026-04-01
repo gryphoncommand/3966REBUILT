@@ -645,7 +645,7 @@ public class FuelSim {
       }
     }
 
-    for (int i = 0; i < 8; i++){
+    for (int i = 0; i < 8+24; i++){
       Fuel fuel = new Fuel(new Translation3d());
       addFuel(fuel);
       deactivateFuel(fuel);

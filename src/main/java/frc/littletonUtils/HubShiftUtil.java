@@ -90,6 +90,16 @@ public class HubShiftUtil {
     return currentSchedule;
   }
 
+    private static boolean[] getOpposingSchedule() {
+      boolean[] currentSchedule;
+      Alliance startAlliance = getFirstActiveAlliance();
+      currentSchedule =
+          startAlliance == DriverStation.getAlliance().orElse(Alliance.Blue)
+              ? inactiveSchedule
+              : activeSchedule;
+      return currentSchedule;
+  }
+
   private static ShiftInfo getShiftInfo(
       boolean[] currentSchedule, double[] shiftStartTimes, double[] shiftEndTimes) {
     double timerValue = shiftTimer.get();
@@ -199,16 +209,6 @@ public class HubShiftUtil {
   }
 
   public static boolean isOpposingHubActive() {
-    ShiftInfo info = getShiftedShiftInfo();
-
-    switch (info.currentShift()) {
-      case AUTO:
-      case TRANSITION:
-      case ENDGAME:
-        return true;
-
-      default:
-        return !info.active();
-    }
+    return getShiftInfo(getOpposingSchedule(), shiftStartTimes, shiftEndTimes).active();
   }
 }

@@ -75,7 +75,7 @@ public class RobotContainer {
 
   // Subsystems
   private final DriveIO m_drive = Robot.isReal() ? new DriveSubsystem() : new SimDriveSubsystem();
-  private final IntakeDeployIO m_intakeDeploy = Robot.isReal() ? new IntakeDeploySparkFlex() : new IntakeDeploySimTalonFX();
+  private final IntakeDeployIO m_intakeDeploy = Robot.isReal() ? new IntakeDeploySparkFlex() : new IntakeDeploySimTalonFX(m_drive);
   private final FlywheelIO m_flywheel = Robot.isReal() ? new FlywheelTalonFX() : new FlywheelSimTalonFX();
   private final Kicker m_kicker = new Kicker();
   private final PreIndexer m_preIndexer = new PreIndexer();
@@ -349,7 +349,7 @@ public class RobotContainer {
       )
     );
     NamedCommands.registerCommand("Align to Shoot", new AlignToGoalAuto(m_drive, AlignmentConstants.HubPose, true));
-    NamedCommands.registerCommand("Outpost Intake", new InstantCommand(()->{for (int i = 0; i < 25; i++){m_preIndexer.addBall();}}));
+    NamedCommands.registerCommand("Outpost Intake", new InstantCommand(()->{for (int i = 0; i < 24; i++){m_preIndexer.addBall();}}));
     NamedCommands.registerCommand("Deploy Intake", new IntakeDeploy(m_intakeDeploy));
     NamedCommands.registerCommand("Stow Intake", new IntakeStow(m_intakeDeploy));
     NamedCommands.registerCommand("Run Intake", new RunCommand(()->m_intakeRollers.setVelocity(IntakeConstants.kIntakeSpeedRPM), m_intakeRollers).finallyDo(()->m_intakeRollers.set(0)));
