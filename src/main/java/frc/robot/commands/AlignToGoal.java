@@ -53,7 +53,7 @@ public class AlignToGoal extends Command {
     public void initialize() {
         turnPID.reset();
         turnPID.setSetpoint(0.0);
-        turnPID.setTolerance(Units.degreesToRadians(1));
+        turnPID.setTolerance(Units.degreesToRadians(1.5));
     }
 
     @Override
@@ -69,8 +69,8 @@ public class AlignToGoal extends Command {
         double strafe  = -MathUtil.applyDeadband(controller.getLeftX(), OIConstants.kDriveDeadband);
 
         if (SOTM){
-            forward *= 0.25;
-            strafe *= 0.25;
+            forward *= 1.0/3.0;
+            strafe *= 1.0/3.0;
         }
 
         // Compute yaw error from shooter pose instead of robot center

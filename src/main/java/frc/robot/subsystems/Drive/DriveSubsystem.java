@@ -358,12 +358,13 @@ public class DriveSubsystem extends SubsystemBase implements DriveIO {
   public PathPlannerPath getPathFromWaypoint(Pose2d waypoint) {
     return createPath(waypoint, AutoConstants.constraints, new GoalEndState(0.0, waypoint.getRotation()));
   }
-
+ 
   public ChassisSpeeds getCurrentSpeedsFieldRelative(){
-    boolean flipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
-    if (Robot.isSimulation()){
-      flipped = false;
-    }
+    // boolean flipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+    // if (Robot.isSimulation()){
+    //   flipped = false;
+    // }
+    boolean flipped = false;
     return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds().times(flipped ? -1 : 1), (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()));
   }
 
@@ -427,7 +428,7 @@ public class DriveSubsystem extends SubsystemBase implements DriveIO {
   @Override
   public void periodic() {
     field2d.getObject("Shooter Pose").setPose(getCurrentPose().transformBy(ShooterConstants.kRobotToShooter));
-    SmartDashboard.putNumber("Distance To Hub (m)", PhotonUtils.getDistanceToPose(getCurrentPose(), AlignmentConstants.HubPose));
+    SmartDashboard.putNumber("Distance To Hub (m)", PhotonUtils.getDistanceToPose(getCurrentPose().plus(ShooterConstants.kRobotToShooter), AlignmentConstants.HubPose));
     Logger.recordOutput("Drive/Chassis Speeds", getCurrentSpeeds());
     Logger.recordOutput("Drive/Desired Chassis Speeds", DriveConstants.kDriveKinematics.toChassisSpeeds(getDesiredStates()));
     if (Vision.getResult1() != null){

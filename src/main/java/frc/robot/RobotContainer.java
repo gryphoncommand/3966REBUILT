@@ -163,7 +163,7 @@ public class RobotContainer {
 
     m_intakeRollers.setDefaultCommand(
       new RunCommand(()->{
-        if (m_driverController.leftTrigger().getAsBoolean() || m_driverController.rightTrigger().getAsBoolean()){
+        if (m_driverController.leftTrigger().getAsBoolean() || m_driverController.rightTrigger().getAsBoolean() || m_driverController.a().getAsBoolean()){
           m_intakeRollers.setVelocity(IntakeConstants.kIntakeSpeedRPM);
         } else {
           m_intakeRollers.setVelocity(0);

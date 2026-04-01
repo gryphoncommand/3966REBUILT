@@ -182,7 +182,7 @@ public final class Constants {
     public static int kThirdWheelCanID = 15;
     public static int kFourthWheelCanID = 16;
 
-    //TODO: test
+    // Needs to be fixed eventually
     public static boolean accountForAccel = false;
 
     // Fixed-hood, 3-wide drum shooter configuration
@@ -210,7 +210,7 @@ public final class Constants {
 
 
     public static List<ShooterState> RealShootingValuesLow = List.of(
-      new ShooterState(1.500000, 28.00, 2628.4, 0.71),
+      new ShooterState(1.500000, 28.00, 2348.4, 0.71),
       new ShooterState(1.750000, 28.00, 2584.4, 0.66),
       new ShooterState(2.000000, 28.00, 2616.6, 0.70),
       new ShooterState(2.250000, 28.00, 2678.4, 0.75),
@@ -271,7 +271,7 @@ public final class Constants {
 
 
     public static ShooterState kShooterStowState = new ShooterState(3, kFixedHoodAngleDeg, 0, 1.2);
-    public static ShooterState kDefaultShooterState = new ShooterState(3, kFixedHoodAngleDeg, 1300, 1.2);
+    public static ShooterState kDefaultShooterState = new ShooterState(3, kFixedHoodAngleDeg, 1800, 1.2);
     public static ShooterState kJuggleShooterState = new ShooterState(3, kFixedHoodAngleDeg, 700, 1.2);
     public static ShooterState kCornerShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 5.2);
     public static ShooterState kTowerShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 3.15);
@@ -288,10 +288,11 @@ public final class Constants {
     public static double kKickerGearRatio = 84.0/24.0; // 84/24
 
     
-    public static double kPreIndexerSpeed = 950;
+    public static double kPreIndexerSpeed = 1000;
     public static double kKickerSpeed = 9000;
     
 
+    // TODO: TOP PRIORITY IS TO TUNE THIS
     public static double kActiveCurrentRollerFloor = 20;
     
   }
@@ -303,9 +304,9 @@ public final class Constants {
     // Ts gear ratio calculations do NOT work because integer division, but it works out for now so its all good i guess Should be fixed in offseason.
     public static double kIntakeDeployGearRatio = 20*(50.0/32.0)*(36.0/16.0); // 20 then (32/50) then (16/36)
     public static double kShaftToIntakeDeployRatio = 36.0/16.0;
-    public static double kIntakeDeployAngle = Units.degreesToRotations(2.7*kShaftToIntakeDeployRatio);
+    public static double kIntakeDeployAngle = Units.degreesToRotations(5*kShaftToIntakeDeployRatio);
     public static double kIntakeStowAngle = Units.degreesToRotations(125*kShaftToIntakeDeployRatio);
-    public static double kIntakeAgitateAngle = Units.degreesToRotations(15*kShaftToIntakeDeployRatio);
+    public static double kIntakeAgitateAngle = Units.degreesToRotations(30*kShaftToIntakeDeployRatio);
 
     
     public static int kDeployCanID = 13;

@@ -96,7 +96,7 @@ public class IntakeDeploySparkFlex extends SubsystemBase implements IntakeDeploy
         if (pid.getControlType() == ControlType.kVelocity) {
             return Math.abs(m_absoluteEncoder.getVelocity() - pid.getSetpoint()) < threshold;
         } else if (pid.getControlType() == ControlType.kPosition) {
-            return Math.abs(m_absoluteEncoder.getPosition() - pid.getSetpoint()) < threshold;
+            return Math.abs(getPosition() - getMechPosition(pid.getSetpoint())) < threshold;
         } else {
             return false;
         }

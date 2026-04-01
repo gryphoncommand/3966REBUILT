@@ -151,7 +151,7 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
 
     @Override
     public boolean atTarget(double threshold) {
-        return Math.abs(Units.degreesToRotations(getPosition() - targetAngleDeg)) < threshold;
+        return Math.abs(getPosition() - targetAngleDeg) < threshold;
     }
 
     @Override

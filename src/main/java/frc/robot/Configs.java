@@ -145,8 +145,7 @@ public final class Configs {
                 IntakeDeployConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
                     // These are example gains you may need to them for your own robot!
-                    // TODO: Tune so autos are faster
-                    .pid(2.0, 0, 0.2)
+                    .pid(2.5, 0, 0.2)
                     .outputRange(-0.9, 0.9);
         }
 

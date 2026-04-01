@@ -4,7 +4,7 @@ import argparse
 import sys
 import numpy as np
 
-# Physical & hardware constants
+# Physical & hasdware constants
 
 G              = 9.81 # m/s^2
 BALL_RADIUS    = 0.150114 / 2 # 0.075057 m
@@ -18,8 +18,6 @@ EFFICIENCY     = 0.45 # Coefficient of shooter efficiency
 # Ball comes out at 90 - hood angle, so these are the limits on launch angle from horizontal
 HOOD_MIN_DEG   = 22.6
 HOOD_MAX_DEG   = 52.5
-
-SHOOTER_OFFSET = 0.260 # m  kRobotToShooter.x
 
 # Air-resistance parameters
 AIR_DENSITY    = 1.2041 # kg/m^3
@@ -183,13 +181,13 @@ def find_speed(
 #  Main table generator 
 
 def generate(
-    robot_distances: list[float],
+    shooter_distances: list[float],
     air_resistance: bool = False,
     arc: str = 'low',
     n_angles: int = 3000,
 ) -> list[dict]:
     """
-    For each robot-to-hub distance, sweep valid hood angles and choose the shot
+    For each shooter-to-hub distance, sweep valid hood angles and choose the shot
     with the lowest peak height ('low' arc) or highest ('high' arc).
 
     When air_resistance=True a coarser grid is used to keep runtime reasonable.
@@ -208,10 +206,10 @@ def generate(
 
     rows = []
 
-    for rd in robot_distances:
-        sd = rd - SHOOTER_OFFSET # horizontal distance: shooter -> hub
+    for sd in shooter_distances:
+        sd = sd # horizontal distance: shooter -> hub 
         if sd < 0.3:
-            print(f"  {rd:.3f} m  [skip — too close after shooter offset]")
+            print(f"  {sd:.3f} m  [skip — too close after shooter offset]")
             continue
 
         best: dict | None = None
@@ -238,11 +236,11 @@ def generate(
                 best['hood'] = hood_from_launch(la)
 
         if best:
-            best['robot_dist'] = rd
+            best['dist'] = sd
             best['rpm']        = speed_to_rpm(best['speed'])
             rows.append(best)
             print(
-                f"  {rd:.3f} m  ->  "
+                f"  {sd:.3f} m  ->  "
                 f"hood {best['hood']:5.2f}°  "
                 f"launch {best['la']:4.1f}°  "
                 f"RPM {best['rpm']:6.0f}  "
@@ -250,12 +248,12 @@ def generate(
                 f"peak {best['z_peak']:.3f} m"
             )
         else:
-            print(f"  {rd:.3f} m  [no valid shot found]")
+            print(f"  {sd:.3f} m  [no valid shot found]")
 
     return rows
 
 def generate_fixed_hood(
-    robot_distances: list[float],
+    shooter_distances: list[float],
     hood_deg: float = 28.0,
     air_resistance: bool = True,
     dt: float = 1e-5,
@@ -263,33 +261,28 @@ def generate_fixed_hood(
     la = launch_from_hood(hood_deg)
     rows = []
 
-    for rd in robot_distances:
-        sd = rd - SHOOTER_OFFSET
-        if sd < 0.3:
-            print(f"  {rd:.3f} m  [too close after shooter offset]")
-            continue
-
+    for sd in shooter_distances:
         v0 = analytical_speed(sd, la)
         if v0 is None:
-            print(f"  {rd:.3f} m  [no possible shot at hood {hood_deg}°]")
+            print(f"  {sd:.3f} m  [no possible shot at hood {hood_deg}°]")
             continue
 
 # Slightly increase to overcome air resistance
         v_guess = v0 * (1.05 if air_resistance else 1.0)
         r = integrate(v_guess, la, air_resistance=air_resistance, dt=dt)
         if r is None:
-            print(f"  {rd:.3f} m  [integration failed]")
+            print(f"  {sd:.3f} m  [integration failed]")
             continue
 
         r['speed'] = v_guess
         r['la'] = la
         r['hood'] = hood_deg
-        r['robot_dist'] = rd
+        r['dist'] = sd
         r['rpm'] = speed_to_rpm(r['speed'])
         rows.append(r)
 
         print(
-            f"  {rd:.3f} m -> hood {r['hood']:5.2f}° "
+            f"  {sd:.3f} m -> hood {r['hood']:5.2f}° "
             f"launch {r['la']:4.1f}° RPM {r['rpm']:6.0f} "
             f"t {r['t']:.3f}s peak {r['z_peak']:.3f}m"
         )
@@ -305,7 +298,7 @@ def emit_java(rows: list[dict], arc: str) -> None:
         sep = "," if i < len(rows) - 1 else ""
         print(
             f"  new ShooterState("
-            f"{r['robot_dist']:.6f}, "
+            f"{r['dist']:.6f}, "
             f"{r['hood']:.2f}, "
             f"{r['rpm']:.1f}, "
             f"{r['t']:.2f}){sep}"
@@ -326,8 +319,7 @@ def plot_trajectories(rows: list[dict], air_resistance: bool) -> None:
     labels = []
 
     for row, colour in zip(rows, cmap):
-        la, v, rd = row['la'], row['speed'], row['robot_dist']
-        sd = rd - SHOOTER_OFFSET
+        la, v, sd = row['la'], row['speed'], row['dist']
         a  = np.radians(la)
         vx = v * np.cos(a)
 
@@ -339,7 +331,7 @@ def plot_trajectories(rows: list[dict], air_resistance: bool) -> None:
 
         ax.plot(xs, zs, color=colour, lw=1.8)
         ax.plot(row['x'], ENTRY_HEIGHT, 'o', color=colour, ms=5)
-        labels.append(mpatches.Patch(color=colour, label=f"{rd:.2f} m"))
+        labels.append(mpatches.Patch(color=colour, label=f"{sd:.2f} m"))
 
     # Hub opening
     ax.fill_betweenx(
@@ -375,15 +367,16 @@ def main():
     ap.add_argument("--air",  action="store_true", default=True,
                     help="account for air resistance (mirrors FuelSim physics)")
     ap.add_argument("--dmin", type=float, default=1.5,  metavar="M",
-                    help="minimum robot-to-hub distance in metres (default: 1.5)")
+                    help="minimum shooter-to-hub distance in metres (default: 1.5)")
     ap.add_argument("--dmax", type=float, default=5.25, metavar="M",
-                    help="maximum robot-to-hub distance in metres (default: 5.25)")
+                    help="maximum shooter-to-hub distance in metres (default: 5.25)")
     ap.add_argument("--step", type=float, default=0.5,  metavar="M",
                     help="distance step in metres (default: 0.5)")
     ap.add_argument("--plot", action="store_true", default=True,
                     help="display trajectory plot (requires matplotlib)")
     args = ap.parse_args()
 
+    # THESE SHOULD BE DISTANCES FROM SHOOTER TO TARGET
     distances = list(np.arange(args.dmin, args.dmax + 1e-9, args.step))
 
     print("=" * 60)
