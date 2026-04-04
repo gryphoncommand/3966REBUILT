@@ -385,7 +385,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
     Logger.recordOutput("Drive/Chassis Speeds", getCurrentSpeeds());
     Logger.recordOutput("Drive/Desired Chassis Speeds", DriveConstants.kDriveKinematics.toChassisSpeeds(getDesiredStates()));
     if (Vision.getResult1() != null){
-      Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1(), getCurrentPose());
+      Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1(), getCurrentPose(), true);
       if (visionBotPose1.isPresent()){
         poseEstimator.addVisionData(List.of(visionBotPose1.get()), Vision.updateEstimationStdDevs(visionBotPose1, visionBotPose1.get().targetsUsed));
         Logger.recordOutput("PoseEst/Camera1 Pose Guess", visionBotPose1.get().estimatedPose);

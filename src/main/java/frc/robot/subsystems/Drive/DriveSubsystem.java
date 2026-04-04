@@ -360,11 +360,11 @@ public class DriveSubsystem extends SubsystemBase implements DriveIO {
   }
  
   public ChassisSpeeds getCurrentSpeedsFieldRelative(){
-    // boolean flipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
-    // if (Robot.isSimulation()){
-    //   flipped = false;
-    // }
-    boolean flipped = false;
+    boolean flipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+    if (Robot.isSimulation()){
+      flipped = false;
+    }
+    // boolean flipped = false;
     return ChassisSpeeds.fromRobotRelativeSpeeds(getCurrentSpeeds().times(flipped ? -1 : 1), (Robot.isReal() ? getRotation() : getCurrentPose().getRotation()));
   }
 
@@ -432,15 +432,22 @@ public class DriveSubsystem extends SubsystemBase implements DriveIO {
     Logger.recordOutput("Drive/Chassis Speeds", getCurrentSpeeds());
     Logger.recordOutput("Drive/Desired Chassis Speeds", DriveConstants.kDriveKinematics.toChassisSpeeds(getDesiredStates()));
     if (Vision.getResult1() != null){
-      Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1(), getCurrentPose());
+      Optional<EstimatedRobotPose> visionBotPose1 = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1(), getCurrentPose(), true);
       if (visionBotPose1.isPresent()){
         poseEstimator.addVisionData(List.of(visionBotPose1.get()), Vision.updateEstimationStdDevs(visionBotPose1, visionBotPose1.get().targetsUsed));
         Logger.recordOutput("PoseEst/Camera1 Pose Guess", visionBotPose1.get().estimatedPose);
       }
+      if (Vision.getResult1().targets.size() > 1){
+        Optional<EstimatedRobotPose> visionBotPose1Multi = Vision.getEstimatedGlobalPoseCam1(Vision.getResult1(), getCurrentPose(), true);
+        if (visionBotPose1Multi.isPresent()){
+          poseEstimator.addVisionData(List.of(visionBotPose1.get()), Vision.updateEstimationStdDevs(visionBotPose1Multi, visionBotPose1Multi.get().targetsUsed));
+          Logger.recordOutput("PoseEst/Camera1 Multitag Pose Guess", visionBotPose1Multi.get().estimatedPose);
+        }
+      }
     } if (Vision.getResult2() != null){
       Optional<EstimatedRobotPose> visionBotPose2 = Vision.getEstimatedGlobalPoseCam2(getCurrentPose(), Vision.getResult2());
       if (visionBotPose2.isPresent()){
-        poseEstimator.addVisionData(List.of(visionBotPose2.get()), Vision.updateEstimationStdDevs(visionBotPose2, visionBotPose2.get().targetsUsed));
+        poseEstimator.addVisionData(List.of(visionBotPose2.get()), Vision.updateEstimationStdDevs(visionBotPose2, visionBotPose2.get().targetsUsed).times(1.8));
         Logger.recordOutput("PoseEst/Camera2 Pose Guess", visionBotPose2.get().estimatedPose);
       }
     } if (Vision.getResult3() != null){

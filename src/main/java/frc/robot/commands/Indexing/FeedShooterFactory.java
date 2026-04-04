@@ -19,7 +19,7 @@ public class FeedShooterFactory {
     public void start(){
         running = true;
         kicker.setVelocity(IndexerConstants.kKickerSpeed);
-        kicker.set(-1);
+        kicker.set(-0.9);
         preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed);
         timer.restart();
     }

@@ -11,15 +11,20 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.commands.PathfindingCommand;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.littletonUtils.HubShiftUtil;
+import frc.robot.Constants.AlignmentConstants;
 import frc.FuelSim;
+import frc.GryphonLib.AllianceFlipUtil;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -31,6 +36,8 @@ public class Robot extends LoggedRobot  {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+
+  private boolean gotAlliance = false;
 
   public Robot(){
     Logger.addDataReceiver(new NT4Publisher());
@@ -49,6 +56,7 @@ public class Robot extends LoggedRobot  {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     PathfindingCommand.warmupCommand();
+    gotAlliance = false;
   }
 
   /**
@@ -60,6 +68,12 @@ public class Robot extends LoggedRobot  {
    */
   @Override
   public void robotPeriodic() {
+    if (DriverStation.getAlliance().isPresent() && !gotAlliance){
+      AlignmentConstants.HubPose = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose;
+      AlignmentConstants.PassingPoseOutpost = (new Pose2d(AllianceFlipUtil.applyX(1.212), 2.2688, new Rotation2d()));
+      AlignmentConstants.PassingPoseDepot = (new Pose2d(AllianceFlipUtil.applyX(1.212), 5.707, new Rotation2d()));
+      gotAlliance = true;
+    }
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic

@@ -7,8 +7,10 @@ package frc.robot;
 import frc.FuelSim;
 import frc.GryphonLib.ShooterState;
 import frc.GryphonLib.AllianceFlipUtil;
+import frc.robot.AI.HybridBotInSimulation;
 import frc.robot.AI.OffensiveBotInSim;
 import frc.robot.Constants.AlignmentConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
@@ -101,7 +103,7 @@ public class RobotContainer {
     configureNamedCommands();
     if (Robot.isSimulation()){
       configureFuelSim();
-      // configureAIOpponents();
+      configureAIOpponents();
     }
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
@@ -137,7 +139,7 @@ public class RobotContainer {
               m_drive.drive(
                 -MathUtil.applyDeadband(forward, OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(strafe, OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(turn, OIConstants.kDriveDeadband), true);
+                -MathUtil.applyDeadband(turn, OIConstants.kDriveDeadband), DriveConstants.fieldOriented);
             },
             m_drive)
             .withName("Basic Drive"));
@@ -179,8 +181,8 @@ public class RobotContainer {
       new InstantCommand(()->{
         m_drive.zeroHeading();
         AlignmentConstants.HubPose = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose;
-        AlignmentConstants.PassingPoseOutpost = (new Pose2d(AllianceFlipUtil.applyX(2.412), 2.2688, new Rotation2d()));
-        AlignmentConstants.PassingPoseDepot = (new Pose2d(AllianceFlipUtil.applyX(2.412), 5.707, new Rotation2d()));
+        AlignmentConstants.PassingPoseOutpost = (new Pose2d(AllianceFlipUtil.applyX(1.212), 2.2688, new Rotation2d()));
+        AlignmentConstants.PassingPoseDepot = (new Pose2d(AllianceFlipUtil.applyX(1.212), 5.707, new Rotation2d()));
       }, m_drive));
     
 
@@ -340,7 +342,7 @@ public class RobotContainer {
   }
 
   private void configureNamedCommands(){
-    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy).withTimeout(5.5));
+    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy).withTimeout(5.0));
     NamedCommands.registerCommand("Speedup Flywheel", new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow));
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
@@ -367,10 +369,10 @@ public class RobotContainer {
     );
   }
 
-  public static void configureAIOpponents(){
+  public void configureAIOpponents(){
     try {
       Logger.recordOutput("Drive/AI Status", "Started Creating AI 0");
-      new OffensiveBotInSim(3, Alliance.Red, true);
+      new HybridBotInSimulation(3, ((SimDriveSubsystem)m_drive)::getRealPoseSim, Alliance.Red);
   } catch (Exception e){
       Logger.recordOutput("Drive/AI Status", "Failed Creating AI 0, " + e.getMessage());
     }

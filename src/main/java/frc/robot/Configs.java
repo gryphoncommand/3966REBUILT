@@ -39,8 +39,7 @@ public final class Configs {
 
 
                 driveConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 1/3;
-                driveConfig.CurrentLimits.withSupplyCurrentLimit(55)
-                .withSupplyCurrentLimitEnable(true);
+                driveConfig.CurrentLimits.withSupplyCurrentLimit(75).withSupplyCurrentLimitEnable(true);
                 
                 // Motor behavior
                 driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -120,7 +119,7 @@ public final class Configs {
             slot0Configs.kI = 0.0;
             slot0Configs.kD = 0.0;
 
-            intakeRollerConfig.CurrentLimits.withSupplyCurrentLimit(Amps.of(20));
+            intakeRollerConfig.CurrentLimits.withSupplyCurrentLimit(Amps.of(45));
             intakeRollerConfig.CurrentLimits.withSupplyCurrentLimitEnable(true);
             
             // Motor behavior

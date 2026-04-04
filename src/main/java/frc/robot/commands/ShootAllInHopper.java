@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.FuelSim;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.Constants.IndexerConstants;
 import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.Robot;
 import frc.robot.subsystems.Drive.DriveIO;

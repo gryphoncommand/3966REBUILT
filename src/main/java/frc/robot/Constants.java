@@ -52,6 +52,8 @@ public final class Constants {
     public static final double kMaxAccelerationMetersPerSecondSquared = 40.0;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
+    public static final boolean fieldOriented = true;
+
     // Chassis configuration
     public static final double kTrackWidth = Units.inchesToMeters(21.5);
     // Distance between centers of right and left wheels on robot
@@ -142,7 +144,7 @@ public final class Constants {
 
   public static class VisionConstants {
     public static final String kCameraName1 = "ShooterLL";
-    public static final String kCameraName2 = "FrontArducam";
+    public static final String kCameraName2 = "LeftLimelight";
     public static final String kCameraName3 = "ArduL";
     // Cam mounted facing forward, half a meter forward of center, half a meter up from center,
     // pitched upward.
@@ -150,14 +152,14 @@ public final class Constants {
     private static final double camYaw1 = Units.degreesToRadians(180);
     
     public static final Transform3d kRobotToCam1 =
-            new Transform3d(new Translation3d(Units.inchesToMeters(5.252), Units.inchesToMeters(9.732), Units.inchesToMeters(20.118257)), new Rotation3d(0, camPitch1, camYaw1));
+            new Transform3d(new Translation3d(Units.inchesToMeters(5.252), Units.inchesToMeters(9.732), Units.inchesToMeters(21.118257)), new Rotation3d(0, camPitch1, camYaw1));
     public static final Transform3d kCamToRobot1 = kRobotToCam1.inverse();
 
     // some of these probably need to be flipped
-    private static final double camPitch2 = -Units.degreesToRadians(8);
-    private static final double camYaw2 = Units.degreesToRadians(0);
+    private static final double camPitch2 = -Units.degreesToRadians(20);
+    private static final double camYaw2 = Units.degreesToRadians(90);
     public static final Transform3d kRobotToCam2 =
-            new Transform3d(new Translation3d(Units.inchesToMeters(8.25), Units.inchesToMeters(10.25), Units.inchesToMeters(19.5)), new Rotation3d(0, camPitch2, camYaw2));
+            new Transform3d(new Translation3d(0.237, 0.274, 0.771), new Rotation3d(0, camPitch2, camYaw2));
     public static final Transform3d kCamToRobot2 = kRobotToCam2.inverse();
 
     // some of these probably need to be flipped
@@ -188,7 +190,7 @@ public final class Constants {
     // Fixed-hood, 3-wide drum shooter configuration
     public static final int kDrumMotorCount = 2;
     public static final double kFixedHoodAngleDeg = 28.0;
-    public static final double kTargetFuelPerSecond = 15.0;
+    public static final double kTargetFuelPerSecond = 7.5;
     public static final int kSimShooterCount = 2;
     public static final double kSimTotalBps = kTargetFuelPerSecond;
     public static final double kSimPerShooterMeanIntervalSec = (double) kSimShooterCount / kSimTotalBps;
@@ -288,7 +290,7 @@ public final class Constants {
     public static double kKickerGearRatio = 84.0/24.0; // 84/24
 
     
-    public static double kPreIndexerSpeed = 1000;
+    public static double kPreIndexerSpeed = 1690;
     public static double kKickerSpeed = 9000;
     
 
@@ -299,9 +301,8 @@ public final class Constants {
 
   public static class IntakeConstants {
     public static int kRollerCanID = 11;
-    public static double kIntakeSpeedRPM = 440;
+    public static double kIntakeSpeedRPM = 700; // Optimally should be 3580
 
-    // Ts gear ratio calculations do NOT work because integer division, but it works out for now so its all good i guess Should be fixed in offseason.
     public static double kIntakeDeployGearRatio = 20*(50.0/32.0)*(36.0/16.0); // 20 then (32/50) then (16/36)
     public static double kShaftToIntakeDeployRatio = 36.0/16.0;
     public static double kIntakeDeployAngle = Units.degreesToRotations(5*kShaftToIntakeDeployRatio);
@@ -320,13 +321,13 @@ public final class Constants {
     public static final Pose2d RedHubPose = new Pose2d(11.916, 4.055, new Rotation2d());
     public static final Pose2d BlueHubPose = new Pose2d(4.624, 4.055, new Rotation2d());
 
-    public static Pose2d HubPose = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? RedHubPose : BlueHubPose;
+    public static Pose2d HubPose = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Blue ? BlueHubPose : RedHubPose;
 
     public static final Pose2d BlueAllianceZoneEnd = new Pose2d(4.3, 0, new Rotation2d());
     public static final Pose2d RedAllianceZoneEnd = new Pose2d(12.2, 0, new Rotation2d());
 
-    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(2.412, 2.288, new Rotation2d()));
-    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(2.412, 5.607, new Rotation2d()));
+    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(1.212, 2.288, new Rotation2d()));
+    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(1.212, 5.607, new Rotation2d()));
 
     public static final double kMidFieldY = Units.feetToMeters(13.15);
     public static final double kMidFieldHubBlockWidth = 1.0;

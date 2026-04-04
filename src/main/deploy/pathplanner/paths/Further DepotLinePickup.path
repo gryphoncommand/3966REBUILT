@@ -56,40 +56,40 @@
         "y": 4.512617719990849
       },
       "nextControl": {
-        "x": 7.543827169222312,
-        "y": 4.096592572821932
+        "x": 7.5438271692223084,
+        "y": 4.096592572821927
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.070525,
-        "y": 4.304605146406388
+        "x": 5.984392191659273,
+        "y": 4.0551197870452524
       },
       "prevControl": {
-        "x": 6.031142594680164,
-        "y": 4.026211004645558
+        "x": 5.945009786339437,
+        "y": 3.7767256452844222
       },
       "nextControl": {
-        "x": 6.1775421472937,
-        "y": 5.061109139307896
+        "x": 6.091409338952973,
+        "y": 4.8116237799467605
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.726858917480035,
-        "y": 7.419148181011535
-      },
-      "prevControl": {
-        "x": 7.054764862466726,
+        "x": 5.678571428571429,
         "y": 7.282333629103815
       },
+      "prevControl": {
+        "x": 7.00647737355812,
+        "y": 7.145519077196094
+      },
       "nextControl": {
-        "x": 5.028131366012187,
-        "y": 7.49113829237489
+        "x": 4.979843877103581,
+        "y": 7.354323740467169
       },
       "isLocked": false,
       "linkedName": null
@@ -100,8 +100,8 @@
         "y": 5.978571428571429
       },
       "prevControl": {
-        "x": 1.9845785270629985,
-        "y": 7.877879325643301
+        "x": 1.7833806566104697,
+        "y": 7.845687666370896
       },
       "nextControl": null,
       "isLocked": false,
@@ -164,9 +164,9 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.8,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 360.0,
+    "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
@@ -175,7 +175,7 @@
     "rotation": 136.6602823689828
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Depot",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 136.6602823689828

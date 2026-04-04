@@ -1,0 +1,157 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.636459627329192,
+        "y": 2.5099201419698307
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.636459627329192,
+        "y": 2.5099201419698307
+      },
+      "isLocked": false,
+      "linkedName": "Outpost Shot"
+    },
+    {
+      "anchor": {
+        "x": 3.6443000000000003,
+        "y": 0.5808416666666665
+      },
+      "prevControl": {
+        "x": 2.613148895114576,
+        "y": 0.6531157988575382
+      },
+      "nextControl": {
+        "x": 4.67769250221828,
+        "y": 0.5084104333037553
+      },
+      "isLocked": false,
+      "linkedName": "Outpost Trench"
+    },
+    {
+      "anchor": {
+        "x": 7.634214729370008,
+        "y": 0.9647204968944094
+      },
+      "prevControl": {
+        "x": 7.6271877010447655,
+        "y": 0.6812970211096625
+      },
+      "nextControl": {
+        "x": 7.658358473824313,
+        "y": 1.9385181898846486
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.4431233362910385,
+        "y": 3.5883407275953854
+      },
+      "prevControl": {
+        "x": 6.644321206743569,
+        "y": 3.1859449866903287
+      },
+      "nextControl": {
+        "x": 6.20879425439972,
+        "y": 4.056998891378018
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.4773735581189,
+        "y": 2.5099201419698307
+      },
+      "prevControl": {
+        "x": 6.781135758651286,
+        "y": 2.4696805678793248
+      },
+      "nextControl": {
+        "x": 4.397015297564871,
+        "y": 2.543264532727671
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.636459627329192,
+        "y": 2.5099201419698307
+      },
+      "prevControl": {
+        "x": 2.884114909640061,
+        "y": 2.475760792685574
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Outpost Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 1.4922907488986734,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": -63.4349488229219
+    },
+    {
+      "waypointRelativePos": 3.5,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 4.0,
+      "rotationDegrees": -135.0
+    },
+    {
+      "waypointRelativePos": 4.5,
+      "rotationDegrees": -135.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 4.026666666666648,
+      "maxWaypointRelativePos": 4.6333333333333275,
+      "constraints": {
+        "maxVelocity": 2.25,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.8,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -141.8924231224851
+  },
+  "reversed": false,
+  "folder": "Outpost",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -141.8924231224851
+  },
+  "useDefaultConstraints": true
+}

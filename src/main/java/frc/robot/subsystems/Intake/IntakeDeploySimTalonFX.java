@@ -1,7 +1,5 @@
 package frc.robot.subsystems.Intake;
 
-import static edu.wpi.first.units.Units.Inches;
-
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -27,12 +25,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.Drive.DriveIO;
-import frc.robot.subsystems.Drive.SimDriveSubsystem;
-import swervelib.simulation.ironmaple.simulation.IntakeSimulation;
 
 public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeployIO {
 
-    private final IntakeSimulation intakeSimulation;
     private final TalonFX intakeMotor =
         new TalonFX(IntakeConstants.kDeployCanID);
     private final TalonFXSimState intakeSimState =
@@ -65,21 +60,6 @@ public class IntakeDeploySimTalonFX extends SubsystemBase implements IntakeDeplo
         double rotorPos =
             intakeSim.getAngleRads() / (2 * Math.PI)
             * IntakeConstants.kShaftToIntakeDeployRatio;
-
-        
-        this.intakeSimulation = IntakeSimulation.OverTheBumperIntake(
-            // Specify the type of game pieces that the intake can collect
-            "Fuel",
-            // Specify the drivetrain to which this intake is attached
-            ((SimDriveSubsystem)simDrive).getDriveTrainSimulation(),
-            // Width of the intake
-            Inches.of(22),
-            // The extension length of the intake beyond the robot's frame (when activated)
-            Inches.of(12),
-            // The intake is mounted on the back side of the chassis
-            IntakeSimulation.IntakeSide.BACK,
-            // The intake can hold up to this many fuel
-            40);
 
         intakeSimState.setRawRotorPosition(rotorPos);
     }

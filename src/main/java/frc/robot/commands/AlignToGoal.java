@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.GryphonLib.MovementCalculations;
 import frc.GryphonLib.PositionCalculations;
 import frc.robot.Constants.AlignmentConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Drive.DriveIO;
@@ -88,7 +89,7 @@ public class AlignToGoal extends Command {
         if (turnPID.atSetpoint() && (Math.abs(forward) < 0.1 && Math.abs(strafe) < 0.1)){
             drive.setX();
         } else {
-            drive.drive(forward, strafe, -turn, true);
+            drive.drive(forward, strafe, -turn, DriveConstants.fieldOriented);
         }
         
 

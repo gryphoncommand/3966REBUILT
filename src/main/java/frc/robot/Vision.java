@@ -165,19 +165,23 @@ public class Vision extends SubsystemBase {
         return 0;
     }
 
-    public static Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam1(PhotonPipelineResult result, Pose2d referencePose) {
+    public static Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam1(PhotonPipelineResult result, Pose2d referencePose, boolean single) {
         if (result == null || !result.hasTargets()){
             return Optional.empty();
         }
 
+        Optional<EstimatedRobotPose> update = Optional.empty();
         Pose3d[] usedTags = new Pose3d[result.targets.size()];
         for (int i = 0; i < result.targets.size(); i++){
           usedTags[i] = (VisionConstants.kTagLayout.getTagPose(result.targets.get(i).fiducialId).get());
         }
 
         Logger.recordOutput("PoseEst/Camera 1 Tags Used", usedTags);
-
-        Optional<EstimatedRobotPose> update = poseEstimator1.estimateClosestToReferencePose(result, new Pose3d(referencePose));
+        if (!single){
+            update = poseEstimator1.estimateCoprocMultiTagPose(result);
+        } else {
+            update = poseEstimator1.estimateClosestToReferencePose(result, new Pose3d(referencePose));
+        }
             
         
         return update;
@@ -243,7 +247,7 @@ public class Vision extends SubsystemBase {
         Logger.recordOutput("PoseEst/Camera 2 Tags Used", usedTags);
 
         
-        update = poseEstimator2.estimateClosestToCameraHeightPose(result);
+        update = poseEstimator2.estimateClosestToReferencePose(result, new Pose3d(prevEstimatedRobotPose));
         
         return update;
     }

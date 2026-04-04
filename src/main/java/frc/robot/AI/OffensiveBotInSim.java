@@ -51,9 +51,9 @@ public class OffensiveBotInSim extends SubsystemBase {
     private static Pose2d PASS_ZONE = new Pose2d(2.412, 5.607, new Rotation2d());
 
     private static final double COLLECT_RADIUS = 1.0;
-    private static final int MAX_CARRY = 40;
+    private static final int MAX_CARRY = 30;
     private static final double ARRIVAL_THRESHOLD = 0.3;
-    private static final double bps = 9;
+    private static final double bps = 4;
 
     private Random passRandomizer = new Random();
 
