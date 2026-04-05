@@ -38,6 +38,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.littletonUtils.FieldConstants;
 import frc.littletonUtils.HubShiftUtil;
 
 import java.util.ArrayDeque;
@@ -68,7 +69,7 @@ public class FuelSim {
   protected static final double TRENCH_HEIGHT = 0.565;
   protected static final double TRENCH_BAR_HEIGHT = 0.102;
   protected static final double TRENCH_BAR_WIDTH = 0.152;
-  protected static final double FRICTION = 3.0; // proportion of horizontal vel to lose per sec while on ground
+  protected static final double FRICTION = 1.0; // proportion of horizontal vel to lose per sec while on ground
   protected static final double FUEL_MASS = 0.448 * 0.45392; // kgs
   protected static final double FUEL_CROSS_AREA = Math.PI * FUEL_RADIUS * FUEL_RADIUS;
   // Drag coefficient of smooth sphere:
@@ -649,6 +650,29 @@ public class FuelSim {
       Fuel fuel = new Fuel(new Translation3d());
       addFuel(fuel);
       deactivateFuel(fuel);
+    }
+  }
+
+  /** Spawns 24 fuels at the outpost opening in waves of 5 across its width. */
+  public void spawnOutpostFuel() {
+    final int totalFuel = 24;
+    final int waveSize = 5;
+    final double centerX = FieldConstants.Outpost.centerPoint.getX();
+    final double centerY = FieldConstants.Outpost.centerPoint.getY();
+    final double minY = centerY - (FieldConstants.Outpost.width / 2.0) + FUEL_RADIUS;
+    final double maxY = centerY + (FieldConstants.Outpost.width / 2.0) - FUEL_RADIUS;
+    final double baseX = centerX + FUEL_RADIUS;
+    final double waveSpacingX = FUEL_DIAMETER;
+    final double z = FieldConstants.Outpost.openingDistanceFromFloor;
+
+    for (int i = 0; i < totalFuel; i++) {
+      int wave = i / waveSize;
+      int indexInWave = i % waveSize;
+      int waveCount = Math.min(waveSize, totalFuel - wave * waveSize);
+      double yStep = waveCount > 1 ? (maxY - minY) / (waveCount - 1) : 0.0;
+      double x = baseX + wave * waveSpacingX;
+      double y = minY + indexInWave * yStep;
+      spawnFuelIfAvailable(new Translation3d(x, y, z), new Translation3d(Math.random()/2 + 0.5, Math.random() + 0.5, 0));
     }
   }
 

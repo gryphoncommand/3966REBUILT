@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.FuelSim;
+import frc.RobotBumpSim;
 import frc.GryphonLib.ShooterState;
 import frc.GryphonLib.AllianceFlipUtil;
 import frc.robot.AI.HybridBotInSimulation;
@@ -103,7 +104,7 @@ public class RobotContainer {
     configureNamedCommands();
     if (Robot.isSimulation()){
       configureFuelSim();
-      configureAIOpponents();
+      // configureAIOpponents();
     }
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
@@ -342,7 +343,7 @@ public class RobotContainer {
   }
 
   private void configureNamedCommands(){
-    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy).withTimeout(5.0));
+    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy).withTimeout(5.0).raceWith(new RunIntakeRollers(m_intakeRollers)));
     NamedCommands.registerCommand("Speedup Flywheel", new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow));
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
@@ -352,6 +353,7 @@ public class RobotContainer {
     );
     NamedCommands.registerCommand("Align to Shoot", new AlignToGoalAuto(m_drive, AlignmentConstants.HubPose, true));
     NamedCommands.registerCommand("Outpost Intake", new InstantCommand(()->{for (int i = 0; i < 24; i++){m_preIndexer.addBall();}}));
+    NamedCommands.registerCommand("Outpost Spawn", new InstantCommand(()->FuelSim.getInstance().spawnOutpostFuel()));
     NamedCommands.registerCommand("Deploy Intake", new IntakeDeploy(m_intakeDeploy));
     NamedCommands.registerCommand("Stow Intake", new IntakeStow(m_intakeDeploy));
     NamedCommands.registerCommand("Run Intake", new RunCommand(()->m_intakeRollers.setVelocity(IntakeConstants.kIntakeSpeedRPM), m_intakeRollers).finallyDo(()->m_intakeRollers.set(0)));

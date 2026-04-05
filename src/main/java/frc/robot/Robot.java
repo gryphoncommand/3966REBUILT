@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.littletonUtils.HubShiftUtil;
 import frc.robot.Constants.AlignmentConstants;
 import frc.FuelSim;
+import frc.RobotBumpSim;
 import frc.GryphonLib.AllianceFlipUtil;
 
 /**
@@ -95,6 +96,9 @@ public class Robot extends LoggedRobot  {
   public void simulationPeriodic() {
     FuelSim.getInstance().updateSim();
   }
+
+  @Override
+  public void simulationInit() {}
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override

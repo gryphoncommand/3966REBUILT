@@ -7,6 +7,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Outpost Spawn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Deploy Intake"
           }
         },
@@ -23,7 +29,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Outpost Trench To Center"
+                  "pathName": "Outpost Trench Bump Swipe"
                 }
               },
               {
@@ -68,44 +74,38 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Outpost Shot to Pickup"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Outpost Intake"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "race",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "OutpostToShoot"
+                  "name": "Run Intake"
                 }
               },
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Speedup Flywheel"
+                  "pathName": "Outpost Collect"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 3.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Speedup Flywheel"
+                      }
+                    }
+                  ]
                 }
               }
             ]

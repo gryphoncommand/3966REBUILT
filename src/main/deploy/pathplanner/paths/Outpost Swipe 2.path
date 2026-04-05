@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.636459627329192,
-        "y": 2.5099201419698307
+        "x": 2.5881721384205854,
+        "y": 2.2845785270629984
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.636459627329192,
-        "y": 2.5099201419698307
+        "x": 2.8759177772091205,
+        "y": 1.5947318584922199
       },
       "isLocked": false,
       "linkedName": "Outpost Shot"
     },
     {
       "anchor": {
-        "x": 3.6443000000000003,
-        "y": 0.5808416666666665
+        "x": 3.6826885536823424,
+        "y": 0.6186601597160597
       },
       "prevControl": {
-        "x": 2.613148895114576,
-        "y": 0.6531157988575382
+        "x": 2.858507824835297,
+        "y": 0.8781200142732764
       },
       "nextControl": {
-        "x": 4.67769250221828,
-        "y": 0.5084104333037553
+        "x": 3.9211512350632702,
+        "y": 0.543589862070333
       },
       "isLocked": false,
       "linkedName": "Outpost Trench"
@@ -36,56 +36,72 @@
         "y": 0.9647204968944094
       },
       "prevControl": {
-        "x": 7.6271877010447655,
-        "y": 0.6812970211096625
+        "x": 6.715601401122145,
+        "y": 0.24919987931887944
       },
       "nextControl": {
-        "x": 7.658358473824313,
-        "y": 1.9385181898846486
+        "x": 8.289502521075924,
+        "y": 1.4751332146212857
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.4431233362910385,
-        "y": 3.5883407275953854
+        "x": 7.634214729370008,
+        "y": 4.063167701863353
       },
       "prevControl": {
-        "x": 6.644321206743569,
-        "y": 3.1859449866903287
+        "x": 8.246359303856337,
+        "y": 3.42084778632644
       },
       "nextControl": {
-        "x": 6.20879425439972,
-        "y": 4.056998891378018
+        "x": 7.280687087699182,
+        "y": 4.434122300502926
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.4773735581189,
-        "y": 2.5099201419698307
+        "x": 6.153666666666667,
+        "y": 4.163491666666666
       },
       "prevControl": {
-        "x": 6.781135758651286,
-        "y": 2.4696805678793248
+        "x": 6.483406571288597,
+        "y": 4.841870687251797
       },
       "nextControl": {
-        "x": 4.397015297564871,
-        "y": 2.543264532727671
+        "x": 5.706436545256075,
+        "y": 3.243398200616368
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.636459627329192,
-        "y": 2.5099201419698307
+        "x": 5.702715173025732,
+        "y": 0.6186601597160597
       },
       "prevControl": {
-        "x": 2.884114909640061,
-        "y": 2.475760792685574
+        "x": 6.569375,
+        "y": 0.8453833333333329
+      },
+      "nextControl": {
+        "x": 5.460854400324924,
+        "y": 0.5553879965748446
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.5881721384205854,
+        "y": 2.2845785270629984
+      },
+      "prevControl": {
+        "x": 2.6927950310559003,
+        "y": 0.20821650399290093
       },
       "nextControl": null,
       "isLocked": false,
@@ -103,26 +119,34 @@
     },
     {
       "waypointRelativePos": 2.0,
-      "rotationDegrees": -63.4349488229219
+      "rotationDegrees": -120.23591924218232
     },
     {
-      "waypointRelativePos": 3.5,
-      "rotationDegrees": -90.0
+      "waypointRelativePos": 3,
+      "rotationDegrees": -125.10992148063777
     },
     {
-      "waypointRelativePos": 4.0,
-      "rotationDegrees": -135.0
+      "waypointRelativePos": 3.95,
+      "rotationDegrees": 49.08678829270963
     },
     {
-      "waypointRelativePos": 4.5,
-      "rotationDegrees": -135.0
+      "waypointRelativePos": 4.61135371179037,
+      "rotationDegrees": 79.36820222214841
+    },
+    {
+      "waypointRelativePos": 5.0,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 5.5,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 4.026666666666648,
-      "maxWaypointRelativePos": 4.6333333333333275,
+      "minWaypointRelativePos": 5.026666666666648,
+      "maxWaypointRelativePos": 5.6333333333333275,
       "constraints": {
         "maxVelocity": 2.25,
         "maxAcceleration": 3.0,

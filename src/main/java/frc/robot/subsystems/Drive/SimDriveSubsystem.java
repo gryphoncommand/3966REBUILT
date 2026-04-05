@@ -28,6 +28,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -46,6 +47,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Vision;
+import frc.RobotBumpSim;
 import frc.GryphonLib.ChassisAccelerations;
 import frc.GryphonLib.MovementCalculations;
 import frc.GryphonLib.PositionCalculations;
@@ -78,8 +80,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
   private boolean aligned = false;
   private ChassisAccelerations currentAccelerationFieldRelative = new ChassisAccelerations();
   private ChassisSpeeds prevSpeeds = new ChassisSpeeds();
-
-
+  private RobotBumpSim robotBumpSim = new RobotBumpSim(DriveConstants.kDriveKinematics.getModules());
 
   /** Creates a new DriveSubsystem. */
   public SimDriveSubsystem() {
@@ -430,7 +431,25 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
 
   @Override
   public void simulationPeriodic() {
-      // YAGSL handles simulation updates in its odometry thread.
+      Pose2d simPose =
+          swerveDrive.getMapleSimDrive().get().getSimulatedDriveTrainPose();
+
+      ChassisSpeeds fieldRelativeSpeeds =
+          swerveDrive.getMapleSimDrive().get().getDriveTrainSimulatedChassisSpeedsFieldRelative();
+
+      Pose3d simPose3d = robotBumpSim.update(simPose, fieldRelativeSpeeds, 5);
+
+      if (robotBumpSim.isOnRamp()) {
+          // Re-read simPose AFTER update so we use the physics-corrected X,
+          // not the stale pre-update snapshot.
+          Pose2d currentSimPose =
+              swerveDrive.getMapleSimDrive().get().getSimulatedDriveTrainPose();
+          swerveDrive.getMapleSimDrive().get().setSimulationWorldPose(
+              robotBumpSim.getSimWorldPose(currentSimPose)
+          );
+      }
+
+      Logger.recordOutput("Drive/Pose3d", simPose3d);
   }
 
   public Pose2d getCurrentPose() {
