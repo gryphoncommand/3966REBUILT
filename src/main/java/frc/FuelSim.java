@@ -672,7 +672,7 @@ public class FuelSim {
       double yStep = waveCount > 1 ? (maxY - minY) / (waveCount - 1) : 0.0;
       double x = baseX + wave * waveSpacingX;
       double y = minY + indexInWave * yStep;
-      spawnFuelIfAvailable(new Translation3d(x, y, z), new Translation3d(Math.random()/2 + 0.5, Math.random() + 0.5, 0));
+      spawnFuelIfAvailable(new Translation3d(x, y, z), new Translation3d(Math.random()/2 + 0.2, Math.random() + 0.1, 0));
     }
   }
 

@@ -5,11 +5,10 @@
 package frc.robot;
 
 import frc.FuelSim;
-import frc.RobotBumpSim;
 import frc.GryphonLib.ShooterState;
 import frc.GryphonLib.AllianceFlipUtil;
+import frc.robot.AI.DefenseBotInSimulation;
 import frc.robot.AI.HybridBotInSimulation;
-import frc.robot.AI.OffensiveBotInSim;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IndexerConstants;
@@ -104,7 +103,7 @@ public class RobotContainer {
     configureNamedCommands();
     if (Robot.isSimulation()){
       configureFuelSim();
-      // configureAIOpponents();
+      configureAIOpponents();
     }
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
@@ -374,7 +373,7 @@ public class RobotContainer {
   public void configureAIOpponents(){
     try {
       Logger.recordOutput("Drive/AI Status", "Started Creating AI 0");
-      new HybridBotInSimulation(3, ((SimDriveSubsystem)m_drive)::getRealPoseSim, Alliance.Red);
+      new DefenseBotInSimulation(3, ((SimDriveSubsystem)m_drive)::getRealPoseSim, Alliance.Red);
   } catch (Exception e){
       Logger.recordOutput("Drive/AI Status", "Failed Creating AI 0, " + e.getMessage());
     }

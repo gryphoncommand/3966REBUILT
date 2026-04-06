@@ -34,8 +34,9 @@ public class PreIndexer extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Indexing/PreIndexer RPM", encoder.getVelocity());
+        Logger.recordOutput("Indexing/PreIndexer RPM", encoder.getVelocity()/IndexerConstants.kPreIndexerGearRatio);
         Logger.recordOutput("Indexing/Desired PreIndexer RPM", targetRPM);
+        Logger.recordOutput("Indexing/Rolling Floor Motor RPM", encoder.getVelocity());
         Logger.recordOutput("Indexing/PreIndexer Applied Output", preIndexerMotor.getAppliedOutput());
         Logger.recordOutput("Indexing/PreIndexer Stator Current", preIndexerMotor.getOutputCurrent());
     }
@@ -46,7 +47,7 @@ public class PreIndexer extends SubsystemBase {
 
     public void setVelocity(double rpm) {
         targetRPM = rpm;
-        pid.setSetpoint(rpm, ControlType.kVelocity);
+        pid.setSetpoint(rpm*IndexerConstants.kPreIndexerGearRatio, ControlType.kVelocity);
     }
 
     public AngularVelocity getVelocity() {

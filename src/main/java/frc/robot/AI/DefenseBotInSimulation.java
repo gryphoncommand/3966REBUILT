@@ -80,7 +80,7 @@ public class DefenseBotInSimulation extends SubsystemBase {
             Meters.of(0.52),
             COTS.ofGenericGyro(),
             COTS.ofMAXSwerve(DCMotor.getKrakenX60(1), DCMotor.getNeo550(1),
-                COTS.WHEELS.BLUE_NITRILE_TREAD.cof * 0.8, 3));
+                COTS.WHEELS.BLUE_NITRILE_TREAD.cof * 0.9, 3));
 
     private final SwerveDriveKinematics kinematics =
         new SwerveDriveKinematics(enemyConfig.moduleTranslations);

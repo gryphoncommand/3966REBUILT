@@ -206,17 +206,18 @@ public final class Configs {
                         .openLoopRampRate(0)
                         .closedLoopRampRate(0);
                 preIndexerConfig.encoder
-                    .positionConversionFactor(IndexerConstants.kPreIndexerGearRatio)
-                    .velocityConversionFactor(IndexerConstants.kPreIndexerGearRatio);
+                    .positionConversionFactor(1)
+                    .velocityConversionFactor(1);
                 preIndexerConfig.closedLoop
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                     // These are example gains you may need to them for your own robot!
-                    .pid(0.0, 0.0, 0.0)
+                    .pid(0.0051642/60, 0.0, 0.0)
                     .iZone(100)
                     .outputRange(-1, 1);
                 preIndexerConfig.closedLoop.feedForward
-                    .kV(0.008)
-                    .kA(0);  
+                    .kS(0.30033)
+                    .kV(0.11123/60)
+                    .kA(0.0050816/60);  
         }
     }
 
