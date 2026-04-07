@@ -112,7 +112,8 @@ public class SimSwerveModule implements SwerveModuleIO {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
     return new SwerveModulePosition(
-        m_drivingKraken.getPosition().getValueAsDouble(),
+        rpsToMps(m_drivingKraken.getPosition().getValueAsDouble()) 
+        / ModuleConstants.kDrivingMotorReduction * (ModuleConstants.kWheelDiameterMeters * Math.PI),
         m_simulatedAzimuth);
   }
 

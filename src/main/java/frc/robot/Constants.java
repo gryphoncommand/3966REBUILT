@@ -48,7 +48,7 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 4.8;
+    public static final double kMaxSpeedMetersPerSecond = 4.6;
     public static final double kMaxAccelerationMetersPerSecondSquared = 40.0;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
@@ -195,7 +195,7 @@ public final class Constants {
     public static final int kDrumMotorCount = 2;
     public static final double kFixedHoodAngleDeg = 28.0;
     public static final int kSimShooterCount = 2;
-    public static final double kSimTotalBps = 9.5;
+    public static final double kSimTotalBps = 8.5;
     public static final double kSimPerShooterMeanIntervalSec = (double) kSimShooterCount / kSimTotalBps;
     public static final double kSimShotIntervalJitterFrac = 0.8;
     public static final double kSimShooterXOffsetMeters = 0.37;
