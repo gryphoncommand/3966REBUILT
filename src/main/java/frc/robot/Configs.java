@@ -39,7 +39,7 @@ public final class Configs {
 
 
                 driveConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 1/3;
-                driveConfig.CurrentLimits.withSupplyCurrentLimit(75).withSupplyCurrentLimitEnable(true);
+                driveConfig.CurrentLimits.withSupplyCurrentLimit(50).withSupplyCurrentLimitEnable(true);
                 
                 // Motor behavior
                 driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -201,7 +201,7 @@ public final class Configs {
         static {
                 preIndexerConfig
                         .idleMode(IdleMode.kBrake)
-                        .smartCurrentLimit(70)
+                        .smartCurrentLimit(60)
                         .inverted(false)
                         .openLoopRampRate(0)
                         .closedLoopRampRate(0);
@@ -229,7 +229,7 @@ public final class Configs {
                         .inverted(true);
                 kickerConfig
                         .idleMode(IdleMode.kBrake)
-                        .smartCurrentLimit(70)
+                        .smartCurrentLimit(60)
                         .inverted(false)
                         .openLoopRampRate(0)
                         .closedLoopRampRate(0);
