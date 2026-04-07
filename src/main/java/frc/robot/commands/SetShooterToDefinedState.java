@@ -36,8 +36,11 @@ public class SetShooterToDefinedState extends Command {
   public void execute() {
     double rpm = state.flywheelRPM();
     flywheel.setRealTarget(rpm);
-    if(!(flywheel.atRealTarget(100)) && rpm > flywheel.getVelocity()){
-      rpm += ShooterConstants.kFlywheelRPMOffset;
+    if(!(flywheel.atRealTarget(60)) && rpm >= flywheel.getVelocity()){
+        rpm += Math.min(ShooterConstants.kFlywheelRPMOffset, 4*(rpm - flywheel.getVelocity()));
+        Logger.recordOutput("Flywheel/Accounting For Diff", true);
+    } else {
+        Logger.recordOutput("Flywheel/Accounting For Diff", false);
     }
     flywheel.setVelocity(rpm);
 

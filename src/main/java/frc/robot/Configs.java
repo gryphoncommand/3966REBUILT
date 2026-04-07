@@ -177,10 +177,10 @@ public final class Configs {
         static {
                 var slot0ConfigsDrive = flywheelFXConfig.Slot0;
                 // PID + FF tuning
-                slot0ConfigsDrive.kS = 0.43199;
-                slot0ConfigsDrive.kV = 0.132;
-                slot0ConfigsDrive.kA = 0.02354;
-                slot0ConfigsDrive.kP = 0.14169;
+                slot0ConfigsDrive.kS = 0.33117;
+                slot0ConfigsDrive.kV = 0.134;
+                slot0ConfigsDrive.kA = 0.022915;
+                slot0ConfigsDrive.kP = 0.13909;
                 slot0ConfigsDrive.kI = 0.0;
                 slot0ConfigsDrive.kD = 0.0;
 

@@ -447,7 +447,7 @@ public class DriveSubsystem extends SubsystemBase implements DriveIO {
     } if (Vision.getResult2() != null){
       Optional<EstimatedRobotPose> visionBotPose2 = Vision.getEstimatedGlobalPoseCam2(getCurrentPose(), Vision.getResult2());
       if (visionBotPose2.isPresent()){
-        poseEstimator.addVisionData(List.of(visionBotPose2.get()), Vision.updateEstimationStdDevs(visionBotPose2, visionBotPose2.get().targetsUsed).times(1.8));
+        poseEstimator.addVisionData(List.of(visionBotPose2.get()), Vision.updateEstimationStdDevs(visionBotPose2, visionBotPose2.get().targetsUsed));
         Logger.recordOutput("PoseEst/Camera2 Pose Guess", visionBotPose2.get().estimatedPose);
       }
     } if (Vision.getResult3() != null){

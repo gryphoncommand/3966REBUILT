@@ -342,8 +342,8 @@ public class RobotContainer {
   }
 
   private void configureNamedCommands(){
-    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy).withTimeout(5.0).raceWith(new RunIntakeRollers(m_intakeRollers)));
-    NamedCommands.registerCommand("Speedup Flywheel", new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow));
+    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy).withTimeout(4.5).raceWith(new RunIntakeRollers(m_intakeRollers)));
+    NamedCommands.registerCommand("Speedup Flywheel", new DeferredCommand(()->new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow), Set.of(m_flywheel)));
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
         new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow),
@@ -373,7 +373,7 @@ public class RobotContainer {
   public void configureAIOpponents(){
     try {
       Logger.recordOutput("Drive/AI Status", "Started Creating AI 0");
-      new DefenseBotInSimulation(3, ((SimDriveSubsystem)m_drive)::getRealPoseSim, Alliance.Red);
+      new HybridBotInSimulation(3, ((SimDriveSubsystem)m_drive)::getRealPoseSim, Alliance.Red);
   } catch (Exception e){
       Logger.recordOutput("Drive/AI Status", "Failed Creating AI 0, " + e.getMessage());
     }

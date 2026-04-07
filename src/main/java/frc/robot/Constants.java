@@ -87,7 +87,11 @@ public final class Constants {
     
 
     public static final boolean kGyroReversed = false;
+
+    public static final double kBumperLength = Units.inchesToMeters(29);
+    public static final double kBumperWidth = Units.inchesToMeters(25);
   }
+
 
   public static final class ModuleConstants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T,
@@ -174,8 +178,8 @@ public final class Constants {
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.2, 0.2, 0.5);
-    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.05, 0.05, 0.1);
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.7, 0.7, 1.4);
+    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.3, 0.3, 0.5);
   }
 
   public static class ShooterConstants {
@@ -190,9 +194,8 @@ public final class Constants {
     // Fixed-hood, 3-wide drum shooter configuration
     public static final int kDrumMotorCount = 2;
     public static final double kFixedHoodAngleDeg = 28.0;
-    public static final double kTargetFuelPerSecond = 7.5;
     public static final int kSimShooterCount = 2;
-    public static final double kSimTotalBps = kTargetFuelPerSecond;
+    public static final double kSimTotalBps = 9.5;
     public static final double kSimPerShooterMeanIntervalSec = (double) kSimShooterCount / kSimTotalBps;
     public static final double kSimShotIntervalJitterFrac = 0.8;
     public static final double kSimShooterXOffsetMeters = 0.37;
@@ -201,7 +204,7 @@ public final class Constants {
     public static final double kViscousFriction = 0.00005;   // Nm per rad/s
     public static final double kGearRatio = 1.1;
 
-    public static double kFlywheelRPMOffset = 300;
+    public static double kFlywheelRPMOffset = 250;
     public static double kShootDelay = 0.05;
     public static double kPhaseDelay = 0.02;
 
@@ -287,7 +290,7 @@ public final class Constants {
 
 
     public static double kPreIndexerGearRatio = 3.0;
-    public static double kKickerGearRatio = 24.0/84.0; // 84/24
+    public static double kKickerGearRatio = 1.0/3.0; // 84/24
     
     public static double kPreIndexerSpeed = 1800;
     public static double kKickerSpeed = 9000;

@@ -35,6 +35,8 @@ public class AlignToGoalAuto extends Command {
         this.SOTM = SOTM;
 
         kRobotToShooter = ShooterConstants.kRobotToShooter;
+        goalPose = AlignmentConstants.HubPose;
+
 
         if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)) {
             try {

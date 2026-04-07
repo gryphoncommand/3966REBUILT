@@ -39,6 +39,7 @@ public class PreIndexer extends SubsystemBase {
         Logger.recordOutput("Indexing/Rolling Floor Motor RPM", encoder.getVelocity());
         Logger.recordOutput("Indexing/PreIndexer Applied Output", preIndexerMotor.getAppliedOutput());
         Logger.recordOutput("Indexing/PreIndexer Stator Current", preIndexerMotor.getOutputCurrent());
+        Logger.recordOutput("Basics/Sim Held Balls", simBalls);
     }
 
     public void set(double speed) {

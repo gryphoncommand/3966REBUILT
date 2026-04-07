@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.littletonUtils.HubShiftUtil;
 import frc.robot.Constants.AlignmentConstants;
 import frc.FuelSim;
-import frc.RobotBumpSim;
 import frc.GryphonLib.AllianceFlipUtil;
 
 /**

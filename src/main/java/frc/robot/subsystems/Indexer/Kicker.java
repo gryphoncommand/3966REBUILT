@@ -29,7 +29,7 @@ public class Kicker extends SubsystemBase {
     public void periodic() {
         Logger.recordOutput("Indexing/Kicker Velocity (RPM)", getVelocity());
         Logger.recordOutput("Indexing/Desired Kicker Speed", targetReference);
-        Logger.recordOutput("Indexing/Kicker Applied Output", getVoltage());
+        Logger.recordOutput("Indexing/Kicker Applied Output", kickerMotor.get());
     }
 
     public void set(double speed) {

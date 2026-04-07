@@ -17,6 +17,7 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.List;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
 
 public class PrepareSOTM extends Command {
@@ -93,8 +94,11 @@ public class PrepareSOTM extends Command {
         double rpm = state.flywheelRPM() + kRPMChange.get();
         flywheel.setRealTarget(rpm);
 
-        if(!(flywheel.atRealTarget(100)) && rpm >= flywheel.getVelocity()){
+        if(!(flywheel.atRealTarget(60)) && rpm >= flywheel.getVelocity()){
             rpm += Math.min(kFlywheelSetpointOffset.get(), 2*(rpm - flywheel.getVelocity()));
+            Logger.recordOutput("Flywheel/Accounting For Diff", true);
+        } else {
+            Logger.recordOutput("Flywheel/Accounting For Diff", false);
         }
 
 

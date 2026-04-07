@@ -61,6 +61,7 @@ public class FlywheelTalonFX extends SubsystemBase implements FlywheelIO {
         Logger.recordOutput("Flywheel/Desired Flywheel Speed", realTarget);
         Logger.recordOutput("Flywheel/Flywheel Applied Output (Duty Cycle)", m_flywheelMotor.get());
         Logger.recordOutput("Flywheel/Flywheel Applied Output (Volts)", getVoltage());
+        Logger.recordOutput("Flywheel/Error", Math.abs(getVelocity() - realTarget));
     }
 
     @Override

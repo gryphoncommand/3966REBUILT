@@ -59,6 +59,7 @@ public class AlignToGoal extends Command {
 
     @Override
     public void execute() {
+        goalPose = AlignmentConstants.HubPose;
         if (SOTM && SmartDashboard.getBoolean("SOTM Goal Calculating", false)) {
             try {
                 goalPose = drive.getField().getObject("SOTM Goal").getPose();
