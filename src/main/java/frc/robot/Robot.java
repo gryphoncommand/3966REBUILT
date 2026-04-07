@@ -70,8 +70,8 @@ public class Robot extends LoggedRobot  {
   public void robotPeriodic() {
     if (DriverStation.getAlliance().isPresent() && !gotAlliance){
       AlignmentConstants.HubPose = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose;
-      AlignmentConstants.PassingPoseOutpost = (new Pose2d(AllianceFlipUtil.applyX(1.212), 2.2688, new Rotation2d()));
-      AlignmentConstants.PassingPoseDepot = (new Pose2d(AllianceFlipUtil.applyX(1.212), 5.707, new Rotation2d()));
+      AlignmentConstants.PassingPoseOutpost = (new Pose2d(AllianceFlipUtil.applyX(1.012), 2.2688, new Rotation2d()));
+      AlignmentConstants.PassingPoseDepot = (new Pose2d(AllianceFlipUtil.applyX(1.012), 5.707, new Rotation2d()));
       gotAlliance = true;
     }
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
@@ -109,6 +109,9 @@ public class Robot extends LoggedRobot  {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    AlignmentConstants.HubPose = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose;
+    AlignmentConstants.PassingPoseOutpost = (new Pose2d(AllianceFlipUtil.applyX(1.012), 2.2688, new Rotation2d()));
+    AlignmentConstants.PassingPoseDepot = (new Pose2d(AllianceFlipUtil.applyX(1.012), 5.707, new Rotation2d()));
     HubShiftUtil.initialize();
     CommandScheduler.getInstance().schedule(Commands.runOnce(() -> {
           FuelSim.getInstance().clearFuel();

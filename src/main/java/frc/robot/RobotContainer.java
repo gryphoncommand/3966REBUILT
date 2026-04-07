@@ -112,8 +112,8 @@ public class RobotContainer {
     
 
     emergencyShotChooser.addOption("Default", ShooterConstants.kDefaultShooterState);
-    emergencyShotChooser.setDefaultOption("Trench", ShooterConstants.kTrenchShotState);
-    emergencyShotChooser.addOption("Tower", ShooterConstants.kTowerShotState);
+    emergencyShotChooser.addOption("Trench", ShooterConstants.kTrenchShotState);
+    emergencyShotChooser.setDefaultOption("Tower", ShooterConstants.kTowerShotState);
     emergencyShotChooser.addOption("Corner", ShooterConstants.kCornerShotState);
     emergencyShotChooser.addOption("Juggle", ShooterConstants.kJuggleShooterState);
 

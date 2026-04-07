@@ -205,14 +205,7 @@ public class ShootAllInHopper extends Command {
 
     @Override
     public boolean isFinished() {
-        if (Robot.isReal()) {
-            // if (startedShooting && shootingTimer.get() > 3){
-            //     return endTrigger.calculate(preIndexer.getStatorCurrent() < IndexerConstants.kActiveCurrentRollerFloor);
-            // }
-            return false;
-		} else {
-			return preIndexer.getBalls() <= simEnd;
-		}
+        return false;
     }
 
     @Override

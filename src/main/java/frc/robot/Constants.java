@@ -195,7 +195,7 @@ public final class Constants {
     public static final int kDrumMotorCount = 2;
     public static final double kFixedHoodAngleDeg = 28.0;
     public static final int kSimShooterCount = 2;
-    public static final double kSimTotalBps = 8.5;
+    public static final double kSimTotalBps = 9.2;
     public static final double kSimPerShooterMeanIntervalSec = (double) kSimShooterCount / kSimTotalBps;
     public static final double kSimShotIntervalJitterFrac = 0.8;
     public static final double kSimShooterXOffsetMeters = 0.37;
@@ -328,8 +328,8 @@ public final class Constants {
     public static final Pose2d BlueAllianceZoneEnd = new Pose2d(4.3, 0, new Rotation2d());
     public static final Pose2d RedAllianceZoneEnd = new Pose2d(12.2, 0, new Rotation2d());
 
-    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(1.212, 2.288, new Rotation2d()));
-    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(1.212, 5.607, new Rotation2d()));
+    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(1.012, 2.288, new Rotation2d()));
+    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(1.012, 5.607, new Rotation2d()));
 
     public static final double kMidFieldY = Units.feetToMeters(13.15);
     public static final double kMidFieldHubBlockWidth = 1.0;
