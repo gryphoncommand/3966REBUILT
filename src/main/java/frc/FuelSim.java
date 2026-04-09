@@ -50,7 +50,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class FuelSim {
   protected static final double PERIOD = 0.02;
-  protected static final int subticks = 3;
+  protected static final int subticks = 2;
   protected static final Translation3d GRAVITY = new Translation3d(0, 0, -9.81); // m/s^2
   // Room temperature dry air density: https://en.wikipedia.org/wiki/Density_of_air#Dry_air
   protected static final double AIR_DENSITY = 1.2041; // kg/m^3

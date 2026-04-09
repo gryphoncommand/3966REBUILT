@@ -17,12 +17,14 @@ import frc.robot.Constants.IndexerConstants;
 
 public class Kicker extends SubsystemBase {
     private SparkFlex kickerMotor = new SparkFlex(IndexerConstants.kKickerCanID, MotorType.kBrushless);
+    private SparkFlex followerMotor = new SparkFlex(IndexerConstants.kKickerFollowerCanID, MotorType.kBrushless);
     private SparkClosedLoopController pid = kickerMotor.getClosedLoopController();
     private RelativeEncoder encoder = kickerMotor.getEncoder();
     private double targetReference = 0.0;
 
     public Kicker(){
         kickerMotor.configure(KickerConfig.kickerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        followerMotor.configure(KickerConfig.kickerConfig.follow(kickerMotor, true), ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override

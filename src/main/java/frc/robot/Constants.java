@@ -195,7 +195,7 @@ public final class Constants {
     public static final int kDrumMotorCount = 2;
     public static final double kFixedHoodAngleDeg = 28.0;
     public static final int kSimShooterCount = 2;
-    public static final double kSimTotalBps = 9.2;
+    public static final double kSimTotalBps = 10.5;
     public static final double kSimPerShooterMeanIntervalSec = (double) kSimShooterCount / kSimTotalBps;
     public static final double kSimShotIntervalJitterFrac = 0.8;
     public static final double kSimShooterXOffsetMeters = 0.37;
@@ -279,13 +279,14 @@ public final class Constants {
     public static ShooterState kDefaultShooterState = new ShooterState(3, kFixedHoodAngleDeg, 1800, 1.2);
     public static ShooterState kJuggleShooterState = new ShooterState(3, kFixedHoodAngleDeg, 700, 1.2);
     public static ShooterState kCornerShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 5.2);
+    public static ShooterState k254Shot = ShooterInterpolator.interpolate(RealShootingValuesLow, 2.5);
     public static ShooterState kTowerShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 3.15);
-    public static ShooterState kTrenchShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 2.3);
-    public static ShooterState kBumpTowerShot = ShooterInterpolator.interpolate(RealShootingValuesLow, 3.195);
+    public static ShooterState kTrenchShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 3.5);
   }
 
   public static class IndexerConstants {
     public static int kKickerCanID = 14;
+    public static int kKickerFollowerCanID = 17;
     public static int kPreIndexerCanID = 12;
 
 

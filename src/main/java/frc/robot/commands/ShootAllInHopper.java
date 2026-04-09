@@ -46,9 +46,7 @@ public class ShootAllInHopper extends Command {
     private boolean reachedSetpoint;
     private boolean agitateAngle;
     private Timer shootingTimer = new Timer();
-    private Random simEnder = new Random();
     private Random simShotRandom = new Random();
-    private int simEnd;
     private double[] nextShotTimeSec = new double[0];
     private double[] simShooterYOffsets = new double[0];
     
@@ -110,7 +108,6 @@ public class ShootAllInHopper extends Command {
         reachedSetpoint = false;
         startedShooting = false;
         if (Robot.isSimulation()){
-            simEnd = simEnder.nextInt(1, 6);
             simShooterYOffsets = buildShooterYOffsets();
             nextShotTimeSec = new double[ShooterConstants.kSimShooterCount];
             double now = Timer.getFPGATimestamp();

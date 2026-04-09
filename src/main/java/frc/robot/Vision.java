@@ -62,7 +62,8 @@ public class Vision extends SubsystemBase {
             SimCameraProperties props = new SimCameraProperties();
             props.setCalibration(320, 240, Rotation2d.fromDegrees(91)); // resolution + FOV
             props.setFPS(30);
-            props.setAvgLatencyMs(0);
+            props.setAvgLatencyMs(30);
+            props.setCalibError(0.2, 0.08);
             props.setLatencyStdDevMs(5);
 
             cameraSim1 = new PhotonCameraSim(camera1, props);

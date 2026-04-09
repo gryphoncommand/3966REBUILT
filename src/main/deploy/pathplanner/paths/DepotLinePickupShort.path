@@ -1,0 +1,148 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.6344010647737353,
+        "y": 7.419148181011535
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.882420664953899,
+        "y": 7.387743118896142
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.923939662821651,
+        "y": 6.968464951197871
+      },
+      "prevControl": {
+        "x": 7.85591466282165,
+        "y": 7.633598284531204
+      },
+      "nextControl": {
+        "x": 7.952144927811599,
+        "y": 6.692680137962821
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.923939662821651,
+        "y": 4.80357586512866
+      },
+      "prevControl": {
+        "x": 8.020514640638865,
+        "y": 4.208030168589175
+      },
+      "nextControl": {
+        "x": 7.817008061570462,
+        "y": 5.4629874061776516
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.153398402839397,
+        "y": 7.419148181011535
+      },
+      "prevControl": {
+        "x": 7.964740305654347,
+        "y": 7.443299406382406
+      },
+      "nextControl": {
+        "x": 5.54980479148181,
+        "y": 7.411100266193433
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.3386867790550685,
+        "y": 6.968464951197871
+      },
+      "prevControl": {
+        "x": 2.161632653056843,
+        "y": 7.555962732922577
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Depot Far Shot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.47389558232931256,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 2.8,
+      "rotationDegrees": 179.46053187008536
+    },
+    {
+      "waypointRelativePos": 3.5341365461847447,
+      "rotationDegrees": 180.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.029333333333333,
+      "maxWaypointRelativePos": 2.1546666666666696,
+      "constraints": {
+        "maxVelocity": 2.75,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.65,
+        "y": 4.0
+      },
+      "rotationOffset": 90.0,
+      "minWaypointRelativePos": 4.0,
+      "maxWaypointRelativePos": 4.5,
+      "name": "Point Towards Zone"
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 3.75,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 126.02737338484792
+  },
+  "reversed": false,
+  "folder": "Depot",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

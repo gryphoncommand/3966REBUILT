@@ -55,7 +55,7 @@ public class Robot extends LoggedRobot  {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    PathfindingCommand.warmupCommand();
+    CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
     gotAlliance = false;
   }
 
@@ -116,6 +116,8 @@ public class Robot extends LoggedRobot  {
     CommandScheduler.getInstance().schedule(Commands.runOnce(() -> {
           FuelSim.getInstance().clearFuel();
           FuelSim.getInstance().spawnStartingFuel();
+          FuelSim.Hub.BLUE_HUB.resetScore();
+          FuelSim.Hub.RED_HUB.resetScore();
           if (Robot.isSimulation()) {
             FuelSim.getInstance().reserveFuelForRobot(m_robotContainer.getSimBallCount());
           }

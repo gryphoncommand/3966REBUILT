@@ -229,7 +229,7 @@ public final class Configs {
                         .inverted(true);
                 kickerConfig
                         .idleMode(IdleMode.kBrake)
-                        .smartCurrentLimit(60)
+                        .smartCurrentLimit(50)
                         .inverted(false)
                         .openLoopRampRate(0)
                         .closedLoopRampRate(0);

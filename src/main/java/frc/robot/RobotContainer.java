@@ -7,7 +7,6 @@ package frc.robot;
 import frc.FuelSim;
 import frc.GryphonLib.ShooterState;
 import frc.GryphonLib.AllianceFlipUtil;
-import frc.robot.AI.DefenseBotInSimulation;
 import frc.robot.AI.HybridBotInSimulation;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.DriveConstants;
@@ -115,6 +114,7 @@ public class RobotContainer {
     emergencyShotChooser.addOption("Trench", ShooterConstants.kTrenchShotState);
     emergencyShotChooser.setDefaultOption("Tower", ShooterConstants.kTowerShotState);
     emergencyShotChooser.addOption("Corner", ShooterConstants.kCornerShotState);
+    emergencyShotChooser.addOption("254 Shot", ShooterConstants.k254Shot);
     emergencyShotChooser.addOption("Juggle", ShooterConstants.kJuggleShooterState);
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -258,6 +258,8 @@ public class RobotContainer {
     m_operatorController.rightBumper()
       .whileTrue(new RunCommand(()->m_intakeDeploy.set(-0.2), m_intakeDeploy))
       .onFalse(new RunCommand(()->m_intakeDeploy.set(0.0), m_intakeDeploy));
+
+    m_operatorController.a().whileTrue(new RunCommand(()->m_kicker.set(-0.2), m_kicker)).onFalse(new RunCommand(()->m_kicker.set(0.0), m_kicker));
     
 
     m_operatorController.start().onTrue(
@@ -319,7 +321,7 @@ public class RobotContainer {
     instance.start();
 
     // Performance tuning for sim
-    instance.setLogEveryNTicks(5); // 25 Hz fuel pose logging
+    instance.setLogEveryNTicks(8); // 25 Hz fuel pose logging
     instance.disableProfiling();
 
     SmartDashboard.putData("Reset Fuel", Commands.runOnce(() -> {
@@ -342,7 +344,7 @@ public class RobotContainer {
   }
 
   private void configureNamedCommands(){
-    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy).withTimeout(4.5).raceWith(new RunIntakeRollers(m_intakeRollers)));
+    NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy).withTimeout(4.0).raceWith(new RunIntakeRollers(m_intakeRollers)));
     NamedCommands.registerCommand("Speedup Flywheel", new DeferredCommand(()->new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow), Set.of(m_flywheel)));
     NamedCommands.registerCommand("Prepare to Shoot", 
       new ParallelCommandGroup(
