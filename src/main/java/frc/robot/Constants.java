@@ -178,8 +178,8 @@ public final class Constants {
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.7, 0.7, 1.4);
-    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.3, 0.3, 0.5);
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.1, 0.1, 0.2);
+    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.025, 0.025, 0.05);
   }
 
   public static class ShooterConstants {
@@ -279,8 +279,8 @@ public final class Constants {
     public static ShooterState kDefaultShooterState = new ShooterState(3, kFixedHoodAngleDeg, 1800, 1.2);
     public static ShooterState kJuggleShooterState = new ShooterState(3, kFixedHoodAngleDeg, 700, 1.2);
     public static ShooterState kCornerShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 5.2);
-    public static ShooterState k254Shot = ShooterInterpolator.interpolate(RealShootingValuesLow, 2.5);
-    public static ShooterState kTowerShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 3.15);
+    public static ShooterState k254Shot = ShooterInterpolator.interpolate(RealShootingValuesLow, 2.8);
+    public static ShooterState kTowerShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 3.25);
     public static ShooterState kTrenchShotState = ShooterInterpolator.interpolate(RealShootingValuesLow, 3.5);
   }
 
@@ -297,14 +297,12 @@ public final class Constants {
     public static double kKickerSpeed = 9000;
     
 
-    // TODO: TOP PRIORITY IS TO TUNE THIS
     public static double kActiveCurrentRollerFloor = 20;
-    
   }
 
   public static class IntakeConstants {
     public static int kRollerCanID = 11;
-    public static double kIntakeSpeedRPM = 700; // Optimally should be 3580
+    public static double kIntakeSpeedRPM = 1600; // Optimally should be 3580
 
     public static double kIntakeDeployGearRatio = 20*(50.0/32.0)*(36.0/16.0); // 20 then (32/50) then (16/36)
     public static double kShaftToIntakeDeployRatio = 36.0/16.0;

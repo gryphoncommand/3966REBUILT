@@ -36,7 +36,7 @@ public class SetShooterToDefinedStateOnce extends Command {
 
   @Override
   public void execute() {
-    double rpm = state.flywheelRPM();
+    double rpm = state.flywheelRPM() + ShooterConstants.kFlywheelRPMOffset;
     flywheel.setRealTarget(rpm);
     if(!(flywheel.atRealTarget(100)) && rpm > flywheel.getVelocity()){
       rpm += ShooterConstants.kFlywheelRPMOffset;

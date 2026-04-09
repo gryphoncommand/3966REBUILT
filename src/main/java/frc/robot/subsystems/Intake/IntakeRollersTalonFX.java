@@ -29,6 +29,7 @@ public class IntakeRollersTalonFX extends SubsystemBase {
   public void periodic() {
     Logger.recordOutput("Intake/Intake Roller Desired Velocity (RPM)", targetReference);
     Logger.recordOutput("Intake/Intake Roller Velocity (RPM)", getVelocity());
+    Logger.recordOutput("Intake/Intake Roller Applied Output", rollerMotor.get());
   }
 
   public void set(double speed) {
@@ -36,10 +37,9 @@ public class IntakeRollersTalonFX extends SubsystemBase {
   }
 
   public void setVelocity(double rpm) {
-    rpm = rpm * 43/18;
     targetReference = rpm;
     
-    rollerMotor.setControl(m_controlRequest.withVelocity(RPM.of(rpm * 43/18)));
+    rollerMotor.setControl(m_controlRequest.withVelocity(RPM.of(rpm * (43.0/18.0))));
   }
 
 
@@ -48,7 +48,7 @@ public class IntakeRollersTalonFX extends SubsystemBase {
   }
 
   public double getVelocity() {
-    return rollerMotor.getVelocity().getValueAsDouble();
+    return rollerMotor.getVelocity().getValue().in(RPM) * (18.0/43.0);
   }
 
   public void intake(){

@@ -115,7 +115,7 @@ public final class Configs {
             slot0Configs.kS = 0.0;
             slot0Configs.kV = 0.12;
             slot0Configs.kA = 0.0;
-            slot0Configs.kP = 0.0;
+            slot0Configs.kP = 0.13;
             slot0Configs.kI = 0.0;
             slot0Configs.kD = 0.0;
 
@@ -123,8 +123,7 @@ public final class Configs {
             intakeRollerConfig.CurrentLimits.withSupplyCurrentLimitEnable(true);
             
             // Motor behavior
-            intakeRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-                    
+            intakeRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;    
         }
     }
 
