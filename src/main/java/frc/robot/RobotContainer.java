@@ -102,7 +102,7 @@ public class RobotContainer {
     configureNamedCommands();
     if (Robot.isSimulation()){
       configureFuelSim();
-      configureAIOpponents();
+      //configureAIOpponents();
     }
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
@@ -181,8 +181,8 @@ public class RobotContainer {
       new InstantCommand(()->{
         m_drive.zeroHeading();
         AlignmentConstants.HubPose = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose;
-        AlignmentConstants.PassingPoseOutpost = (new Pose2d(AllianceFlipUtil.applyX(1.212), 2.2688, new Rotation2d()));
-        AlignmentConstants.PassingPoseDepot = (new Pose2d(AllianceFlipUtil.applyX(1.212), 5.707, new Rotation2d()));
+        AlignmentConstants.PassingPoseOutpost = (new Pose2d(AllianceFlipUtil.applyX(0.812), 2.2688, new Rotation2d()));
+        AlignmentConstants.PassingPoseDepot = (new Pose2d(AllianceFlipUtil.applyX(0.812), 5.707, new Rotation2d()));
       }, m_drive));
     
 

@@ -327,8 +327,8 @@ public final class Constants {
     public static final Pose2d BlueAllianceZoneEnd = new Pose2d(4.3, 0, new Rotation2d());
     public static final Pose2d RedAllianceZoneEnd = new Pose2d(12.2, 0, new Rotation2d());
 
-    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(1.012, 2.288, new Rotation2d()));
-    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(1.012, 5.607, new Rotation2d()));
+    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(0.812, 2.288, new Rotation2d()));
+    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(0.812, 5.607, new Rotation2d()));
 
     public static final double kMidFieldY = Units.feetToMeters(13.15);
     public static final double kMidFieldHubBlockWidth = 1.0;
