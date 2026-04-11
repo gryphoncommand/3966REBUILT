@@ -224,7 +224,7 @@ public class Vision extends SubsystemBase {
                 // Increase std devs based on (average) distance
                 if (numTags == 1 && avgDist > 3.5)
                     estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-                else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 5));
+                else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 25));
                 curStdDevs = estStdDevs;
             }
         }

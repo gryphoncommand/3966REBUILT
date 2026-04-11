@@ -321,7 +321,7 @@ public class RobotContainer {
     instance.start();
 
     // Performance tuning for sim
-    instance.setLogEveryNTicks(8); // 25 Hz fuel pose logging
+    instance.setLogEveryNTicks(3); // 25 Hz fuel pose logging
     instance.disableProfiling();
 
     SmartDashboard.putData("Reset Fuel", Commands.runOnce(() -> {
