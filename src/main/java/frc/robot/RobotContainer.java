@@ -347,8 +347,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy).withTimeout(4.0).raceWith(new RunIntakeRollers(m_intakeRollers)));
     NamedCommands.registerCommand("Speedup Flywheel", new DeferredCommand(()->new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow), Set.of(m_flywheel)));
     NamedCommands.registerCommand("Prepare to Shoot", 
-    new DeferredCommand(()->
-      new ParallelCommandGroup(
+    new DeferredCommand(()->      new ParallelCommandGroup(
         new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow),
         new AlignToGoalAuto(m_drive, AlignmentConstants.HubPose, true)
       ),
