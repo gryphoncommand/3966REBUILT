@@ -259,7 +259,9 @@ public class RobotContainer {
       .whileTrue(new RunCommand(()->m_intakeDeploy.set(-0.2), m_intakeDeploy))
       .onFalse(new RunCommand(()->m_intakeDeploy.set(0.0), m_intakeDeploy));
 
-    m_operatorController.a().whileTrue(new RunCommand(()->m_kicker.set(-0.2), m_kicker)).onFalse(new RunCommand(()->m_kicker.set(0.0), m_kicker));
+    m_operatorController.a()
+    .whileTrue(new RunCommand(()->m_kicker.set(-0.2), m_kicker)).onFalse(new RunCommand(()->m_kicker.set(0.0), m_kicker))
+    .whileTrue(new RunCommand(()->m_preIndexer.set(0.05), m_preIndexer)).onFalse(new RunCommand(()->m_preIndexer.set(0.0), m_preIndexer));
     
 
     m_operatorController.start().onTrue(
