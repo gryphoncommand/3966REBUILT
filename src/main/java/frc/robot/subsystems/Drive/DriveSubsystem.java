@@ -126,7 +126,12 @@ public class DriveSubsystem extends SubsystemBase implements DriveIO {
     desiredPublisher = NetworkTableInstance.getDefault()
       .getStructArrayTopic("/DesiredSwerveStates", SwerveModuleState.struct).publish();
 
-    poseEstimator = new PoseEstimator(stateStdDevs);
+    poseEstimator = new PoseEstimator(
+      stateStdDevs,
+      DriveConstants.kDriveKinematics,
+      getPositions(),
+      getRotation()
+    );
     
     Logger.recordOutput("Robot Pose", getCurrentPose());
     Logger.recordOutput("Goal Pose", field2d.getObject("Goal Pose").getPose());
@@ -280,7 +285,17 @@ public class DriveSubsystem extends SubsystemBase implements DriveIO {
   public void zeroHeading() {
     gyroOffset = m_gyro.getAngle(); // Set current yaw as zero
     Pose2d currentPose = poseEstimator.getLatestPose();
-    poseEstimator.resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), DriverStation.getAlliance().get() == Alliance.Blue ? new Rotation2d() : new Rotation2d(Math.PI)));
+    poseEstimator.resetPose(
+        new Pose2d(
+            currentPose.getX(),
+            currentPose.getY(),
+            DriverStation.getAlliance().get() == Alliance.Blue
+                ? new Rotation2d()
+                : new Rotation2d(Math.PI)
+        ),
+        getPositions(),
+        getRotation()
+    );
   }
 
   public void setHeading(double angle) {
@@ -460,8 +475,9 @@ public class DriveSubsystem extends SubsystemBase implements DriveIO {
     
     // Update pose estimator with drivetrain sensors
     poseEstimator.addDriveData(
-      Timer.getTimestamp(),
-      getCurrentSpeeds().toTwist2d(Timer.getTimestamp() - currentTimestamp)
+        Timer.getTimestamp(),
+        getPositions(),
+        getRotation()
     );
 
     field2d.setRobotPose(poseEstimator.getLatestPose());
@@ -500,7 +516,7 @@ public class DriveSubsystem extends SubsystemBase implements DriveIO {
    * @param newPose new pose
    */
   public void setCurrentPose(Pose2d newPose) {
-    poseEstimator.resetPose(newPose);
+    poseEstimator.resetPose(newPose, getPositions(), getRotation());
 
     Rotation2d adjustedRotation = newPose.getRotation();
     if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {

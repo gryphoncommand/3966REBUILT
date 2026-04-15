@@ -107,7 +107,12 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
     desiredPublisher = NetworkTableInstance.getDefault()
       .getStructArrayTopic("/DesiredSwerveStates", SwerveModuleState.struct).publish();
 
-    poseEstimator = new PoseEstimator(stateStdDevs);
+    poseEstimator = new PoseEstimator(
+      stateStdDevs,
+      DriveConstants.kDriveKinematics,
+      getPositions(),
+      getRotation()
+    );
 
     setCurrentPose(new Pose2d(2, 2, new Rotation2d()));
 
@@ -254,7 +259,17 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
   public void zeroHeading() {
     gyroOffset = Units.radiansToDegrees(swerveDrive.imuReadingCache.getValue().getZ()); // Set current yaw as zero
     Pose2d currentPose = getCurrentPose();
-    poseEstimator.resetPose(new Pose2d(currentPose.getX(), currentPose.getY(), DriverStation.getAlliance().get() == Alliance.Blue ? new Rotation2d() : new Rotation2d(Math.PI)));
+    poseEstimator.resetPose(
+        new Pose2d(
+            currentPose.getX(),
+            currentPose.getY(),
+            DriverStation.getAlliance().get() == Alliance.Blue
+                ? new Rotation2d()
+                : new Rotation2d(Math.PI)
+        ),
+        getPositions(),
+        getRotation()
+    );
   }
 
   public void setHeading(double angle) {
@@ -410,8 +425,9 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
       setX();
     }
     poseEstimator.addDriveData(
-      Timer.getTimestamp(),
-      getCurrentSpeeds().toTwist2d(Timer.getTimestamp() - currentTimestamp)
+        Timer.getTimestamp(),
+        getPositions(),
+        getRotation()
     );
 
     field2d.setRobotPose(poseEstimator.getLatestPose());
@@ -450,6 +466,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
       }
 
       Logger.recordOutput("Drive/Pose3d", simPose3d);
+      Logger.recordOutput("Drive/Estimated Pose", getCurrentPose());
   }
 
   public Pose2d getCurrentPose() {
@@ -467,7 +484,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
    * @param newPose new pose
    */
   public void setCurrentPose(Pose2d newPose) {
-    poseEstimator.resetPose(newPose);
+    poseEstimator.resetPose(newPose, getPositions(), getRotation());
     swerveDrive.getMapleSimDrive().get().setSimulationWorldPose(newPose);
 
     Rotation2d adjustedRotation = newPose.getRotation();
