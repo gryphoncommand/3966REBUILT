@@ -39,7 +39,7 @@ public class IntakeRollersTalonFX extends SubsystemBase {
   public void setVelocity(double rpm) {
     targetReference = rpm;
     
-    rollerMotor.setControl(m_controlRequest.withVelocity(RPM.of(rpm * (43.0/18.0))));
+    rollerMotor.setControl(m_controlRequest.withVelocity(RPM.of(rpm * IntakeConstants.kIntakeRollerGearRatio)));
   }
 
 
@@ -48,7 +48,7 @@ public class IntakeRollersTalonFX extends SubsystemBase {
   }
 
   public double getVelocity() {
-    return rollerMotor.getVelocity().getValue().in(RPM) * (18.0/43.0);
+    return rollerMotor.getVelocity().getValue().in(RPM) * (1.0/IntakeConstants.kIntakeRollerGearRatio);
   }
 
   public void intake(){
