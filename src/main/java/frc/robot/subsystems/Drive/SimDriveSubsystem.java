@@ -71,7 +71,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
   private SwerveModuleState[] desiredStates;
   private double gyroOffset = 0.0;
 
-  private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
+  private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10));
   private final PoseEstimator poseEstimator;
   private final Field2d field2d = new Field2d();
   private final StructArrayPublisher<SwerveModuleState> publisher;
@@ -96,9 +96,6 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
     }
 
     swerveDrive.getMapleSimDrive().get().config.withBumperSize(Meters.of(DriveConstants.kTrackWidth + Units.inchesToMeters(2.5)), Meters.of(DriveConstants.kWheelBase + Units.inchesToMeters(2.5)));
-    swerveDrive.setChassisDiscretization(false, false, 0.02);
-    swerveDrive.setAngularVelocityCompensation(false, false, 0.0);
-    swerveDrive.setHeadingCorrection(true);
     desiredStates = swerveDrive.getStates();
     swerveDrive.getMapleSimDrive().get().setSimulationWorldPose(new Pose2d(2, 2, new Rotation2d()));
 
@@ -491,7 +488,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
     if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
       adjustedRotation = adjustedRotation.plus(new Rotation2d(Math.PI));
     }
-    gyroOffset = adjustedRotation.getDegrees() + getRawYawDegrees();
+    zeroHeading();
   }
 
   public void setAlign(boolean alignedNow) {

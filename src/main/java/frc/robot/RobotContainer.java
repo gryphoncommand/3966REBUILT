@@ -4,21 +4,56 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Pounds;
+
+import java.util.Set;
+
+import org.littletonrobotics.junction.Logger;
+import org.photonvision.PhotonUtils;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.FuelSim;
-import frc.GryphonLib.ShooterState;
 import frc.GryphonLib.AllianceFlipUtil;
-import frc.robot.AI.HybridBotInSimulation;
+import frc.GryphonLib.ShooterState;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.AI.HybridBotInSimulation;
+import frc.robot.AI.StationaryBotInSimulation;
 import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.AlignToGoalAuto;
 import frc.robot.commands.AlignToTrench;
 import frc.robot.commands.AllSystemsTest;
 import frc.robot.commands.FlywheelSysID;
+import frc.robot.commands.ParameterizedAutoBuilder;
 import frc.robot.commands.PassCommand;
 import frc.robot.commands.PrepareSOTM;
 import frc.robot.commands.RollerFloorSysID;
@@ -36,41 +71,17 @@ import frc.robot.subsystems.Drive.SimDriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Flywheel.FlywheelSimTalonFX;
 import frc.robot.subsystems.Flywheel.FlywheelTalonFX;
-
-import java.util.Set;
-
-import org.littletonrobotics.junction.Logger;
-import org.photonvision.PhotonUtils;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Indexer.Kicker;
 import frc.robot.subsystems.Indexer.PreIndexer;
 import frc.robot.subsystems.Intake.IntakeDeployIO;
 import frc.robot.subsystems.Intake.IntakeDeploySimTalonFX;
 import frc.robot.subsystems.Intake.IntakeDeploySparkFlex;
 import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
+import swervelib.simulation.ironmaple.simulation.SimulatedArena;
+import swervelib.simulation.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
+import swervelib.simulation.ironmaple.simulation.drivesims.COTS;
+import swervelib.simulation.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import swervelib.simulation.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 
 public class RobotContainer {
 
@@ -102,12 +113,19 @@ public class RobotContainer {
     configureNamedCommands();
     if (Robot.isSimulation()){
       configureFuelSim();
-      //configureAIOpponents();
+      // configureAIOpponents();
     }
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
     autoChooser.addOption("Roller Floor SysID", new RollerFloorSysID(m_preIndexer).doAllSysID());
     autoChooser.addOption("Systems Test", new AllSystemsTest(m_drive, m_intakeDeploy, m_intakeRollers, m_kicker, m_preIndexer, m_flywheel).getSystemsTest());
+    try {
+      autoChooser.addOption("Custom Position Path Test", 
+        ParameterizedAutoBuilder.buildAuto("Double Swipe Depot Bump Bump", m_drive, true)
+      );
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     
 
     emergencyShotChooser.addOption("Default", ShooterConstants.kDefaultShooterState);
@@ -264,6 +282,13 @@ public class RobotContainer {
     .whileTrue(new RunCommand(()->m_preIndexer.set(0.05), m_preIndexer)).onFalse(new RunCommand(()->m_preIndexer.set(0.0), m_preIndexer));
     
 
+    m_operatorController.y()
+      .whileTrue(new RunCommand(()->m_intakeRollers.set(-0.8), m_intakeRollers))
+      .whileTrue(new RunCommand(()->m_preIndexer.set(-0.8), m_preIndexer))
+      .onFalse(new RunCommand(()->m_intakeRollers.set(0.0), m_intakeRollers))
+      .onFalse(new RunCommand(()->m_preIndexer.set(0.0), m_preIndexer));
+    
+      
     m_operatorController.start().onTrue(
       new InstantCommand(()->{
         Pose2d shooterPose = m_drive.getCurrentPose().plus(ShooterConstants.kRobotToShooter);
@@ -376,9 +401,10 @@ public class RobotContainer {
   }
 
   public void configureAIOpponents(){
-    try {
+    try {      
       Logger.recordOutput("Drive/AI Status", "Started Creating AI 0");
-      new HybridBotInSimulation(3, ((SimDriveSubsystem)m_drive)::getRealPoseSim, Alliance.Red);
+      new StationaryBotInSimulation(3);
+      // new HybridBotInSimulation(3, ((SimDriveSubsystem)m_drive)::getRealPoseSim, Alliance.Red);
   } catch (Exception e){
       Logger.recordOutput("Drive/AI Status", "Failed Creating AI 0, " + e.getMessage());
     }
