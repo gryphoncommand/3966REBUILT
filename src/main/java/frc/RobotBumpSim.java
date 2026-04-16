@@ -338,31 +338,27 @@ public class RobotBumpSim {
                 simXVel += avgGravAccelX * dt;
                 simXPos += prevXVel * dt;
             } else if (onRamp) {
-                // Still on ramp but no contact this tick (briefly airborne over peak)
-                // Keep sliding under simXVel
                 simXPos += simXVel * dt;
 
-                // Check if all modules have settled back to flat ground
                 boolean allFlat = true;
                 for (int i = 0; i < 4; i++) {
                     if (moduleZPos[i] > 0.01) { allFlat = false; break; }
                 }
 
                 if (allFlat) {
-                    // Release ramp mode once we're clearly past the bump in whichever direction we traveled.
-                    // Blue bump spans X ~ 3.96–5.18, Red bump spans X ~ 11.33–12.55
                     boolean travelingPositiveX = simXVel >= 0;
                     boolean pastBump =
                         travelingPositiveX
-                            // Exiting +X: past the far (Red) side of either bump
-                            ? (simXPos > BUMP_LINE_ENDS[3].getX()   // past Blue bump descending end
-                            || simXPos > BUMP_LINE_ENDS[7].getX())  // past Red bump descending end
-                            // Exiting -X: before the near (Blue) side of either bump
-                            : (simXPos < BUMP_LINE_STARTS[0].getX() // before Blue bump ascending start
-                            || simXPos < BUMP_LINE_STARTS[4].getX());// before Red bump ascending start
-                    if (pastBump) onRamp = false;
+                            ? (simXPos > BUMP_LINE_ENDS[3].getX()
+                            || simXPos > BUMP_LINE_ENDS[7].getX())
+                            : (simXPos < BUMP_LINE_STARTS[0].getX()
+                            || simXPos < BUMP_LINE_STARTS[4].getX());
+
+                    // Safety: if simXPos has escaped the field entirely, always release.
+                    boolean escapedField = simXPos < 0.0 || simXPos > FIELD_LENGTH;
+
+                    if (pastBump || escapedField) onRamp = false;
                 }
-                // If not yet flat and not yet past the bump, keep sliding — do nothing else
             }
             // No else: when off-ramp and no contact, simXPos is irrelevant, don't touch it
         }

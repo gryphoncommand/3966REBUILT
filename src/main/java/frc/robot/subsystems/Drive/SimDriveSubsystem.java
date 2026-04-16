@@ -31,6 +31,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -176,8 +177,8 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
       this::getCurrentSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
       (speeds, feedforwards) -> driveRobotRelativeChassis(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
       new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-              new PIDConstants(3.0, 0.0, 0.0), // Translation PID constants
-              new PIDConstants(3.0, 0.0, 0.0) // Rotation PID constants
+              new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+              new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
       ),
       config, // The robot configuration
       () -> {
@@ -460,6 +461,10 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
           swerveDrive.getMapleSimDrive().get().setSimulationWorldPose(
               robotBumpSim.getSimWorldPose(currentSimPose)
           );
+      }
+      if (simPose3d.getZ() > 0.05){
+        ChassisSpeeds speeds = new ChassisSpeeds(getRealPoseSim().minus(simPose).getX(), getRealPoseSim().minus(simPose).getY(), 0).times(2.0);
+        poseEstimator.addDriveData(Timer.getFPGATimestamp(), speeds.toTwist2d(0.2));
       }
 
       Logger.recordOutput("Drive/Pose3d", simPose3d);
