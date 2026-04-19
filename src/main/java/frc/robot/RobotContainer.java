@@ -4,9 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Pounds;
-
 import java.util.Set;
 
 import org.littletonrobotics.junction.Logger;
@@ -20,8 +17,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -46,14 +41,12 @@ import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.AI.HybridBotInSimulation;
 import frc.robot.AI.StationaryBotInSimulation;
 import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.AlignToGoalAuto;
 import frc.robot.commands.AlignToTrench;
 import frc.robot.commands.AllSystemsTest;
 import frc.robot.commands.FlywheelSysID;
-import frc.robot.commands.ParameterizedAutoBuilder;
 import frc.robot.commands.PassCommand;
 import frc.robot.commands.PrepareSOTM;
 import frc.robot.commands.RollerFloorSysID;
@@ -77,11 +70,6 @@ import frc.robot.subsystems.Intake.IntakeDeployIO;
 import frc.robot.subsystems.Intake.IntakeDeploySimTalonFX;
 import frc.robot.subsystems.Intake.IntakeDeploySparkFlex;
 import frc.robot.subsystems.Intake.IntakeRollersTalonFX;
-import swervelib.simulation.ironmaple.simulation.SimulatedArena;
-import swervelib.simulation.ironmaple.simulation.drivesims.AbstractDriveTrainSimulation;
-import swervelib.simulation.ironmaple.simulation.drivesims.COTS;
-import swervelib.simulation.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import swervelib.simulation.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 
 public class RobotContainer {
 
@@ -113,19 +101,12 @@ public class RobotContainer {
     configureNamedCommands();
     if (Robot.isSimulation()){
       configureFuelSim();
-      // configureAIOpponents();
+      configureAIOpponents();
     }
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
     autoChooser.addOption("Roller Floor SysID", new RollerFloorSysID(m_preIndexer).doAllSysID());
     autoChooser.addOption("Systems Test", new AllSystemsTest(m_drive, m_intakeDeploy, m_intakeRollers, m_kicker, m_preIndexer, m_flywheel).getSystemsTest());
-    try {
-      autoChooser.addOption("Custom Position Path Test", 
-        ParameterizedAutoBuilder.buildAuto("Double Swipe Depot Bump Bump", m_drive, true)
-      );
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
     
 
     emergencyShotChooser.addOption("Default", ShooterConstants.kDefaultShooterState);
@@ -288,7 +269,7 @@ public class RobotContainer {
       .onFalse(new RunCommand(()->m_intakeRollers.set(0.0), m_intakeRollers))
       .onFalse(new RunCommand(()->m_preIndexer.set(0.0), m_preIndexer));
     
-      
+
     m_operatorController.start().onTrue(
       new InstantCommand(()->{
         Pose2d shooterPose = m_drive.getCurrentPose().plus(ShooterConstants.kRobotToShooter);
