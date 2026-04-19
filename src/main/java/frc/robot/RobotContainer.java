@@ -163,7 +163,7 @@ public class RobotContainer {
             .withName("Basic Drive"));
     m_preIndexer.setDefaultCommand(
       new RunCommand(()->{
-        if (m_driverController.rightTrigger().getAsBoolean()){
+        if (m_driverController.rightTrigger().getAsBoolean() || (m_driverController.povUp().getAsBoolean()) || m_operatorController.leftTrigger().getAsBoolean()){
           m_preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed);
         } else {
           m_preIndexer.setVelocity(0);
