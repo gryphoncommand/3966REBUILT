@@ -464,10 +464,6 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
 
           poseEstimator.addDriveData(Timer.getTimestamp(), swerveDrive.kinematics.toChassisSpeeds(desiredStates).toTwist2d(0.02));
       }
-      if (simPose3d.getZ() > 0.05){
-        ChassisSpeeds speeds = new ChassisSpeeds(getRealPoseSim().minus(simPose).getX(), getRealPoseSim().minus(simPose).getY(), 0).times(2.0);
-        poseEstimator.addDriveData(Timer.getFPGATimestamp(), speeds.toTwist2d(0.2));
-      }
 
       Logger.recordOutput("Drive/Pose3d", simPose3d);
       Logger.recordOutput("Drive/Estimated Pose", getCurrentPose());
