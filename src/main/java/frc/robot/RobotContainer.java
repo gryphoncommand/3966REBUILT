@@ -144,8 +144,10 @@ public class RobotContainer {
             .withName("Basic Drive"));
     m_preIndexer.setDefaultCommand(
       new RunCommand(()->{
-        if (m_driverController.rightTrigger().getAsBoolean()){
+        if (m_driverController.rightTrigger().getAsBoolean() || m_operatorController.leftTrigger().getAsBoolean()){
           m_preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed);
+        } else if (m_operatorController.y().getAsBoolean()){
+          m_preIndexer.set(-0.8);
         } else {
           m_preIndexer.setVelocity(0);
         }
@@ -166,6 +168,8 @@ public class RobotContainer {
       new RunCommand(()->{
         if (m_driverController.leftTrigger().getAsBoolean() || m_driverController.rightTrigger().getAsBoolean() || m_driverController.a().getAsBoolean()){
           m_intakeRollers.setVelocity(IntakeConstants.kIntakeSpeedRPM);
+        } else if (m_operatorController.y().getAsBoolean()){
+          m_intakeRollers.set(-0.8);
         } else {
           m_intakeRollers.setVelocity(0);
           m_intakeRollers.set(0);
@@ -247,10 +251,6 @@ public class RobotContainer {
     m_operatorController.x().toggleOnTrue(new SetToDashboardSpeeds(m_flywheel));
     
 
-    m_operatorController.leftTrigger()
-      .whileTrue(runIntakeRollers)
-      .whileTrue(new RunCommand(()->m_preIndexer.setVelocity(IndexerConstants.kPreIndexerSpeed), m_preIndexer))
-      .onFalse(new RunCommand(()->m_preIndexer.setVelocity(0), m_preIndexer));
     m_operatorController.leftBumper()
       .whileTrue(new RunCommand(()->m_intakeDeploy.set(0.2), m_intakeDeploy))
       .onFalse(new RunCommand(()->m_intakeDeploy.set(0.0), m_intakeDeploy));
@@ -262,12 +262,6 @@ public class RobotContainer {
     .whileTrue(new RunCommand(()->m_kicker.set(-0.2), m_kicker)).onFalse(new RunCommand(()->m_kicker.set(0.0), m_kicker))
     .whileTrue(new RunCommand(()->m_preIndexer.set(0.05), m_preIndexer)).onFalse(new RunCommand(()->m_preIndexer.set(0.0), m_preIndexer));
     
-
-    m_operatorController.y()
-      .whileTrue(new RunCommand(()->m_intakeRollers.set(-0.8), m_intakeRollers))
-      .whileTrue(new RunCommand(()->m_preIndexer.set(-0.8), m_preIndexer))
-      .onFalse(new RunCommand(()->m_intakeRollers.set(0.0), m_intakeRollers))
-      .onFalse(new RunCommand(()->m_preIndexer.set(0.0), m_preIndexer));
     
 
     m_operatorController.start().onTrue(
