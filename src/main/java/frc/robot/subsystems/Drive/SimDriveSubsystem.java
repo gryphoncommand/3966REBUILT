@@ -460,6 +460,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
           swerveDrive.getMapleSimDrive().get().setSimulationWorldPose(
               robotBumpSim.getSimWorldPose(currentSimPose)
           );
+          poseEstimator.addDriveData(Timer.getTimestamp(), swerveDrive.kinematics.toChassisSpeeds(desiredStates).toTwist2d(0.02));
       }
 
       Logger.recordOutput("Drive/Pose3d", simPose3d);
