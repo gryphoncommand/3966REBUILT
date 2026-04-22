@@ -68,6 +68,8 @@ public class Vision extends SubsystemBase {
             props.setExposureTimeMs(320);
 
             cameraSim1 = new PhotonCameraSim(camera1, props);
+            props.setCalibration(256, 144, Rotation2d.fromDegrees(91)); // resolution + FOV
+            
             cameraSim2 = new PhotonCameraSim(camera2, props);
 
 
