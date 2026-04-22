@@ -54,6 +54,7 @@ import frc.robot.commands.SetShooterToDefinedState;
 import frc.robot.commands.SetToDashboardSpeeds;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootAllInHopper;
+import frc.robot.commands.Intake.AutoSpitTrenchExit;
 import frc.robot.commands.Intake.IntakeDeploy;
 import frc.robot.commands.Intake.IntakeStow;
 import frc.robot.commands.Intake.RunIntakeRollers;
@@ -142,6 +143,7 @@ public class RobotContainer {
             },
             m_drive)
             .withName("Basic Drive"));
+
     m_preIndexer.setDefaultCommand(
       new RunCommand(()->{
         if (m_driverController.rightTrigger().getAsBoolean() || m_operatorController.leftTrigger().getAsBoolean()){
@@ -221,7 +223,12 @@ public class RobotContainer {
     )
     .onFalse(new RunCommand(()->m_flywheel.stop(), m_flywheel));
 
-    m_driverController.b().whileTrue(new AlignToTrench(m_drive, m_driverController));
+    m_driverController
+      .b()
+      .whileTrue(
+        new AlignToTrench(m_drive, m_driverController)
+          .alongWith(new AutoSpitTrenchExit(m_drive, m_intakeRollers, m_preIndexer, m_driverController, m_operatorController))
+      );
     m_driverController.a()
       .whileTrue(
         new DeferredCommand(()->new SetShooterToDefinedState(m_flywheel,

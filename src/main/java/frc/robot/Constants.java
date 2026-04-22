@@ -314,6 +314,13 @@ public final class Constants {
     
     public static int kDeployCanID = 13;
     public static double kIntakeLengthMeters = Units.inchesToMeters(14.678);
+
+    // Auto-spit (intake + preindexer) when leaving the alliance zone while aligning to trench
+    public static final double kAutoSpitOuttakeDutyCycle = -0.8;
+    public static final double kAutoSpitBallIntervalSec = 0.18; // ~5.5 balls/sec
+    public static final double kAutoSpitEjectSpeedMps = 1.6;
+    public static final double kAutoSpitMinExitSpeedMps = 0.25;
+    public static final double kAutoSpitHeadingTolRad = Units.degreesToRadians(25.0);
   }
 
   public static class AlignmentConstants {

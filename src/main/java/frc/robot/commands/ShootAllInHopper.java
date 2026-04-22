@@ -8,7 +8,6 @@ import java.util.Random;
 
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -21,8 +20,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.FuelSim;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.Robot;
+import frc.robot.commands.Indexing.FeedShooterFactory;
 import frc.robot.subsystems.Drive.DriveIO;
 import frc.robot.subsystems.Drive.SimDriveSubsystem;
 import frc.robot.subsystems.Flywheel.FlywheelIO;
@@ -39,8 +38,6 @@ public class ShootAllInHopper extends Command {
     private final IntakeDeployIO intake;
     private final PreIndexer preIndexer;
     private FeedShooterFactory passthroughFactory;
-    private Debouncer endTrigger = new Debouncer(1.5);
-    private boolean startedShooting = false;
     private boolean indexingStopped = true;
     private boolean neeedAlign = true;
     private boolean reachedSetpoint;
@@ -106,7 +103,6 @@ public class ShootAllInHopper extends Command {
         passthroughFactory.stop();
         indexingStopped = true;
         reachedSetpoint = false;
-        startedShooting = false;
         if (Robot.isSimulation()){
             simShooterYOffsets = buildShooterYOffsets();
             nextShotTimeSec = new double[ShooterConstants.kSimShooterCount];
@@ -152,7 +148,6 @@ public class ShootAllInHopper extends Command {
                         break;
                     }
                     if (now >= nextShotTimeSec[i]){
-                        startedShooting = true;
                         Pose2d ballPose2d = ((SimDriveSubsystem)driveData).getRealPoseSim().transformBy(
                             new Transform2d(
                                 ShooterConstants.kSimShooterXOffsetMeters,
@@ -176,7 +171,6 @@ public class ShootAllInHopper extends Command {
 
         if (flyReady && indexingStopped && aligned) {
             Logger.recordOutput("Shoot Report", "Shooting");
-            startedShooting = true;
             passthroughFactory.start();
             indexingStopped = false;
         } else if (!(aligned && flyReady)) {
