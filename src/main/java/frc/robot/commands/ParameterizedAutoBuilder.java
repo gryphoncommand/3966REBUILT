@@ -57,14 +57,14 @@ public final class ParameterizedAutoBuilder {
     // ── Public API ────────────────────────────────────────────────────────────
 
     /**
-     * Builds the auto without resetting the robot pose.
+     * Builds the auto with resetting the robot pose.
      *
      * @param autoName name of the {@code .auto} file (without extension)
      * @param drive    drive IO layer passed to each path command
      * @return the reconstructed auto command
      */
     public static Command buildAuto(String autoName, DriveIO drive) {
-        return buildAuto(autoName, drive, false);
+        return buildAuto(autoName, drive, true);
     }
 
     /**

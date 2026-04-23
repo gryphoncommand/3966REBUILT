@@ -24,7 +24,7 @@ public class AlignToTrench extends Command {
 
 
     private final SlewRateLimiter xLimiter = new SlewRateLimiter(6);
-    private final PIDController yPID = new PIDController(2.5, 0, 0.3);
+    private final PIDController yPID = new PIDController(3.5, 0, 0.3);
     private final PIDController thetaPID = new PIDController(4.0, 0, 0.4);
 
     public AlignToTrench(DriveIO drive, CommandXboxController controller) {

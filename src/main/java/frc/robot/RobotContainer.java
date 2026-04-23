@@ -47,6 +47,7 @@ import frc.robot.commands.AlignToGoalAuto;
 import frc.robot.commands.AlignToTrench;
 import frc.robot.commands.AllSystemsTest;
 import frc.robot.commands.FlywheelSysID;
+import frc.robot.commands.ParameterizedAutoBuilder;
 import frc.robot.commands.PassCommand;
 import frc.robot.commands.PrepareSOTM;
 import frc.robot.commands.RollerFloorSysID;
@@ -108,6 +109,7 @@ public class RobotContainer {
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
     autoChooser.addOption("Roller Floor SysID", new RollerFloorSysID(m_preIndexer).doAllSysID());
     autoChooser.addOption("Systems Test", new AllSystemsTest(m_drive, m_intakeDeploy, m_intakeRollers, m_kicker, m_preIndexer, m_flywheel).getSystemsTest());
+    autoChooser.addOption("Position Parameterized Depot Bumps", ParameterizedAutoBuilder.buildAuto("Double Swipe Depot Bump Bump", m_drive, true));
     
 
     emergencyShotChooser.addOption("Default", ShooterConstants.kDefaultShooterState);
@@ -356,7 +358,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy).withTimeout(4.0).raceWith(new RunIntakeRollers(m_intakeRollers)));
     NamedCommands.registerCommand("Speedup Flywheel", new DeferredCommand(()->new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow), Set.of(m_flywheel)));
     NamedCommands.registerCommand("Prepare to Shoot", 
-    new DeferredCommand(()->      new ParallelCommandGroup(
+    new DeferredCommand(()->
+      new ParallelCommandGroup(
         new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow),
         new AlignToGoalAuto(m_drive, AlignmentConstants.HubPose, true)
       ),
@@ -385,7 +388,7 @@ public class RobotContainer {
   public void configureAIOpponents(){
     try {      
       Logger.recordOutput("Drive/AI Status", "Started Creating AI 0");
-      new StationaryBotInSimulation(3);
+      // new StationaryBotInSimulation(3);
       // new HybridBotInSimulation(3, ((SimDriveSubsystem)m_drive)::getRealPoseSim, Alliance.Red);
   } catch (Exception e){
       Logger.recordOutput("Drive/AI Status", "Failed Creating AI 0, " + e.getMessage());

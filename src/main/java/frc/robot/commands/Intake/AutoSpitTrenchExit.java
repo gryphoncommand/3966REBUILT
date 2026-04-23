@@ -1,6 +1,9 @@
 package frc.robot.commands.Intake;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -67,6 +70,7 @@ public class AutoSpitTrenchExit extends Command {
     }
 
     if (activeOuttake == null && shouldStartSpitting()) {
+      Logger.recordOutput("Orbit Tech/Status", "Running");
       activeOuttake =
           new AutoSpitOuttake(drive, intakeRollers, preIndexer, driverController, operatorController)
               .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
@@ -88,18 +92,21 @@ public class AutoSpitTrenchExit extends Command {
   }
 
   private boolean shouldStartSpitting() {
+    // TODO: UNCOMMENT
     // Only when it is not our shift
-    if (HubShiftUtil.getShiftedShiftInfo().active()) {
-      return false;
-    }
+    // if (HubShiftUtil.getShiftedShiftInfo().active()) {
+    //   return false;
+    // }
 
     // Only if the operator/driver isn't already commanding these subsystems via the default logic
     if (operatorOrDriverUsingIntakeOrIndexer(driverController, operatorController)) {
+      Logger.recordOutput("Orbit Tech/Status", "Subsystems being used");
       return false;
     }
 
     // Only if nothing else is currently commanding the subsystems
     if (!subsystemsFreeForAutoSpit(intakeRollers, preIndexer)) {
+      Logger.recordOutput("Orbit Tech/Status", "Subsystems not free");
       return false;
     }
 
@@ -107,15 +114,22 @@ public class AutoSpitTrenchExit extends Command {
     Pose2d pose = drive.getCurrentPose();
 
     if (!isInAllianceZone(pose, alliance)) {
+      Logger.recordOutput("Orbit Tech/Status", "Not in Alliance Zone");
       return false;
     }
 
     if (!isLeavingAllianceZone(drive, alliance)) {
+      Logger.recordOutput("Orbit Tech/Status", "Not leaving Alliance Zone");
       return false;
     }
 
     // Back of robot faces alliance wall -> robot faces away from alliance wall
-    return isFacingAwayFromAlliance(pose, alliance);
+     if (!isFacingAwayFromAlliance(pose, alliance)){
+      Logger.recordOutput("Orbit Tech/Status", "Intake Not Facing DS");
+      return false;
+     }
+
+     return true;
   }
 
   private static boolean operatorOrDriverUsingIntakeOrIndexer(
@@ -170,6 +184,7 @@ public class AutoSpitTrenchExit extends Command {
     private final PreIndexer preIndexer;
     private final CommandXboxController driverController;
     private final CommandXboxController operatorController;
+    private final Debouncer stopSpitting = new Debouncer(0.1);
 
     private double nextFuelEjectTimeSec = 0.0;
 
@@ -203,19 +218,21 @@ public class AutoSpitTrenchExit extends Command {
 
     @Override
     public boolean isFinished() {
-      return !shouldContinueSpitting();
+      return stopSpitting.calculate(!shouldContinueSpitting());
     }
 
     @Override
     public void end(boolean interrupted) {
       intakeRollers.set(0.0);
       preIndexer.set(0.0);
+      Logger.recordOutput("Orbit Tech/Status", "Stopped");
     }
 
     private boolean shouldContinueSpitting() {
-      if (HubShiftUtil.getShiftedShiftInfo().active()) {
-        return false;
-      }
+      // TODO: UNCOMMENT
+      // if (HubShiftUtil.getShiftedShiftInfo().active()) {
+      //   return false;
+      // }
       if (operatorOrDriverUsingIntakeOrIndexer(driverController, operatorController)) {
         return false;
       }
@@ -228,7 +245,11 @@ public class AutoSpitTrenchExit extends Command {
       if (!isLeavingAllianceZone(drive, alliance)) {
         return false;
       }
-      return isFacingAwayFromAlliance(pose, alliance);
+      if(!isFacingAwayFromAlliance(pose, alliance)){
+        return false;
+      }
+
+      return true;
     }
 
     private Pose2d getPoseForFuelSim() {
@@ -273,12 +294,11 @@ public class AutoSpitTrenchExit extends Command {
       Translation3d initialPosition =
           new Translation3d(spawnPose2d.getX(), spawnPose2d.getY(), fuelRadius);
 
-      double theta = robotPose.getRotation().getRadians();
-      double spitVx = IntakeConstants.kAutoSpitEjectSpeedMps * Math.cos(theta + Math.PI);
-      double spitVy = IntakeConstants.kAutoSpitEjectSpeedMps * Math.sin(theta + Math.PI);
+      double spitVx = IntakeConstants.kAutoSpitEjectSpeedMps * (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? -1 : 1);
+      double spitVy = 0;
       Translation3d initialVelocity =
           new Translation3d(
-              fieldSpeeds.vxMetersPerSecond + spitVx,
+              (fieldSpeeds.vxMetersPerSecond*0.25) + spitVx,
               fieldSpeeds.vyMetersPerSecond + spitVy,
               0.0);
 

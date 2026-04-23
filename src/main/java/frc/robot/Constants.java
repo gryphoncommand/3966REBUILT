@@ -48,7 +48,7 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 4.6;
+    public static final double kMaxSpeedMetersPerSecond = 4.0;
     public static final double kMaxAccelerationMetersPerSecondSquared = 40.0;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
@@ -318,7 +318,7 @@ public final class Constants {
     // Auto-spit (intake + preindexer) when leaving the alliance zone while aligning to trench
     public static final double kAutoSpitOuttakeDutyCycle = -0.8;
     public static final double kAutoSpitBallIntervalSec = 0.18; // ~5.5 balls/sec
-    public static final double kAutoSpitEjectSpeedMps = 1.6;
+    public static final double kAutoSpitEjectSpeedMps = 3;
     public static final double kAutoSpitMinExitSpeedMps = 0.25;
     public static final double kAutoSpitHeadingTolRad = Units.degreesToRadians(25.0);
   }

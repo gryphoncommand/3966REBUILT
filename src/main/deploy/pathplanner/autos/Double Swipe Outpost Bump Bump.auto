@@ -15,9 +15,15 @@
           "data": {
             "commands": [
               {
+                "type": "named",
+                "data": {
+                  "name": "Run Intake"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
-                  "pathName": "DepotLinePickup"
+                  "pathName": "Outpost Trench Bump Swipe"
                 }
               },
               {
@@ -27,7 +33,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 5.0
+                        "waitTime": 4.0
                       }
                     },
                     {
@@ -37,12 +43,6 @@
                       }
                     }
                   ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Intake"
                 }
               }
             ]
@@ -72,15 +72,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "DepotSwipe2BumpShort"
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "Run Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Outpost Bump Swipe 2"
                 }
               },
               {
@@ -90,7 +90,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 7.0
+                        "waitTime": 4.0
                       }
                     },
                     {

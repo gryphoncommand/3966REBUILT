@@ -84,12 +84,16 @@ public class MAXSwerveModule implements SwerveModuleIO {
    * @return The current position of the module.
    */
   public SwerveModulePosition getPosition() {
-    // Apply chassis angular offset to the encoder position to get the position
-    // relative to the chassis.
+    double motorRotations = m_drivingKraken.getPosition().getValueAsDouble();
+
+    double wheelRotations = motorRotations / ModuleConstants.kDrivingMotorReduction;
+
+    double meters = wheelRotations * (ModuleConstants.kWheelDiameterMeters * Math.PI);
+
     return new SwerveModulePosition(
-        rpsToMps(m_drivingKraken.getPosition().getValueAsDouble()) 
-        / ModuleConstants.kDrivingMotorReduction * (ModuleConstants.kWheelDiameterMeters * Math.PI),
-        new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
+        meters,
+        new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset)
+    );
   }
 
   /**
