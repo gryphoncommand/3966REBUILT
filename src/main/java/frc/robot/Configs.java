@@ -38,7 +38,7 @@ public final class Configs {
                 slot0ConfigsDrive.kD = 0;
 
 
-                driveConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 1/3;
+                driveConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0;
                 driveConfig.CurrentLimits.withSupplyCurrentLimit(50).withSupplyCurrentLimitEnable(true);
                 
                 // Motor behavior

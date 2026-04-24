@@ -3,28 +3,28 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.43919254658385,
-        "y": 7.395004436557232
+        "x": 2.5157409050576747,
+        "y": 6.316583850931677
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.687212146764014,
-        "y": 7.363599374441839
+        "x": 1.2441703637976922,
+        "y": 7.990550133096717
       },
       "isLocked": false,
-      "linkedName": "DepotTrenchStart"
+      "linkedName": "Depot Far Shot"
     },
     {
       "anchor": {
-        "x": 7.529591836734694,
+        "x": 7.571,
         "y": 6.968464951197871
       },
       "prevControl": {
-        "x": 7.4615668367346935,
+        "x": 7.502974999999999,
         "y": 7.633598284531204
       },
       "nextControl": {
-        "x": 7.557797101724642,
+        "x": 7.599205264989948,
         "y": 6.692680137962821
       },
       "isLocked": false,
@@ -32,32 +32,32 @@
     },
     {
       "anchor": {
-        "x": 7.529591836734694,
-        "y": 4.827719609582964
+        "x": 7.571,
+        "y": 4.80481111111111
       },
       "prevControl": {
-        "x": 8.123639952185098,
-        "y": 4.9331152429693255
+        "x": 7.483673463710897,
+        "y": 4.194712081338737
       },
       "nextControl": {
-        "x": 7.030621118012422,
-        "y": 4.739192546583851
+        "x": 7.665844444444444,
+        "y": 5.467433333333333
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.525661047027507,
-        "y": 5.688846495119788
+        "x": 6.153398402839397,
+        "y": 7.419148181011535
       },
       "prevControl": {
-        "x": 7.337002949842457,
-        "y": 5.712997720490658
+        "x": 7.964740305654347,
+        "y": 7.443299406382406
       },
       "nextControl": {
-        "x": 4.92206743566992,
-        "y": 5.680798580301685
+        "x": 5.54980479148181,
+        "y": 7.411100266193433
       },
       "isLocked": false,
       "linkedName": null
@@ -68,8 +68,8 @@
         "y": 6.316583850931677
       },
       "prevControl": {
-        "x": 2.4352617568766637,
-        "y": 5.407169476486247
+        "x": 1.6707098491574692,
+        "y": 7.853735581196606
       },
       "nextControl": null,
       "isLocked": false,
@@ -78,8 +78,12 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.47389558232931256,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 0.40449438202247173,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 0.6741573033707868,
+      "rotationDegrees": 180.0
     },
     {
       "waypointRelativePos": 1.0,
@@ -91,11 +95,11 @@
     },
     {
       "waypointRelativePos": 2.8,
-      "rotationDegrees": 133.21298893175725
+      "rotationDegrees": 179.46053187008536
     },
     {
       "waypointRelativePos": 3.5341365461847447,
-      "rotationDegrees": 135.21631245694425
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [
@@ -111,33 +115,9 @@
         "nominalVoltage": 12.0,
         "unlimited": false
       }
-    },
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 2.939890710382503,
-      "maxWaypointRelativePos": 3.486338797814211,
-      "constraints": {
-        "maxVelocity": 2.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 360.0,
-        "maxAngularAcceleration": 540.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
     }
   ],
-  "pointTowardsZones": [
-    {
-      "fieldPosition": {
-        "x": 4.65,
-        "y": 4.0
-      },
-      "rotationOffset": 90.0,
-      "minWaypointRelativePos": 4.0,
-      "maxWaypointRelativePos": 4.5,
-      "name": "Point Towards Zone"
-    }
-  ],
+  "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
@@ -155,7 +135,7 @@
   "folder": "Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 126.02737338484792
   },
   "useDefaultConstraints": true
 }

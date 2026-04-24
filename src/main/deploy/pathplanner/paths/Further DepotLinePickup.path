@@ -8,11 +8,11 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5510508688247118,
+        "x": 1.5510508688247122,
         "y": 7.505414158436591
       },
       "isLocked": false,
-      "linkedName": "Corner 3"
+      "linkedName": "Depot Far Shot"
     },
     {
       "anchor": {
@@ -101,11 +101,11 @@
       },
       "prevControl": {
         "x": 1.4146186828374563,
-        "y": 7.807483850927571
+        "y": 7.807483850927567
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Corner 3"
+      "linkedName": "Depot Far Shot"
     }
   ],
   "rotationTargets": [
@@ -166,13 +166,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 127.87498365109816
+    "rotation": 126.02737338484792
   },
   "reversed": false,
   "folder": "Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 127.87498365109816
+    "rotation": 126.02737338484792
   },
   "useDefaultConstraints": true
 }

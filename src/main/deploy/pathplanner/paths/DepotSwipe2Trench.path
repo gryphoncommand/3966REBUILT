@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5157409050576747,
-        "y": 6.316583850931677
+        "x": 2.089201419698314,
+        "y": 6.759219165927241
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1268512160717132,
-        "y": 7.371159909448729
+        "x": 1.7003117307123525,
+        "y": 7.813795224444293
       },
       "isLocked": false,
       "linkedName": "Corner 3"
@@ -112,12 +112,12 @@
     },
     {
       "anchor": {
-        "x": 2.5157409050576747,
-        "y": 6.316583850931677
+        "x": 2.089201419698314,
+        "y": 6.759219165927241
       },
       "prevControl": {
-        "x": 2.1257632355136415,
-        "y": 7.371937159796277
+        "x": 1.6992237501542813,
+        "y": 7.81457247479184
       },
       "nextControl": null,
       "isLocked": false,
@@ -163,13 +163,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 127.87498365109816
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 127.87498365109816
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

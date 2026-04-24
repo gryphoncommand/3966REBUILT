@@ -44,8 +44,8 @@ import frc.GryphonLib.ShooterState;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final boolean kTuningMode = true;
-  public static final class DriveConstants {
+    public static final boolean kTuningMode = true;
+    public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
     public static final double kMaxSpeedMetersPerSecond = 4.0;

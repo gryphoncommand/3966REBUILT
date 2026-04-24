@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.380984915705412,
-        "y": 5.0208695652173905
+        "x": 3.561969831410825,
+        "y": 6.517781721391815
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.380984915705412,
-        "y": 5.0208695652173905
+        "x": 2.926184560780834,
+        "y": 6.493637976929901
       },
       "isLocked": false,
       "linkedName": "SOTM End"
@@ -20,12 +20,12 @@
         "y": 6.316583850931677
       },
       "prevControl": {
-        "x": 1.5157409050576747,
-        "y": 6.316583850931676
+        "x": 2.217968056787932,
+        "y": 6.614356699201419
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Corner 3"
+      "linkedName": "Depot Far Shot"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 127.87498365109816
+    "velocity": 0.0,
+    "rotation": 126.02737338484792
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": -0.9963478965049255
+    "velocity": 0.0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

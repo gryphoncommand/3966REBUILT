@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6344010647737353,
-        "y": 7.419148181011535
+        "x": 4.43919254658385,
+        "y": 7.395004436557232
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.882420664953899,
-        "y": 7.387743118896142
+        "x": 4.687212146764014,
+        "y": 7.363599374441839
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "DepotTrenchStart"
     },
     {
       "anchor": {
@@ -68,12 +68,12 @@
         "y": 6.316583850931677
       },
       "prevControl": {
-        "x": 0.9956075717243411,
-        "y": 7.934161628709456
+        "x": 1.6707098491574692,
+        "y": 7.853735581196606
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Corner 3"
+      "linkedName": "Depot Far Shot"
     }
   ],
   "rotationTargets": [
@@ -101,10 +101,10 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 1.029333333333333,
-      "maxWaypointRelativePos": 2.1546666666666696,
+      "minWaypointRelativePos": 0.9180327868852456,
+      "maxWaypointRelativePos": 1.3661202185792365,
       "constraints": {
-        "maxVelocity": 2.75,
+        "maxVelocity": 1.5,
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 360.0,
@@ -113,18 +113,7 @@
       }
     }
   ],
-  "pointTowardsZones": [
-    {
-      "fieldPosition": {
-        "x": 4.65,
-        "y": 4.0
-      },
-      "rotationOffset": 90.0,
-      "minWaypointRelativePos": 4.0,
-      "maxWaypointRelativePos": 4.5,
-      "name": "Point Towards Zone"
-    }
-  ],
+  "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.0,
@@ -136,7 +125,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 127.87498365109816
+    "rotation": 126.02737338484792
   },
   "reversed": false,
   "folder": "Depot",

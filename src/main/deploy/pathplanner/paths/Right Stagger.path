@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.561969831410825,
+        "y": 1.6729370008873103
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.183717834960071,
+        "y": 1.9063265306122448
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.3746111111111112,
+        "y": 1.9301999999999997
+      },
+      "prevControl": {
+        "x": 3.272244897959183,
+        "y": 1.930470275066548
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Outpost Shot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -141.8924231224851
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.4063462333090808
+  },
+  "useDefaultConstraints": true
+}

@@ -8,11 +8,11 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4191088954866258,
-        "y": 6.810074568772929
+        "x": 1.8638598047914816,
+        "y": 7.362812777284827
       },
       "isLocked": false,
-      "linkedName": "Corner 3"
+      "linkedName": "Depot Far Shot"
     },
     {
       "anchor": {
@@ -84,12 +84,12 @@
         "y": 5.50374445430346
       },
       "prevControl": {
-        "x": 7.9068706062391945,
-        "y": 5.476509916624086
+        "x": 7.901019892890277,
+        "y": 5.443615961083575
       },
       "nextControl": {
-        "x": 5.8892867332382295,
-        "y": 5.697617689015692
+        "x": 5.839529724933453,
+        "y": 5.954427684117125
       },
       "isLocked": false,
       "linkedName": null
@@ -100,12 +100,12 @@
         "y": 6.316583850931677
       },
       "prevControl": {
-        "x": 2.628411712511091,
-        "y": 5.069157054125998
+        "x": 2.62036379769299,
+        "y": 4.916246672582076
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Corner 3"
+      "linkedName": "Depot Far Shot"
     }
   ],
   "rotationTargets": [
@@ -134,7 +134,21 @@
       "rotationDegrees": 135.0
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 5.10655737704916,
+      "maxWaypointRelativePos": 5.737704918032788,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 720.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -147,13 +161,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 127.87498365109816
+    "rotation": 126.02737338484792
   },
   "reversed": false,
   "folder": "Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 127.87498365109816
+    "rotation": 126.02737338484792
   },
   "useDefaultConstraints": false
 }
