@@ -41,7 +41,6 @@ import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.AI.StationaryBotInSimulation;
 import frc.robot.commands.AlignToGoal;
 import frc.robot.commands.AlignToGoalAuto;
 import frc.robot.commands.AlignToTrench;

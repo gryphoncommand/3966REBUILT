@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.FuelSim;
 import frc.littletonUtils.FieldConstants;
-import frc.littletonUtils.HubShiftUtil;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Robot;
