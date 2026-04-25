@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.653602564102565,
-        "y": 7.383923076923077
+        "x": 2.5157409050576747,
+        "y": 6.316583850931677
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.653602564102566,
-        "y": 7.383923076923077
+        "x": 1.469511978704525,
+        "y": 7.926166814551909
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Depot Far Shot"
     },
     {
       "anchor": {
@@ -32,85 +32,73 @@
     },
     {
       "anchor": {
-        "x": 7.665333333333335,
-        "y": 5.360615384615385
+        "x": 7.690550133096718,
+        "y": 4.827719609582964
       },
       "prevControl": {
-        "x": 7.787416666666668,
-        "y": 6.372269230769231
+        "x": 7.722741792369121,
+        "y": 5.817613132209406
       },
       "nextControl": {
-        "x": 7.543250000000001,
-        "y": 4.348961538461539
+        "x": 7.677721917098335,
+        "y": 4.433251967632666
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.2583205128205135,
-        "y": 4.883858974358975
+        "x": 6.14535048801329,
+        "y": 4.2321739130469
       },
       "prevControl": {
-        "x": 6.309239238632549,
-        "y": 3.381756562903914
+        "x": 5.976344276841171,
+        "y": 3.6929636202307004
       },
       "nextControl": {
-        "x": 6.188551282051283,
-        "y": 6.942051282051284
+        "x": 6.687271596735874,
+        "y": 5.961160307635639
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.235038461538462,
-        "y": 7.383923076923077
+        "x": 3.4332031943132004,
+        "y": 5.527888198761185
       },
       "prevControl": {
-        "x": 6.769961538461539,
-        "y": 7.453692307692307
+        "x": 4.968126271236278,
+        "y": 5.597657429530416
       },
       "nextControl": {
-        "x": 4.302695340843097,
-        "y": 7.341543844164197
+        "x": 2.5008600736178352,
+        "y": 5.485508966002305
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.0605641025641033,
-        "y": 7.383923076923077
+        "x": 2.5157409050576747,
+        "y": 6.316583850931677
       },
       "prevControl": {
-        "x": 4.165243589743591,
-        "y": 7.442064102564103
-      },
-      "nextControl": {
-        "x": 1.7724757212667581,
-        "y": 7.3161289515916375
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.089201419698314,
-        "y": 6.759219165927241
-      },
-      "prevControl": {
-        "x": 0.7776767305280567,
-        "y": 8.507541851340381
+        "x": 2.598945934481043,
+        "y": 6.080836267532278
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Corner 3"
+      "linkedName": "Depot Far Shot"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6272189349112475,
+      "waypointRelativePos": 0.48539325842696646,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 0.7685393258426969,
       "rotationDegrees": 180.0
     },
     {
@@ -122,15 +110,37 @@
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 3.9408284023668907,
-      "rotationDegrees": 180.0
+      "waypointRelativePos": 2.5213483146067346,
+      "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 4.736842105263133,
-      "rotationDegrees": 180.0
+      "waypointRelativePos": 2.988764044943833,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 3.2808988764044704,
+      "rotationDegrees": 135.0
+    },
+    {
+      "waypointRelativePos": 4.005617977528085,
+      "rotationDegrees": 135.0
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 3.497267759562821,
+      "maxWaypointRelativePos": 4.153005464480863,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 540.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -143,13 +153,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 126.02737338484792
   },
   "reversed": false,
   "folder": "Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 126.02737338484792
   },
   "useDefaultConstraints": true
 }

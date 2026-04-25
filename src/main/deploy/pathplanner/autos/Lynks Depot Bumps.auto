@@ -11,38 +11,13 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Left Stagger"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Prepare to Shoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot All Balls"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "race",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "DepotShotLinePickup"
+                  "pathName": "DepotBumpSwipe"
                 }
               },
               {
@@ -65,35 +40,9 @@
                 }
               },
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "race",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Run Intake"
-                            }
-                          },
-                          {
-                            "type": "wait",
-                            "data": {
-                              "waitTime": 11.0
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 100.0
-                      }
-                    }
-                  ]
+                  "name": "Run Intake"
                 }
               }
             ]
@@ -125,7 +74,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Further DepotLinePickup"
+                  "pathName": "LYNK DepotLinePickup"
                 }
               },
               {

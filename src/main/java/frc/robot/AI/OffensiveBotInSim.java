@@ -51,9 +51,9 @@ public class OffensiveBotInSim extends SubsystemBase {
     private static Pose2d PASS_ZONE = new Pose2d(2.412, 5.607, new Rotation2d());
 
     private static final double COLLECT_RADIUS = 1.0;
-    private static final int MAX_CARRY = 30;
+    private static final int MAX_CARRY = 40;
     private static final double ARRIVAL_THRESHOLD = 0.3;
-    private static final double bps = 4;
+    private static final double bps = 9;
 
     private Random passRandomizer = new Random();
 
@@ -184,19 +184,19 @@ public class OffensiveBotInSim extends SubsystemBase {
             fuelsCarried--;
         }
 
-        Set<Translation2d> fuels = FuelSim.getInstance().getFuels();
+        Set<Translation3d> fuels = FuelSim.getInstance().getFuels();
         Translation2d robot = pose.getTranslation();
 
         Translation2d nearest = null;
         double best = Double.MAX_VALUE;
 
-        for (Translation2d f : fuels) {
-            if (FieldConstants.isInTowerZone(f)) continue;
+        for (Translation3d f : fuels) {
+            if (FieldConstants.isInTowerZone(f.toTranslation2d()) || f.getZ() > 0.5) continue;
             if (f.getX() < 4.3 && ally.equals(Alliance.Blue) || f.getX() > 12.2 && ally.equals(Alliance.Red)) continue; // neutral zone only
-            double d = robot.getDistance(f);
+            double d = robot.getDistance(f.toTranslation2d());
             if (d < best) {
                 best = d;
-                nearest = f;
+                nearest = f.toTranslation2d();
             }
         }
 
@@ -231,7 +231,7 @@ public class OffensiveBotInSim extends SubsystemBase {
             return;
         }
 
-        Set<Translation2d> fuels = FuelSim.getInstance().getFuels();
+        Set<Translation3d> fuels = FuelSim.getInstance().getFuels();
         Translation2d robot = pose.getTranslation();
 
         Translation2d nearestPriority = null;
@@ -240,31 +240,34 @@ public class OffensiveBotInSim extends SubsystemBase {
         Translation2d nearestFallback = null;
         double bestFallback = Double.MAX_VALUE;
 
-        for (Translation2d f : fuels) {
-            if (FieldConstants.isInTowerZone(f)) continue;
-            double d = robot.getDistance(f);
+        for (Translation3d f : fuels) {
+            if (FieldConstants.isInTowerZone(f.toTranslation2d()) || f.getZ() > 0.5) continue;
+            double d = robot.getDistance(f.toTranslation2d());
             if (d <= 1.1) continue;
 
             boolean onPreferredSide =
                 (ally.equals(Alliance.Red) && f.getX() > 12.2) ||
                 (ally.equals(Alliance.Blue) && f.getX() < 3.3);
 
-            if (sotm && onPreferredSide) {
+            // if (sotm && onPreferredSide) {
+            if (sotm) {
                 if (d < bestPriority) {
                     bestPriority = d;
-                    nearestPriority = f;
+                    nearestPriority = f.toTranslation2d();
                 }
             } else {
                 if (d < bestFallback) {
                     bestFallback = d;
-                    nearestFallback = f;
+                    nearestFallback = f.toTranslation2d();
                 }
             }
         }
 
         Translation2d nearest = (nearestPriority != null) ? nearestPriority : nearestFallback;
-
-        Logger.recordOutput("Drive/AI/" + id + "/Goal Fuel", new Pose2d(nearest, new Rotation2d()));
+        if (nearest == null){
+            cancelCommand();
+            return;
+        }
 
         if(sotm){
             if((ally.equals(Alliance.Red) && pose.getX() > 13.2) ||
@@ -287,12 +290,6 @@ public class OffensiveBotInSim extends SubsystemBase {
             
 
         if (fuelsCarried >= MAX_CARRY) {
-            cancelCommand();
-            phase = Phase.DRIVE_TO_GOAL;
-            return;
-        }
-
-        if (nearest == null) {
             cancelCommand();
             phase = Phase.DRIVE_TO_GOAL;
             return;
@@ -480,7 +477,7 @@ public class OffensiveBotInSim extends SubsystemBase {
         new Pose2d(3,  2, new Rotation2d()),
         new Pose2d(5,  2, new Rotation2d()),
         new Pose2d(6,  2, new Rotation2d()),
-        new Pose2d(12.2, 0.6444996, new Rotation2d()),
+        new Pose2d(12.2, FieldConstants.fieldWidth-0.6444996, new Rotation2d()),
         new Pose2d(10, 4, new Rotation2d())
     };
 }

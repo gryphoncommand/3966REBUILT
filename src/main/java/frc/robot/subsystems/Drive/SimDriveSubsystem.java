@@ -260,7 +260,7 @@ public class SimDriveSubsystem extends SubsystemBase implements DriveIO {
         new Pose2d(
             currentPose.getX(),
             currentPose.getY(),
-            DriverStation.getAlliance().get() == Alliance.Blue
+            DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
                 ? new Rotation2d()
                 : new Rotation2d(Math.PI)
         ),

@@ -290,17 +290,17 @@ public class HybridBotInSimulation extends SubsystemBase {
             return;
         }
 
-        Set<Translation2d> fieldFuels = FuelSim.getInstance().getFuels();
+        Set<Translation3d> fieldFuels = FuelSim.getInstance().getFuels();
         Translation2d robotPos = currentPose.getTranslation();
 
         // Find nearest active fuel
         Translation2d nearest = null;
         double nearestDist = Double.MAX_VALUE;
-        for (Translation2d fuel : fieldFuels) {
-            double dist = robotPos.getDistance(fuel);
+        for (Translation3d fuel : fieldFuels) {
+            double dist = robotPos.getDistance(fuel.toTranslation2d());
             if (dist < nearestDist) {
                 nearestDist = dist;
-                nearest = fuel;
+                nearest = fuel.toTranslation2d();
             }
         }
 

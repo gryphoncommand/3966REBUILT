@@ -701,14 +701,14 @@ public class FuelSim {
   }
 
   /** Returns the list of fuels in the simulation */
-  public Set<Translation2d> getFuels() {
-    Set<Translation2d> result = new java.util.HashSet<>(Math.max(16, activeFuelCount * 2));
+  public Set<Translation3d> getFuels() {
+    Set<Translation3d> result = new java.util.HashSet<>(Math.max(16, activeFuelCount * 2));
     for (int f = 0, size = fuels.size(); f < size; f++) {
       Fuel fuel = fuels.get(f);
       if (!fuel.active) {
         continue;
       }
-      result.add(new Translation2d(fuel.x, fuel.y));
+      result.add(new Translation3d(fuel.x, fuel.y, fuel.z));
     }
     return result;
   }

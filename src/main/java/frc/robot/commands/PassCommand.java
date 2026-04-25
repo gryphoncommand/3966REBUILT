@@ -54,9 +54,9 @@ public class PassCommand extends Command {
     @Override
     public boolean isFinished() {
         Pose2d currentPose = drive.getCurrentPose();
-        if (isInMidfieldBlockZone(currentPose)) {
-            return true;
-        }
+        // if (isInMidfieldBlockZone(currentPose)) {
+        //     return true;
+        // }
         Pose2d futurePose = currentPose.exp(drive.getCurrentSpeeds().toTwist2d(0.5));
         boolean changed = (Math.abs(futurePose.getY() - AlignmentConstants.PassingPoseDepot.getY()) < Math.abs(futurePose.getY() - AlignmentConstants.PassingPoseOutpost.getY()) != depot);
         return passGroup.isFinished() || changed;

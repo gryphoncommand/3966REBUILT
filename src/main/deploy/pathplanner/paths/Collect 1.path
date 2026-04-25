@@ -1,0 +1,101 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.5157409050576747,
+        "y": 6.316583850931677
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 0.2945164152617563,
+        "y": 7.765208518189885
+      },
+      "isLocked": false,
+      "linkedName": "Depot Far Shot"
+    },
+    {
+      "anchor": {
+        "x": 7.571,
+        "y": 6.968464951197871
+      },
+      "prevControl": {
+        "x": 7.529591836734694,
+        "y": 7.749112688553682
+      },
+      "nextControl": {
+        "x": 7.585684210549324,
+        "y": 6.691630751459497
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.571,
+        "y": 4.562138420585625
+      },
+      "prevControl": {
+        "x": 7.624239667488531,
+        "y": 4.317873118494414
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Depot Pass"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.40449438202247173,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 0.6741573033707868,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 1.608988764044945,
+      "rotationDegrees": 90.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.0,
+      "maxWaypointRelativePos": 1.5,
+      "constraints": {
+        "maxVelocity": 2.75,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -20.704027663960993
+  },
+  "reversed": false,
+  "folder": "Pickme",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 126.02737338484792
+  },
+  "useDefaultConstraints": true
+}

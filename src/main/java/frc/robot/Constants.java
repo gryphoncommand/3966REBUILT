@@ -237,41 +237,41 @@ public final class Constants {
     );
 
     public static List<ShooterState> RealPassingValues = List.of(
-      new ShooterState(1.500000, 28.00, 1999.9, 0.78),
-      new ShooterState(1.750000, 28.00, 2222.6, 0.84),
-      new ShooterState(2.000000, 28.00, 2426.1, 0.90),
-      new ShooterState(2.250000, 28.00, 2614.4, 0.95),
-      new ShooterState(2.500000, 28.00, 2790.5, 1.00),
-      new ShooterState(2.750000, 28.00, 2956.5, 1.05),
-      new ShooterState(3.000000, 28.00, 3113.8, 1.10),
-      new ShooterState(3.250000, 28.00, 3263.7, 1.14),
-      new ShooterState(3.500000, 28.00, 3407.2, 1.18),
-      new ShooterState(3.750000, 28.00, 3544.8, 1.22),
-      new ShooterState(4.000000, 28.00, 3677.6, 1.26),
-      new ShooterState(4.250000, 28.00, 3805.6, 1.30),
-      new ShooterState(4.500000, 28.00, 3929.6, 1.33),
-      new ShooterState(4.750000, 28.00, 4049.8, 1.37),
-      new ShooterState(5.000000, 28.00, 4166.6, 1.40),
-      new ShooterState(5.250000, 28.00, 4280.2, 1.44),
-      new ShooterState(5.500000, 28.00, 4390.9, 1.47),
-      new ShooterState(5.750000, 28.00, 4498.9, 1.50),
-      new ShooterState(6.000000, 28.00, 4604.3, 1.53),
-      new ShooterState(6.250000, 28.00, 4707.6, 1.56),
-      new ShooterState(6.500000, 28.00, 4808.4, 1.59),
-      new ShooterState(6.750000, 28.00, 4907.2, 1.61),
-      new ShooterState(7.000000, 28.00, 5004.2, 1.64),
-      new ShooterState(7.250000, 28.00, 5099.2, 1.67),
-      new ShooterState(7.500000, 28.00, 5192.7, 1.69),
-      new ShooterState(7.750000, 28.00, 5284.4, 1.72),
-      new ShooterState(8.000000, 28.00, 5374.6, 1.74),
-      new ShooterState(8.250000, 28.00, 5463.2, 1.77),
-      new ShooterState(8.500000, 28.00, 5550.5, 1.79),
-      new ShooterState(8.750000, 28.00, 5636.4, 1.81),
-      new ShooterState(9.000000, 28.00, 5721.0, 1.84),
-      new ShooterState(9.250000, 28.00, 5804.4, 1.86),
-      new ShooterState(9.500000, 28.00, 5886.7, 1.88),
-      new ShooterState(9.750000, 28.00, 5967.7, 1.90),
-      new ShooterState(10.000000, 28.00, 6047.7, 1.93)
+      new ShooterState(1.500000, 28.00, 1538.4, 0.78),
+      new ShooterState(1.750000, 28.00, 1709.7, 0.84),
+      new ShooterState(2.000000, 28.00, 1866.2, 0.90),
+      new ShooterState(2.250000, 28.00, 2011.1, 0.95),
+      new ShooterState(2.500000, 28.00, 2146.5, 1.00),
+      new ShooterState(2.750000, 28.00, 2274.2, 1.05),
+      new ShooterState(3.000000, 28.00, 2395.2, 1.10),
+      new ShooterState(3.250000, 28.00, 2510.5, 1.14),
+      new ShooterState(3.500000, 28.00, 2620.9, 1.18),
+      new ShooterState(3.750000, 28.00, 2726.8, 1.22),
+      new ShooterState(4.000000, 28.00, 2828.9, 1.26),
+      new ShooterState(4.250000, 28.00, 2927.4, 1.30),
+      new ShooterState(4.500000, 28.00, 3022.8, 1.33),
+      new ShooterState(4.750000, 28.00, 3115.2, 1.37),
+      new ShooterState(5.000000, 28.00, 3205.1, 1.40),
+      new ShooterState(5.250000, 28.00, 3292.5, 1.44),
+      new ShooterState(5.500000, 28.00, 3377.6, 1.47),
+      new ShooterState(5.750000, 28.00, 3460.7, 1.50),
+      new ShooterState(6.000000, 28.00, 3541.8, 1.53),
+      new ShooterState(6.250000, 28.00, 3621.2, 1.56),
+      new ShooterState(6.500000, 28.00, 3698.8, 1.59),
+      new ShooterState(6.750000, 28.00, 3774.8, 1.61),
+      new ShooterState(7.000000, 28.00, 3849.4, 1.64),
+      new ShooterState(7.250000, 28.00, 3922.5, 1.67),
+      new ShooterState(7.500000, 28.00, 3994.4, 1.69),
+      new ShooterState(7.750000, 28.00, 4064.9, 1.72),
+      new ShooterState(8.000000, 28.00, 4134.3, 1.74),
+      new ShooterState(8.250000, 28.00, 4202.5, 1.77),
+      new ShooterState(8.500000, 28.00, 4269.6, 1.79),
+      new ShooterState(8.750000, 28.00, 4335.7, 1.81),
+      new ShooterState(9.000000, 28.00, 4400.8, 1.84),
+      new ShooterState(9.250000, 28.00, 4464.9, 1.86),
+      new ShooterState(9.500000, 28.00, 4528.2, 1.88),
+      new ShooterState(9.750000, 28.00, 4590.5, 1.90),
+      new ShooterState(10.000000, 28.00, 4652.1, 1.93)
     );
 
 
@@ -335,8 +335,8 @@ public final class Constants {
     public static final Pose2d BlueAllianceZoneEnd = new Pose2d(4.3, 0, new Rotation2d());
     public static final Pose2d RedAllianceZoneEnd = new Pose2d(12.2, 0, new Rotation2d());
 
-    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(0.812, 2.288, new Rotation2d()));
-    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(0.812, 5.607, new Rotation2d()));
+    public static Pose2d PassingPoseOutpost = AllianceFlipUtil.apply(new Pose2d(0.512, 2.288, new Rotation2d()));
+    public static Pose2d PassingPoseDepot = AllianceFlipUtil.apply(new Pose2d(0.512, 5.607, new Rotation2d()));
 
     public static final double kMidFieldY = Units.feetToMeters(13.15);
     public static final double kMidFieldHubBlockWidth = 1.0;

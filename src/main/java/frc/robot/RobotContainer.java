@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.FuelSim;
 import frc.GryphonLib.AllianceFlipUtil;
 import frc.GryphonLib.ShooterState;
+import frc.robot.AI.OffensiveBotInSim;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IndexerConstants;
@@ -187,8 +188,8 @@ public class RobotContainer {
       new InstantCommand(()->{
         m_drive.zeroHeading();
         AlignmentConstants.HubPose = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose;
-        AlignmentConstants.PassingPoseOutpost = (new Pose2d(AllianceFlipUtil.applyX(0.812), 2.2688, new Rotation2d()));
-        AlignmentConstants.PassingPoseDepot = (new Pose2d(AllianceFlipUtil.applyX(0.812), 5.707, new Rotation2d()));
+        AlignmentConstants.PassingPoseOutpost = (new Pose2d(AllianceFlipUtil.applyX(0.512), 2.2688, new Rotation2d()));
+        AlignmentConstants.PassingPoseDepot = (new Pose2d(AllianceFlipUtil.applyX(0.512), 5.707, new Rotation2d()));
       }, m_drive));
     
 
@@ -371,6 +372,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("Stow Intake", new IntakeStow(m_intakeDeploy));
     NamedCommands.registerCommand("Run Intake", new RunIntakeRollers(m_intakeRollers));
     NamedCommands.registerCommand("Stop", new RunCommand(()->m_drive.stop(), m_drive).withTimeout(1));
+    NamedCommands.registerCommand("Prepare to Pass", 
+      new RepeatCommand(new DeferredCommand(()->
+        new PassCommand(m_drive, m_driverController, m_flywheel)
+        , Set.of(m_drive, m_flywheel)
+      ))
+    );
   }
 
   private void configureLogger(){
@@ -388,7 +395,7 @@ public class RobotContainer {
     try {      
       Logger.recordOutput("Drive/AI Status", "Started Creating AI 0");
       // new StationaryBotInSimulation(3);
-      // new HybridBotInSimulation(3, ((SimDriveSubsystem)m_drive)::getRealPoseSim, Alliance.Red);
+      new OffensiveBotInSim(3, Alliance.Red, true);
   } catch (Exception e){
       Logger.recordOutput("Drive/AI Status", "Failed Creating AI 0, " + e.getMessage());
     }
