@@ -103,7 +103,7 @@ public class RobotContainer {
     configureNamedCommands();
     if (Robot.isSimulation()){
       configureFuelSim();
-      configureAIOpponents();
+      // configureAIOpponents();
     }
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
@@ -188,8 +188,8 @@ public class RobotContainer {
       new InstantCommand(()->{
         m_drive.zeroHeading();
         AlignmentConstants.HubPose = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? AlignmentConstants.RedHubPose : AlignmentConstants.BlueHubPose;
-        AlignmentConstants.PassingPoseOutpost = (new Pose2d(AllianceFlipUtil.applyX(0.512), 2.2688, new Rotation2d()));
-        AlignmentConstants.PassingPoseDepot = (new Pose2d(AllianceFlipUtil.applyX(0.512), 5.707, new Rotation2d()));
+        AlignmentConstants.PassingPoseOutpost = (new Pose2d(AllianceFlipUtil.applyX(0.312), 2.2688, new Rotation2d()));
+        AlignmentConstants.PassingPoseDepot = (new Pose2d(AllianceFlipUtil.applyX(0.312), 5.707, new Rotation2d()));
       }, m_drive));
     
 
@@ -355,6 +355,7 @@ public class RobotContainer {
   }
 
   private void configureNamedCommands(){
+    NamedCommands.registerCommand("Shoot All Balls Short", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy).withTimeout(3.4).raceWith(new RunIntakeRollers(m_intakeRollers)));
     NamedCommands.registerCommand("Shoot All Balls", new ShootAllInHopper(m_drive, m_flywheel, m_kicker, m_preIndexer, m_intakeDeploy).withTimeout(4.0).raceWith(new RunIntakeRollers(m_intakeRollers)));
     NamedCommands.registerCommand("Speedup Flywheel", new DeferredCommand(()->new PrepareSOTM(m_flywheel, m_drive, AlignmentConstants.HubPose, ShooterConstants.RealShootingValuesLow), Set.of(m_flywheel)));
     NamedCommands.registerCommand("Prepare to Shoot", 

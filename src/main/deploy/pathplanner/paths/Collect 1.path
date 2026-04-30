@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 2.5157409050576747,
-        "y": 6.316583850931677
+        "y": 5.527888198761185
       },
       "prevControl": null,
       "nextControl": {
         "x": 0.2945164152617563,
-        "y": 7.765208518189885
+        "y": 6.976512866019394
       },
       "isLocked": false,
       "linkedName": "Depot Far Shot"
@@ -95,7 +95,7 @@
   "folder": "Pickme",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 126.02737338484792
+    "rotation": 145.0
   },
   "useDefaultConstraints": true
 }
