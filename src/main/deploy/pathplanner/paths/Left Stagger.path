@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 2.5157409050576747,
-        "y": 5.527888198761185
+        "x": 2.5398846495119782,
+        "y": 7.290381543921917
       },
       "prevControl": {
-        "x": 2.217968056787932,
-        "y": 5.825661047030928
+        "x": 2.694360949830933,
+        "y": 7.093818392136624
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot Far Shot"
+      "linkedName": "Corner 3"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 145.0
+    "rotation": 119.99999999999999
   },
   "reversed": false,
   "folder": null,
