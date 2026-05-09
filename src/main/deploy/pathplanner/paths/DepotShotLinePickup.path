@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5157409050576747,
-        "y": 5.527888198761185
+        "x": 2.5398846495119782,
+        "y": 7.290381543921917
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.19794143744454296,
-        "y": 8.22393966282165
+        "x": 2.7247084395712022,
+        "y": 7.4587269229144635
       },
       "isLocked": false,
-      "linkedName": "Depot Far Shot"
+      "linkedName": "Corner 3"
     },
     {
       "anchor": {
@@ -64,21 +64,21 @@
     },
     {
       "anchor": {
-        "x": 2.5157409050576747,
-        "y": 5.527888198761185
+        "x": 2.5398846495119782,
+        "y": 7.290381543921917
       },
       "prevControl": {
-        "x": 0.9544454303460506,
-        "y": 8.143460514640639
+        "x": 3.042781740370898,
+        "y": 7.340827389443652
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot Far Shot"
+      "linkedName": "Corner 3"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.40449438202247173,
+      "waypointRelativePos": 0.3,
       "rotationDegrees": 180.0
     },
     {
@@ -129,13 +129,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 145.0
+    "rotation": 119.99999999999999
   },
   "reversed": false,
   "folder": "Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 145.0
+    "rotation": 119.99999999999999
   },
   "useDefaultConstraints": true
 }

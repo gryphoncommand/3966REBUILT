@@ -11,13 +11,38 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "Left Stagger"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Prepare to Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot All Balls"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "DepotLinePickup"
+                  "pathName": "Left Stagger Wall Collect"
                 }
               },
               {
@@ -27,7 +52,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 5.0
+                        "waitTime": 3.0
                       }
                     },
                     {
@@ -61,7 +86,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot All Balls"
+                  "name": "Shoot All Balls Short"
                 }
               }
             ]
@@ -74,7 +99,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "DepotSwipe2Bump From Trench"
+                  "pathName": "Left Stagger Wall Collect"
                 }
               },
               {
@@ -90,7 +115,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 7.0
+                        "waitTime": 3.0
                       }
                     },
                     {

@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5398846495119782,
-        "y": 7.290381543921917
+        "x": 2.5157409050576747,
+        "y": 5.527888198761185
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3863408952148397,
-        "y": 7.487674005806146
+        "x": 1.3607560627674744,
+        "y": 7.159686162624822
       },
       "isLocked": false,
-      "linkedName": "Corner 3"
+      "linkedName": "Depot Far Shot"
     },
     {
       "anchor": {
@@ -161,7 +161,7 @@
   "folder": "Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 119.99999999999999
+    "rotation": 145.0
   },
   "useDefaultConstraints": true
 }
