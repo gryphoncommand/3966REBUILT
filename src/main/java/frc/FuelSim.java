@@ -980,11 +980,11 @@ public class FuelSim {
    * <p>Red hub center: ({@code FIELD_LENGTH - 4.61}, {@code FIELD_WIDTH / 2}) ≈ (11.90, 4.02)
    * Entry height: 1.83 m, entry radius: 0.56 m.
    */
-  public boolean shootFuelIntoRedHub() {
+  public boolean shootFuelIntoHub(Alliance alliance) {
     // Small random spread within 0.2 m of hub center to look natural
     double angle = Math.random() * Math.PI * 2.0;
     double r = Math.random() * 0.2;
-    double cx = FIELD_LENGTH - 4.61;
+    double cx = alliance.equals(Alliance.Red) ? FIELD_LENGTH - 4.61 : 4.61;
     double cy = FIELD_WIDTH / 2.0;
     Translation3d pos = new Translation3d(
         cx + r * Math.cos(angle),
@@ -1286,7 +1286,7 @@ public class FuelSim {
         applyDispersalVelocity(fuel);
         Alliance hubAlly = this.equals(Hub.RED_HUB) ? Alliance.Red : Alliance.Blue;
         Alliance DSAlly = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? Alliance.Red : Alliance.Blue;
-        if (hubAlly.equals(DSAlly) ? HubShiftUtil.getShiftedShiftInfo().active() : HubShiftUtil.isOpposingHubActive()){
+        if ((hubAlly.equals(DSAlly) ? HubShiftUtil.getShiftedShiftInfo().active() : HubShiftUtil.isOpposingHubActive()) || DriverStation.isDisabled()){
           score++;
         }
       }

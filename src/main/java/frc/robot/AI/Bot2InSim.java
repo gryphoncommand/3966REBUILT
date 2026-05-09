@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinder;
@@ -34,7 +33,7 @@ import swervelib.simulation.ironmaple.simulation.drivesims.*;
 import swervelib.simulation.ironmaple.simulation.drivesims.configs.*;
 import swervelib.simulation.ironmaple.simulation.motorsims.*;
 
-public class OffensiveBotInSim extends SubsystemBase {
+public class Bot2InSim extends SubsystemBase {
 
     private final int id;
     private final Alliance ally;
@@ -53,9 +52,9 @@ public class OffensiveBotInSim extends SubsystemBase {
     private static Pose2d PASS_ZONE = new Pose2d(2.412, 5.607, new Rotation2d());
 
     private static final double COLLECT_RADIUS = 1.0;
-    private static final int MAX_CARRY = 40;
+    private static final int MAX_CARRY = 70;
     private static final double ARRIVAL_THRESHOLD = 0.3;
-    private static final double bps = 12.5;
+    private static final double bps = 33;
 
     private Random passRandomizer = new Random();
 
@@ -114,7 +113,7 @@ public class OffensiveBotInSim extends SubsystemBase {
     // =========================
     // Constructor
     // =========================
-    public OffensiveBotInSim(int id, Alliance ally, boolean sotm) {
+    public Bot2InSim(int id, Alliance ally, boolean sotm) {
         this.id = id;
         this.ally = ally;
         this.sotm = sotm;

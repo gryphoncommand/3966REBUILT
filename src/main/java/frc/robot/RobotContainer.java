@@ -35,6 +35,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.FuelSim;
 import frc.GryphonLib.AllianceFlipUtil;
 import frc.GryphonLib.ShooterState;
+import frc.robot.AI.Bot2InSim;
+import frc.robot.AI.HybridBotInSimulation;
 import frc.robot.AI.OffensiveBotInSim;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.DriveConstants;
@@ -103,7 +105,7 @@ public class RobotContainer {
     configureNamedCommands();
     if (Robot.isSimulation()){
       configureFuelSim();
-      // configureAIOpponents();
+      configureAIOpponents();
     }
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("Flywheel SysID", new FlywheelSysID(m_flywheel).doAllSysID());
@@ -395,8 +397,9 @@ public class RobotContainer {
   public void configureAIOpponents(){
     try {      
       Logger.recordOutput("Drive/AI Status", "Started Creating AI 0");
-      // new StationaryBotInSimulation(3);
+      new Bot2InSim(2, Alliance.Blue, false);      
       new OffensiveBotInSim(3, Alliance.Red, true);
+      m_drive.setCurrentPose(new Pose2d(-30, -20, new Rotation2d()));
   } catch (Exception e){
       Logger.recordOutput("Drive/AI Status", "Failed Creating AI 0, " + e.getMessage());
     }

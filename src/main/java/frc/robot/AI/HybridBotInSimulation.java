@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.FuelSim;
+import frc.littletonUtils.FieldConstants;
 import frc.littletonUtils.HubShiftUtil;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.AutoConstants;
@@ -375,7 +376,7 @@ public class HybridBotInSimulation extends SubsystemBase {
             return;
         } 
         if (shotTimer.get() > (1/bps)){
-            FuelSim.getInstance().shootFuelIntoRedHub();
+            FuelSim.getInstance().shootFuelIntoHub(alliance);
             shotTimer.restart();
             fuelsCarried --;
         }
@@ -506,8 +507,8 @@ public class HybridBotInSimulation extends SubsystemBase {
     public static final Pose2d[] ROBOT_QUEENING_POSITIONS = new Pose2d[] {
         new Pose2d(3,  2, new Rotation2d()),
         new Pose2d(5,  2, new Rotation2d()),
-        new Pose2d(6,  2, new Rotation2d()),
         new Pose2d(12.2, 0.6444996, new Rotation2d()),
+        new Pose2d(12.2, FieldConstants.fieldWidth-0.6444996, new Rotation2d()),
         new Pose2d(10, 4, new Rotation2d())
     };
 
