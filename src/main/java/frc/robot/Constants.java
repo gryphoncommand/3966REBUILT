@@ -55,7 +55,7 @@ public final class Constants {
     public static final double kMaxAccelerationMetersPerSecondSquared = 40.0;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
-    public static final boolean fieldOriented = false;
+    public static final boolean fieldOriented = true;
 
     // Chassis configuration
     public static final double kTrackWidth = Units.inchesToMeters(21.5);
@@ -156,7 +156,7 @@ public final class Constants {
 
     // some of these probably need to be flipped
     private static final double camPitch2 = -Units.degreesToRadians(8);
-    private static final double camYaw2 = Units.degreesToRadians(0);
+    private static final double camYaw2 = Units.degreesToRadians(-90);
     public static final Transform3d kRobotToCam2 =
             new Transform3d(new Translation3d(Units.inchesToMeters(8.25), Units.inchesToMeters(10.25), Units.inchesToMeters(19.5)), new Rotation3d(0, camPitch2, camYaw2));
     public static final Transform3d kCamToRobot2 = kRobotToCam2.inverse();
@@ -173,8 +173,8 @@ public final class Constants {
 
     // The standard deviations of our vision estimated poses, which affect correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(2, 2, 4);
-    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.2, 0.2, 0.2);
+    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.05, 0.05, 0.1);
   }
 
   public static class ShooterConstants {
@@ -192,7 +192,7 @@ public final class Constants {
     public static double kPhaseDelay = 0.02;
 
 
-    public static double kHoodGearRatio = 198/10;
+    public static double kHoodGearRatio = 100.0;
     public static double kHoodLengthMeters = Units.inchesToMeters(5);
 
     public static double kHoodMaxAngleDeg = 52.5;
@@ -208,51 +208,66 @@ public final class Constants {
     public static ShooterState kTrenchShotState = new ShooterState(3.168, 35.0, 1900, 1.10);
 
 
-    public static List<ShooterState> RealShootingValuesLow= List.of(
-      new ShooterState(1.500000, 22.60, 2478.3, 0.58),
-      new ShooterState(2.000000, 22.60, 2644.2, 0.77),
-      new ShooterState(2.500000, 22.60, 2870.1, 0.92),
-      new ShooterState(3.000000, 22.98, 3084.0, 1.03),
-      new ShooterState(3.500000, 22.60, 3328.1, 1.16),
-      new ShooterState(4.000000, 23.36, 3516.8, 1.24),
-      new ShooterState(4.500000, 23.36, 3729.0, 1.34),
-      new ShooterState(5.000000, 24.87, 3855.1, 1.38)
-    );
-
-    public static List<ShooterState> RealShootingValuesHigh = List.of(
-      new ShooterState(1.500, 23.0, 1520, 1.05),
-      new ShooterState(2.095, 23.5, 1740, 1.15),
-      new ShooterState(2.300, 24.0, 1810, 1.18),
-      new ShooterState(2.493, 24.5, 1870, 1.22),
-      new ShooterState(2.850, 25.0, 1900, 1.30),
-      new ShooterState(3.168, 26.0, 1960, 1.35),
-      new ShooterState(3.500, 27.0, 2075, 1.42),
-      new ShooterState(3.820, 28.0, 2170, 1.50),
-      new ShooterState(4.150, 29.0, 2260, 1.58),
-      new ShooterState(4.414, 30.0, 2330, 1.63),
-      new ShooterState(4.800, 31.0, 2400, 1.72),
-      new ShooterState(5.250, 32.0, 2500, 1.85)
+    public static List<ShooterState> RealShootingValuesLow = List.of(
+      new ShooterState(1.500000, 22.60, 1548.9, 0.58),
+      new ShooterState(1.750000, 22.98, 1591.2, 0.67),
+      new ShooterState(2.000000, 22.60, 1652.6, 0.77),
+      new ShooterState(2.250000, 23.36, 1713.0, 0.82),
+      new ShooterState(2.500000, 22.60, 1793.8, 0.92),
+      new ShooterState(2.750000, 22.98, 1859.1, 0.97),
+      new ShooterState(3.000000, 22.98, 1927.5, 1.03),
+      new ShooterState(3.250000, 22.98, 1999.5, 1.09),
+      new ShooterState(3.500000, 22.60, 2080.1, 1.16),
+      new ShooterState(3.750000, 22.60, 2151.3, 1.22),
+      new ShooterState(4.000000, 23.36, 2198.0, 1.24),
+      new ShooterState(4.250000, 22.60, 2289.0, 1.32),
+      new ShooterState(4.500000, 23.36, 2330.6, 1.34),
+      new ShooterState(4.750000, 22.60, 2427.4, 1.42),
+      new ShooterState(5.000000, 24.87, 2409.5, 1.38),
+      new ShooterState(5.250000, 22.60, 2557.7, 1.51),
+      new ShooterState(5.500000, 23.36, 2593.6, 1.52),
+      new ShooterState(5.750000, 22.98, 2671.6, 1.58),
+      new ShooterState(6.000000, 22.60, 2752.5, 1.64)
     );
 
     public static List<ShooterState> RealPassingValues = List.of(
-      new ShooterState(1.500000, 52.50, 1263.9, 0.54),
-      new ShooterState(2.000000, 52.50, 1580.5, 0.61),
-      new ShooterState(2.500000, 51.74, 1858.3, 0.68),
-      new ShooterState(3.000000, 52.50, 2108.7, 0.73),
-      new ShooterState(3.500000, 52.50, 2336.2, 0.79),
-      new ShooterState(4.000000, 49.09, 2532.2, 0.89),
-      new ShooterState(4.500000, 50.61, 2731.4, 0.92),
-      new ShooterState(5.000000, 52.12, 2929.0, 0.94),
-      new ShooterState(5.500000, 52.12, 3110.9, 0.99),
-      new ShooterState(6.000000, 52.50, 3296.6, 1.02),
-      new ShooterState(6.500000, 52.12, 3458.0, 1.07),
-      new ShooterState(7.000000, 52.50, 3624.5, 1.10),
-      new ShooterState(7.500000, 52.12, 3785.7, 1.15),
-      new ShooterState(8.000000, 52.12, 3939.8, 1.19),
-      new ShooterState(8.500000, 52.50, 4098.3, 1.22),
-      new ShooterState(9.000000, 52.50, 4254.7, 1.25),
-      new ShooterState(9.500000, 52.12, 4397.0, 1.30),
-      new ShooterState(10.000000, 52.12, 4545.5, 1.33)
+      new ShooterState(1.000000, 52.50, 551.6, 0.46),
+      new ShooterState(1.250000, 52.50, 678.8, 0.50),
+      new ShooterState(1.500000, 52.50, 789.9, 0.54),
+      new ShooterState(1.750000, 52.50, 895.4, 0.58),
+      new ShooterState(2.000000, 52.50, 987.8, 0.61),
+      new ShooterState(2.250000, 52.12, 1079.6, 0.65),
+      new ShooterState(2.500000, 51.74, 1161.4, 0.68),
+      new ShooterState(2.750000, 51.74, 1240.7, 0.71),
+      new ShooterState(3.000000, 52.50, 1317.9, 0.73),
+      new ShooterState(3.250000, 52.50, 1386.9, 0.76),
+      new ShooterState(3.500000, 52.50, 1460.1, 0.79),
+      new ShooterState(3.750000, 50.99, 1523.9, 0.83),
+      new ShooterState(4.000000, 49.09, 1582.6, 0.89),
+      new ShooterState(4.250000, 50.61, 1646.6, 0.89),
+      new ShooterState(4.500000, 50.61, 1707.1, 0.92),
+      new ShooterState(4.750000, 52.50, 1775.5, 0.91),
+      new ShooterState(5.000000, 52.12, 1830.6, 0.94),
+      new ShooterState(5.250000, 52.50, 1893.3, 0.96),
+      new ShooterState(5.500000, 52.12, 1944.3, 0.99),
+      new ShooterState(5.750000, 52.50, 2003.8, 1.00),
+      new ShooterState(6.000000, 52.50, 2060.4, 1.02),
+      new ShooterState(6.250000, 52.12, 2107.9, 1.05),
+      new ShooterState(6.500000, 52.12, 2161.3, 1.07),
+      new ShooterState(6.750000, 52.50, 2213.4, 1.08),
+      new ShooterState(7.000000, 52.50, 2265.3, 1.10),
+      new ShooterState(7.250000, 52.50, 2315.4, 1.12),
+      new ShooterState(7.500000, 52.12, 2366.1, 1.15),
+      new ShooterState(7.750000, 52.12, 2414.5, 1.17),
+      new ShooterState(8.000000, 52.12, 2462.3, 1.19),
+      new ShooterState(8.250000, 52.50, 2516.2, 1.20),
+      new ShooterState(8.500000, 52.50, 2561.4, 1.22),
+      new ShooterState(8.750000, 52.12, 2608.9, 1.24),
+      new ShooterState(9.000000, 52.50, 2659.2, 1.25),
+      new ShooterState(9.250000, 52.50, 2702.0, 1.27),
+      new ShooterState(9.500000, 52.12, 2748.1, 1.30),
+      new ShooterState(9.750000, 52.50, 2796.5, 1.31),
+      new ShooterState(10.000000, 52.12, 2841.0, 1.33)
     );
   }
 
@@ -270,9 +285,9 @@ public final class Constants {
     public static double kTurretHeightMeters = Units.inchesToMeters(18.0);
 
     // Closed-loop tuning (starting points)
-    public static double kTurretP = 1.5;
+    public static double kTurretP = 4.0;
     public static double kTurretI = 0.0;
-    public static double kTurretD = 0.08;
+    public static double kTurretD = 2.0;
     public static double kTurretMaxVolts = 12.0;
     public static double kTurretClosedLoopRampSec = 1;
 

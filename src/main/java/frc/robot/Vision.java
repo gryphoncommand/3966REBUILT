@@ -60,7 +60,7 @@ public class Vision extends SubsystemBase {
 
             // Camera properties (tune if needed)
             SimCameraProperties props = new SimCameraProperties();
-            props.setCalibration(320, 240, Rotation2d.fromDegrees(91)); // resolution + FOV
+            props.setCalibration(640, 360, Rotation2d.fromDegrees(91)); // resolution + FOV
             props.setFPS(30);
             props.setAvgLatencyMs(0);
             props.setLatencyStdDevMs(5);

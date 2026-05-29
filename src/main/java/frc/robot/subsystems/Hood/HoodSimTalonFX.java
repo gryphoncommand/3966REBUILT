@@ -58,7 +58,7 @@ public class HoodSimTalonFX extends SubsystemBase implements HoodIO {
         hoodSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
         // Feed TalonFX output into physics sim
-        hoodSim.setInputVoltage(hoodSimState.getMotorVoltage()/2.5);
+        hoodSim.setInputVoltage(hoodSimState.getMotorVoltage());
         hoodSim.update(0.02);
 
         // Sync sim position back to TalonFX sensor
